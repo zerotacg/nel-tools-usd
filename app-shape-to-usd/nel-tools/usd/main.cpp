@@ -1,0 +1,76 @@
+#include <fmt/color.h>
+#include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/sphere.h>
+#include <pxr/usd/usdGeom/xform.h>
+#include <nel/3d/register_3d.h>
+#include <nel/3d/scene.h>
+#include <nel/3d/shape.h>
+#include <nel/misc/app_context.h>
+#include <nel/misc/cmd_args.h>
+#include <nel/misc/common.h>
+#include <nel/misc/file.h>
+
+#include <nel-tools/usd/mesh-converter/Converter.h>
+
+int main(int argc, char** argv)
+{
+    fmt::print(fmt::emphasis::bold, "shape-to-usd:\n");
+
+    try
+    {
+        NLMISC::CApplicationContext myApplicationContext;
+        NLMISC::CCmdArgs args;
+
+        args.addAdditionalArg("input", "Input shape file");
+        args.addAdditionalArg("output", "Output usd file");
+        if (!args.parse(argc, argv))
+        {
+            args.displayHelp();
+            return EXIT_FAILURE;
+        }
+
+        std::string inputFilePath = args.getAdditionalArg("input").front();
+        std::string outputFilePath = args.getAdditionalArg("output").front();
+        NL3D::registerSerial3d();
+        NL3D::CScene::registerBasics();
+
+        NLMISC::CIFile inputFile(inputFilePath);
+        NL3D::CShapeStream shapeStream;
+        shapeStream.serial(inputFile);
+        inputFile.close();
+        NL3D::IShape *shape = shapeStream.getShapePointer();
+        fmt::print( "Shape is of type {}\n", shape->getClassName());
+
+        // Create a new USD stage
+        pxr::UsdStageRefPtr stage = pxr::UsdStage::CreateNew(outputFilePath);
+        if (!stage)
+        {
+            fmt::print(fg(fmt::color::red), "Failed to create stage at {}\n", outputFilePath);
+            return EXIT_FAILURE;
+        }
+
+        auto xform = pxr::UsdGeomXform::Define(stage,  pxr::SdfPath("/hello"));
+        auto sphere = pxr::UsdGeomSphere::Define(stage, pxr::SdfPath("/hello/world"));
+
+        // You can set attributes if you want, e.g., radius
+        sphere.GetRadiusAttr().Set(2.0);
+
+        Converter::from(shape, nullptr)->process(stage);
+
+        // Save the stage
+        if (!stage->GetRootLayer()->Save())
+        {
+            fmt::print(fg(fmt::color::red), "Failed to save file at {}\n", outputFilePath);
+            return EXIT_FAILURE;
+        }
+
+        fmt::print(fg(fmt::color::green), "Successfully created USD file with a sphere at {}\n", outputFilePath);
+
+        return EXIT_SUCCESS;
+    }
+    catch (const std::exception& e)
+    {
+        fmt::print(fg(fmt::color::red), "Error converting shape file file: {}\n", e.what());
+        return EXIT_FAILURE;
+    }
+}

@@ -1,4 +1,4 @@
-luabind provides CMake targets:
+nel provides CMake targets:
 
 find_package(NeL REQUIRED misc)
 

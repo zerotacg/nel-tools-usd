@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 4.1..4.2)
 
-project(learning-vcpkg VERSION 1.0.0 LANGUAGES CXX)
+project(nel-tools-usd VERSION 1.0.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 enable_testing()
@@ -18,11 +18,11 @@ set(project_config "${generated_dir}/${PROJECT_NAME}-config.cmake")
 set(package_components "")
 
 find_package(fmt REQUIRED)
-find_package(OpenAL REQUIRED)
-find_package(ZLIB REQUIRED)
+find_package(pxr REQUIRED)
+find_package(NeL REQUIRED COMPONENTS misc)
 
-add_subdirectory(app-hello-world)
-add_subdirectory(lib-example)
+
+add_subdirectory(app-shape-to-usd)
 
 
 write_basic_package_version_file(
