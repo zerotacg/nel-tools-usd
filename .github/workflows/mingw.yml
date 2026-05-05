@@ -1,0 +1,103 @@
+name: "CI / CD: mingw"
+
+on:
+  push:
+    branches: [ "main", "feature/*", "bugfix/*" ]
+    paths-ignore:
+      - '.github/**.yml'
+      - '!.github/workflows/mingw.yml'
+
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '.github/**.yml'
+      - '!.github/workflows/mingw.yml'
+
+  workflow_dispatch:
+
+env:
+  VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/.vcpkg,readwrite"
+
+jobs:
+  strings:
+    runs-on: ubuntu-latest
+    outputs:
+      build-dir: ${{ steps.strings.outputs.build-dir }}
+      build-version: ${{ steps.strings.outputs.build-version }}
+    steps:
+      - name: Set reusable strings
+        id: strings
+        shell: bash
+        run: |
+          echo "build-dir=build" >> "$GITHUB_OUTPUT"
+          COMMIT_HASH=${{ github.sha }}
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          [ "$VERSION" == "${{ github.event.repository.default_branch }}" ] && VERSION=latest
+          VERSION="$VERSION+sha.${COMMIT_HASH:0:8}"
+          echo VERSION=$VERSION
+          echo "build-version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+  build-package:
+    needs: [ strings ]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [ ci-mingw-x64-static, ci-mingw-x86-static ]
+    steps:
+      - name: Dependencies
+        run: |
+          sudo apt update
+          sudo apt install --yes \
+            autoconf \
+            autoconf-archive \
+            automake \
+            libtool \
+            libltdl-dev \
+            '^libxcb.*-dev' \
+            libx11-xcb-dev \
+            libgl1-mesa-dev \
+            libxrender-dev \
+            libxi-dev \
+            libxtst-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-dev \
+            nsis \
+            mingw-w64 \
+            mingw-w64-tools
+
+      - uses: actions/checkout@v5
+
+      - uses: lukka/get-cmake@latest
+
+      - uses: lukka/run-vcpkg@v11.5
+
+      - uses: actions/cache/restore@v5
+        id: cache-vcpkg
+        with:
+          path: ${{ github.workspace }}/.vcpkg
+          key: vcpkg-${{ matrix.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: vcpkg-${{ matrix.os }}-
+
+
+      - name: Configure CMake
+        run: cmake --preset ${{ matrix.preset }}
+
+      - uses: actions/cache/save@v5
+        if: ( ! cancelled() )
+        with:
+          path: ${{ github.workspace }}/.vcpkg
+          key: ${{ steps.cache-vcpkg.outputs.cache-primary-key }}
+
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+
+      - name: Package
+        run: cpack --preset ${{ matrix.preset }} -R "${{ needs.strings.outputs.build-version }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: learning-vcpkg-${{ matrix.preset }}-${{ needs.strings.outputs.build-version }}
+          path: ${{ needs.strings.outputs.build-dir }}/${{ matrix.preset }}/learning-vcpkg-*
+          if-no-files-found: error

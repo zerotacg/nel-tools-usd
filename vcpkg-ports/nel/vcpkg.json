@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "luabind",
+  "version": "4.1.0.0",
+  "description": "Luabind is a library that helps you create bindings between C++ and Lua. Fork to merge in C++11 and Lua 5.4 support.",
+  "homepage": "https://github.com/ryzom/luabind",
+  "license": "AGPL-3.0-only",
+  "dependencies": [
+    "curl",
+    {
+      "name": "freetype",
+      "default-features": false,
+      "features": [
+        "error-strings"
+      ]
+    },
+    {
+      "name": "directxsdk",
+      "platform": "windows"
+    },
+    "giflib",
+    "libogg",
+    "libvorbis",
+    "libpng",
+    "libjpeg-turbo",
+    {
+      "name": "libxml2",
+      "default-features": false,
+      "features": [
+        "zlib"
+      ]
+    },
+    "lua",
+    "luabind",
+    "msquic",
+    "openal-soft",
+    "opengl",
+    "openssl",
+    "zlib",
+    "gtest"
+  ],
+  "overrides": [
+    {
+      "name": "openal-soft",
+      "version": "1.24.3"
+    }
+  ],
+  "default-features": [
+  ],
+  "features": {
+  }
+}

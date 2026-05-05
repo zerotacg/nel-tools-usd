@@ -1,0 +1,214 @@
+{
+  "version": 10,
+  "configurePresets": [
+    {
+      "name": "default",
+      "hidden": true,
+      "binaryDir": "build/${presetName}",
+      "installDir": "build/install/${presetName}",
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "${sourceDir}/build/install",
+        "CMAKE_VERIFY_INTERFACE_HEADER_SETS": true
+      }
+    },
+    {
+      "name": "ninja",
+      "hidden": true,
+      "generator": "Ninja Multi-Config"
+    },
+    {
+      "name": "clang",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "vcpkg",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
+      "name": "mingw-x64-static",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/mingw-windows-x64.cmake",
+        "BUILD_SHARED_LIBS": false
+      }
+    },
+    {
+      "name": "mingw-x86-static",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/mingw-windows-x86.cmake",
+        "BUILD_SHARED_LIBS": false
+      }
+    },
+    {
+      "name": "ci",
+      "inherits": [
+        "vcpkg",
+        "default"
+      ]
+    },
+    {
+      "name": "ci-x64-linux-dynamic",
+      "inherits": [
+        "ci"
+      ],
+      "binaryDir": "build/ci",
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": true,
+        "VCPKG_TARGET_TRIPLET": "x64-linux-dynamic"
+      }
+    },
+    {
+      "name": "ci-mingw-x64-static",
+      "inherits": [
+        "ci",
+        "mingw-x64-static"
+      ],
+      "cacheVariables": {
+      }
+    },
+    {
+      "name": "ci-mingw-x86-static",
+      "inherits": [
+        "ci",
+        "mingw-x86-static"
+      ],
+      "cacheVariables": {
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "ci",
+      "configurePreset": "ci",
+      "configuration": "Debug",
+      "targets": [
+        "all"
+      ]
+    },
+    {
+      "name": "ci/install",
+      "inherits": "ci",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "ci-mingw-x64-static",
+      "inherits": "ci",
+      "configurePreset": "ci-mingw-x64-static"
+    },
+    {
+      "name": "ci-mingw-x86-static",
+      "inherits": "ci",
+      "configurePreset": "ci-mingw-x86-static"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "ci",
+      "configurePreset": "ci",
+      "configuration": "Debug",
+      "output": {
+        "outputOnFailure": true,
+        "subprojectSummary": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      }
+    },
+    {
+      "name": "ci-mingw-x64-static",
+      "inherits": "ci",
+      "configurePreset": "ci-mingw-x64-static"
+    }
+  ],
+  "packagePresets": [
+    {
+      "name": "ci",
+      "configurePreset": "ci",
+      "configurations": [
+        "Debug"
+      ]
+    },
+    {
+      "name": "ci-mingw-x64-static",
+      "inherits": "ci",
+      "configurePreset": "ci-mingw-x64-static"
+    },
+    {
+      "name": "ci-mingw-x86-static",
+      "inherits": "ci",
+      "configurePreset": "ci-mingw-x86-static"
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci"
+        },
+        {
+          "type": "build",
+          "name": "ci"
+        },
+        {
+          "type": "test",
+          "name": "ci"
+        },
+        {
+          "type": "package",
+          "name": "ci"
+        },
+        {
+          "type": "build",
+          "name": "ci/install"
+        }
+      ]
+    },
+    {
+      "name": "ci-mingw-x64",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-mingw-x64-static"
+        },
+        {
+          "type": "build",
+          "name": "ci-mingw-x64-static"
+        },
+        {
+          "type": "test",
+          "name": "ci-mingw-x64-static"
+        }
+      ]
+    },
+    {
+      "name": "ci-mingw-x86",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-mingw-x86-static"
+        },
+        {
+          "type": "build",
+          "name": "ci-mingw-x86-static"
+        },
+        {
+          "type": "package",
+          "name": "ci-mingw-x86-static"
+        }
+      ]
+    }
+  ]
+}

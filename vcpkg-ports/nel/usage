@@ -1,0 +1,5 @@
+luabind provides CMake targets:
+
+find_package(NeL REQUIRED misc)
+
+target_link_libraries(main PRIVATE NeL::misc)
