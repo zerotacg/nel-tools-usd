@@ -2,8 +2,9 @@
 
 #include <fmt/color.h>
 #include <pxr/usd/usd/modelAPI.h>
-#include <pxr/usd/usdGeom/metrics.h>
 #include <pxr/usd/usdGeom/mesh.h>
+#include <pxr/usd/usdGeom/metrics.h>
+#include <pxr/usd/usdGeom/primvarsAPI.h>
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdGeom/xform.h>
 
@@ -29,10 +30,10 @@ void ConverterCMesh::convert(UsdStageRefPtr& output)
 {
     UsdGeomSetStageUpAxis(output, UsdGeomTokens->z);
     auto modelRoot = UsdGeomXform::Define(output, SdfPath("/shape"));
-    auto outMesh = UsdGeomMesh::Define(output, SdfPath("/shape/mesh"));
+    auto outMesh = UsdGeomMesh::Define(output, SdfPath("/shape/model"));
 
     outMesh.CreatePointsAttr().Set(convertVertices());
-
+    outMesh.CreateNormalsAttr().Set(convertVertices());
     auto indices = convertIndices();
     outMesh.CreateFaceVertexIndicesAttr().Set(indices);
     outMesh.CreateFaceVertexCountsAttr().Set(convertFaceCount(indices));
@@ -44,11 +45,29 @@ VtArray<GfVec3f> ConverterCMesh::convertVertices() const
     CVertexBufferRead vertexBufferRead;
     vertexBuffer.lock(vertexBufferRead);
     VtArray<GfVec3f> value;
+
     for (auto i = 0; i < vertexBuffer.getNumVertices(); ++i)
     {
         auto vertex = *vertexBufferRead.getVertexCoordPointer(i);
         value.emplace_back(vertex.x, vertex.y, vertex.z);
     }
+
+    return value;
+}
+
+VtArray<GfVec3f> ConverterCMesh::convertNormals() const
+{
+    CVertexBuffer vertexBuffer = mesh->getVertexBuffer();
+    CVertexBufferRead vertexBufferRead;
+    vertexBuffer.lock(vertexBufferRead);
+    VtArray<GfVec3f> value;
+
+    for (auto i = 0; i < vertexBuffer.getNumVertices(); ++i)
+    {
+        auto normal = *vertexBufferRead.getNormalCoordPointer(i);
+        value.emplace_back(normal.x, normal.y, normal.z);
+    }
+
     return value;
 }
 

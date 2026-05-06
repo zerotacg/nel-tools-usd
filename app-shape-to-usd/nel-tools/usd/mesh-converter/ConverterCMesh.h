@@ -18,6 +18,7 @@ public:
 
 protected:
     pxr::VtArray<pxr::GfVec3f> convertVertices() const;
+    pxr::VtArray<pxr::GfVec3f> convertNormals() const;
     pxr::VtArray<int> convertIndices() const;
     pxr::VtArray<int> convertFaceCount(pxr::VtArray<int> indices) const;
 
