@@ -12,66 +12,79 @@ using namespace NLMISC;
 using namespace std;
 using namespace pxr;
 
-uint32 getIndexAt(const CIndexBufferRead &buffer, const int index)
+uint32 getIndexAt(const CIndexBufferRead& buffer, const int index)
 {
-	switch (buffer.getFormat())
-	{
-		case CIndexBuffer::Indices32:
-			return *(static_cast<const uint32 *>(buffer.getPtr()) + index);
-		case CIndexBuffer::Indices16:
-		default:
-			return *(static_cast<const uint16 *>(buffer.getPtr()) + index);
-		}
+    switch (buffer.getFormat())
+    {
+    case CIndexBuffer::Indices32:
+        return *(static_cast<const uint32*>(buffer.getPtr()) + index);
+    case CIndexBuffer::Indices16:
+    default:
+        return *(static_cast<const uint16*>(buffer.getPtr()) + index);
+    }
 }
 
 
-void ConverterCMesh::convert(UsdStageRefPtr &output)
+void ConverterCMesh::convert(UsdStageRefPtr& output)
 {
-	UsdGeomSetStageUpAxis(output, UsdGeomTokens->z);
-    auto modelRoot = UsdGeomXform::Define(output,  SdfPath("/shape"));
-	auto outMesh = UsdGeomMesh::Define(output, SdfPath("/shape/mesh"));
- 	auto attributePoints = outMesh.CreatePointsAttr();
-	auto attributeIndices = outMesh.CreateFaceVertexIndicesAttr();
-	auto attributeFaceCount = outMesh.CreateFaceVertexCountsAttr();
+    UsdGeomSetStageUpAxis(output, UsdGeomTokens->z);
+    auto modelRoot = UsdGeomXform::Define(output, SdfPath("/shape"));
+    auto outMesh = UsdGeomMesh::Define(output, SdfPath("/shape/mesh"));
 
-	CVertexBuffer vertexBuffer = mesh->getVertexBuffer();
-	CVertexBufferRead vba;
-	vertexBuffer.lock(vba);
-	VtArray<GfVec3f> vertexArray;
-	for (auto i = 0; i < vertexBuffer.getNumVertices(); ++i)
-	{
-		auto vertex = *vba.getVertexCoordPointer(i);
-		vertexArray.emplace_back(vertex.x, vertex.y, vertex.z);
-	}
-	attributePoints.Set(vertexArray);
+    outMesh.CreatePointsAttr().Set(convertVertices());
 
-    constexpr uint lodId = 0;
-	VtArray<int> indices;
-	for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
-	{
-		auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
-		auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
-		nlinfo("RenderPasss %i Elements %i Material %i", renderPass, indexBuffer.getNumIndexes(), materialIndex);
-		auto material = mesh->getMaterial(materialIndex);
-		vector<string> textures;
+    auto indices = convertIndices();
+    outMesh.CreateFaceVertexIndicesAttr().Set(indices);
+    outMesh.CreateFaceVertexCountsAttr().Set(convertFaceCount(indices));
+}
 
-		CIndexBufferRead iba;
-		indexBuffer.lock(iba);
+VtArray<GfVec3f> ConverterCMesh::convertVertices() const
+{
+    CVertexBuffer vertexBuffer = mesh->getVertexBuffer();
+    CVertexBufferRead vertexBufferRead;
+    vertexBuffer.lock(vertexBufferRead);
+    VtArray<GfVec3f> value;
+    for (auto i = 0; i < vertexBuffer.getNumVertices(); ++i)
+    {
+        auto vertex = *vertexBufferRead.getVertexCoordPointer(i);
+        value.emplace_back(vertex.x, vertex.y, vertex.z);
+    }
+    return value;
+}
 
-		for (auto i = 0; i < indexBuffer.getNumIndexes(); ++i)
-		{
-			if (uint32 idx = getIndexAt(iba, i); idx != -1)
-			{
-				indices.emplace_back(idx);
-			}
-		}
-		nldebug("index min %i max %i", *min_element(indices.begin(), indices.end()), *max_element(indices.begin(), indices.end()));
-	}
-	attributeIndices.Set(indices);
-	VtArray<int> faceCount;
-	for (auto i = 0; i < indices.size(); i += 3)
-	{
-		faceCount.emplace_back(3);
-	}
-	attributeFaceCount.Set(faceCount);
+VtArray<int> ConverterCMesh::convertIndices() const
+{
+    VtArray<int> value;
+    for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
+    {
+        auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
+        auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
+        auto material = mesh->getMaterial(materialIndex);
+        nlinfo("RenderPasss %i Elements %i Material %i", renderPass, indexBuffer.getNumIndexes(), materialIndex);
+
+        CIndexBufferRead indexBufferRead;
+        indexBuffer.lock(indexBufferRead);
+
+        for (auto i = 0; i < indexBuffer.getNumIndexes(); ++i)
+        {
+            if (uint32 idx = getIndexAt(indexBufferRead, i); idx != -1)
+            {
+                value.emplace_back(idx);
+            }
+        }
+        nldebug("index min %i max %i", *min_element(value.begin(), value.end()),
+                *max_element(value.begin(), value.end()));
+    }
+
+    return value;
+}
+
+VtArray<int> ConverterCMesh::convertFaceCount(VtArray<int> indices) const
+{
+    VtArray<int> value;
+    for (auto i = 0; i < indices.size(); i += 3)
+    {
+        value.emplace_back(3);
+    }
+    return value;
 }
