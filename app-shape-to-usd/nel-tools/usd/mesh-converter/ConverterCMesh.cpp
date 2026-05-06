@@ -1,12 +1,18 @@
 #include <nel-tools/usd/mesh-converter/ConverterCMesh.h>
 
 #include <fmt/color.h>
+#include <pxr/usd/kind/registry.h>
 #include <pxr/usd/usd/modelAPI.h>
 #include <pxr/usd/usdGeom/mesh.h>
 #include <pxr/usd/usdGeom/metrics.h>
+#include <pxr/usd/usdGeom/modelAPI.h>
 #include <pxr/usd/usdGeom/primvarsAPI.h>
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usdShade/material.h>
+#include <pxr/usd/usdShade/materialBindingAPI.h>
+#include <pxr/usd/usdShade/shader.h>
+#include <pxr/usd/usdShade/tokens.h>
 
 using namespace NL3D;
 using namespace NLMISC;
@@ -29,11 +35,37 @@ uint32 getIndexAt(const CIndexBufferRead& buffer, const int index)
 void ConverterCMesh::convert(UsdStageRefPtr& output)
 {
     UsdGeomSetStageUpAxis(output, UsdGeomTokens->z);
-    auto modelRoot = UsdGeomXform::Define(output, SdfPath("/shape"));
-    auto outMesh = UsdGeomMesh::Define(output, SdfPath("/shape/model"));
+    auto modelRoot = UsdGeomXform::Define(output, SdfPath("/root"));
+    UsdModelAPI(modelRoot).SetKind(KindTokens->component);
+    auto outMesh = UsdGeomMesh::Define(output, SdfPath("/root/model"));
 
     outMesh.CreatePointsAttr().Set(convertVertices());
-    outMesh.CreateNormalsAttr().Set(convertVertices());
+    outMesh.CreateNormalsAttr().Set(convertNormals());
+    UsdGeomPrimvarsAPI(outMesh)
+        .CreatePrimvar(TfToken("st"), SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->varying)
+        .Set(convertUVs());
+
+    auto material = UsdShadeMaterial::Define(output, SdfPath("/root/model/materialMAT"));
+    auto pbrShader = UsdShadeShader::Define(output, SdfPath("/root/model/materialMAT/PBRShader"));
+    pbrShader.CreateIdAttr().Set(TfToken("UsdPreviewSurface"));
+    material.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
+
+    auto stReader = UsdShadeShader::Define(output, SdfPath("/root/model/materialMAT/stReader"));
+    stReader.CreateIdAttr().Set(TfToken("UsdPrimvarReader_float2"));
+
+    auto diffuseTextureSampler = UsdShadeShader::Define(output, SdfPath("/root/model/materialMAT/diffuseTexture"));
+    diffuseTextureSampler.CreateIdAttr().Set(TfToken("UsdUVTexture"));
+    diffuseTextureSampler.CreateInput(TfToken("file"), SdfValueTypeNames->Asset).Set("./textures/ca_ship_front1.png");
+    diffuseTextureSampler.CreateInput(TfToken("st"), SdfValueTypeNames->Float2).ConnectToSource(stReader.ConnectableAPI(), TfToken("result"));
+    diffuseTextureSampler.CreateOutput(TfToken("rgb"), SdfValueTypeNames->Float3);
+    pbrShader.CreateInput(TfToken("diffuseColor"), SdfValueTypeNames->Color3f).ConnectToSource(diffuseTextureSampler.ConnectableAPI(), TfToken("rgb"));
+    auto stInput = material.CreateInput(TfToken("frame:stPrimvarName"), SdfValueTypeNames->Token);
+    stInput.Set(TfToken("st"));
+    stReader.CreateInput(TfToken("varname"),SdfValueTypeNames->Token).ConnectToSource(stInput);
+    outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
+    UsdShadeMaterialBindingAPI(outMesh).Bind(material);
+
+
     auto indices = convertIndices();
     outMesh.CreateFaceVertexIndicesAttr().Set(indices);
     outMesh.CreateFaceVertexCountsAttr().Set(convertFaceCount(indices));
@@ -66,6 +98,22 @@ VtArray<GfVec3f> ConverterCMesh::convertNormals() const
     {
         auto normal = *vertexBufferRead.getNormalCoordPointer(i);
         value.emplace_back(normal.x, normal.y, normal.z);
+    }
+
+    return value;
+}
+
+VtArray<GfVec2f> ConverterCMesh::convertUVs() const
+{
+    CVertexBuffer vertexBuffer = mesh->getVertexBuffer();
+    CVertexBufferRead vertexBufferRead;
+    vertexBuffer.lock(vertexBufferRead);
+    VtArray<GfVec2f> value;
+
+    for (auto i = 0; i < vertexBuffer.getNumVertices(); ++i)
+    {
+        auto uv = *vertexBufferRead.getTexCoordPointer(i);
+        value.emplace_back(uv.U, uv.V);
     }
 
     return value;

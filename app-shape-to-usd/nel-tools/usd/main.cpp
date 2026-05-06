@@ -1,7 +1,6 @@
 #include <fmt/color.h>
+#include <pxr/usd/ar/defaultResolver.h>
 #include <pxr/usd/usd/stage.h>
-#include <pxr/usd/usdGeom/sphere.h>
-#include <pxr/usd/usdGeom/xform.h>
 #include <nel/3d/register_3d.h>
 #include <nel/3d/scene.h>
 #include <nel/3d/shape.h>
@@ -31,6 +30,7 @@ int main(int argc, char** argv)
 
         std::string inputFilePath = args.getAdditionalArg("input").front();
         std::string outputFilePath = args.getAdditionalArg("output").front();
+
         NL3D::registerSerial3d();
         NL3D::CScene::registerBasics();
 

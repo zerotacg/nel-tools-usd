@@ -19,6 +19,7 @@ target_link_libraries(nel-tools-shape-to-usd
         NeL::misc
         usd
         usdGeom
+        usdShade
 )
 
 target_compile_definitions(nel-tools-shape-to-usd PRIVATE $<$<CONFIG:Debug>:NL_DEBUG> $<$<CONFIG:Release>:NL_RELEASE>)
