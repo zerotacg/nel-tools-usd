@@ -49,13 +49,7 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
 
-        auto xform = pxr::UsdGeomXform::Define(stage,  pxr::SdfPath("/hello"));
-        auto sphere = pxr::UsdGeomSphere::Define(stage, pxr::SdfPath("/hello/world"));
-
-        // You can set attributes if you want, e.g., radius
-        sphere.GetRadiusAttr().Set(2.0);
-
-        Converter::from(shape, nullptr)->process(stage);
+        Converter::from(shape, nullptr)->convert(stage);
 
         // Save the stage
         if (!stage->GetRootLayer()->Save())

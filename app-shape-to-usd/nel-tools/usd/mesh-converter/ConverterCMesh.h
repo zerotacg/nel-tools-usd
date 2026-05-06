@@ -13,7 +13,7 @@ public:
 	{
 	}
 
-	void process(pxr::UsdStageRefPtr& output) override;
+	void convert(pxr::UsdStageRefPtr& output) override;
 
 private:
 	NL3D::CMesh *mesh;

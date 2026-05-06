@@ -11,7 +11,7 @@ class Converter
 public:
 	virtual ~Converter() = default;
 
-	virtual void process(pxr::UsdStageRefPtr& output) = 0;
+	virtual void convert(pxr::UsdStageRefPtr& output) = 0;
 
 	static std::unique_ptr<Converter> from(NL3D::IShape *shape, NL3D::IShape *skeleton);
 };
