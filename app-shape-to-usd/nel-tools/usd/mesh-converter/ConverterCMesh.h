@@ -49,6 +49,8 @@ private:
         const pxr::TfToken rgb = pxr::TfToken("rgb");
         const pxr::TfToken result = pxr::TfToken("result");
         const pxr::TfToken diffuseColor = pxr::TfToken("diffuseColor");
+        const pxr::TfToken varname = pxr::TfToken("varname");
+        const pxr::TfToken frame_stPrimvarName = pxr::TfToken("frame:stPrimvarName");
     } Tokens;
 };
 

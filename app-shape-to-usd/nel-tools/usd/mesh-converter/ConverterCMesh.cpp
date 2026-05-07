@@ -77,9 +77,9 @@ void ConverterCMesh::convert(UsdStageRefPtr& stage)
     diffuseTextureSampler.CreateOutput(Tokens.rgb, SdfValueTypeNames->Float3);
     pbrShader.CreateInput(Tokens.diffuseColor, SdfValueTypeNames->Color3f).ConnectToSource(
         diffuseTextureSampler.ConnectableAPI(), Tokens.rgb);
-    auto stInput = material.CreateInput(TfToken("frame:stPrimvarName"), SdfValueTypeNames->Token);
+    auto stInput = material.CreateInput(Tokens.frame_stPrimvarName, SdfValueTypeNames->Token);
     stInput.Set(Tokens.st);
-    stReader.CreateInput(TfToken("varname"), SdfValueTypeNames->Token).ConnectToSource(stInput);
+    stReader.CreateInput(Tokens.varname, SdfValueTypeNames->Token).ConnectToSource(stInput);
     outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
     UsdShadeMaterialBindingAPI(outMesh).Bind(material);
 
@@ -191,9 +191,12 @@ UsdShadeMaterial ConverterCMesh::convert(UsdStageRefPtr& stage, CMaterial& sourc
     auto pbrShader = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("PBRShader")));
     pbrShader.CreateIdAttr().Set(TfToken("UsdPreviewSurface"));
     material.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
+    material.CreateInput(Tokens.frame_stPrimvarName, SdfValueTypeNames->Token).Set(Tokens.st);
 
-    auto stReader = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("stReader")));
-    stReader.CreateIdAttr().Set(TfToken("UsdPrimvarReader_float2"));
+    auto uvmap = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("uvmap")));
+    uvmap.CreateIdAttr().Set(TfToken("UsdPrimvarReader_float2"));
+    uvmap.CreateInput(Tokens.varname, SdfValueTypeNames->Token);
+    uvmap.CreateOutput(Tokens.result, SdfValueTypeNames->Float2);
 
     if (source.getBlend())
     {
