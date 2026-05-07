@@ -11,6 +11,7 @@
 #include <pxr/usd/usdGeom/metrics.h>
 #include <pxr/usd/usdGeom/modelAPI.h>
 #include <pxr/usd/usdGeom/primvarsAPI.h>
+#include <pxr/usd/usdGeom/scope.h>
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdGeom/xform.h>
 #include <pxr/usd/usdShade/material.h>
@@ -177,6 +178,7 @@ VtArray<int> ConverterCMesh::convertFaceCount(VtArray<int> indices) const
 
 void ConverterCMesh::convertMaterials()
 {
+    UsdGeomScope::Define(stage, SdfPath("/root/_materials"));
     for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
     {
         auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
@@ -186,7 +188,7 @@ void ConverterCMesh::convertMaterials()
 
 UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex)
 {
-    auto materialPath = SdfPath(fmt::format("/root/model/material_{}_MAT", materialIndex));
+    auto materialPath = SdfPath(fmt::format("/root/_materials/material_{}_MAT", materialIndex));
     auto material = UsdShadeMaterial::Define(stage, materialPath);
     auto pbrShader = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("PBRShader")));
     pbrShader.CreateIdAttr().Set(TfToken("UsdPreviewSurface"));
@@ -206,9 +208,9 @@ UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex
     {
         if (source.texturePresent(textureIndex))
         {
-            auto texture = source.getTexture(textureIndex);
-            nlinfo("Texture at index %i is %s", textureIndex, texture->getClassName().c_str());
-            convert( materialPath, texture, textureIndex);
+            auto sourceTexture = source.getTexture(textureIndex);
+            nlinfo("Texture at index %i is %s", textureIndex, sourceTexture->getClassName().c_str());
+            auto sampler = convert( materialPath, sourceTexture, textureIndex);
         }
     }
 
