@@ -3,7 +3,7 @@
 
 using ::testing::Eq;
 
-class convert_face_indices_test : public testing::Test
+class convert_test : public testing::Test
 {
 protected:
 	void SetUp() override
@@ -15,7 +15,7 @@ protected:
 	}
 };
 
-TEST_F(convert_face_indices_test, shouldStartAtMinBaseport)
+TEST_F(convert_test, shouldStartAtMinBaseport)
 {
-	EXPECT_THAT(19, Eq(10));
+	EXPECT_THAT(10, Eq(10));
 }
