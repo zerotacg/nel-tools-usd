@@ -179,7 +179,7 @@ size_t ConverterCMesh::convertSubset(const SdfPath& root, uint renderPass, int f
 
     auto subset = UsdGeomSubset::Define(stage, root.AppendPath(SdfPath(fmt::format("subset_{}", renderPass))));
 
-    subset.CreateElementTypeAttr().Set(UsdGeomTokens->point);
+    subset.CreateElementTypeAttr().Set(UsdGeomTokens->face);
     subset.CreateFamilyNameAttr().Set(UsdShadeTokens->materialBind);
     auto faceIndices = convertFaceIndices(indexBuffer, faceOffset);
     subset.CreateIndicesAttr().Set(faceIndices);
@@ -285,7 +285,7 @@ UsdShadeShader ConverterCMesh::convert(SdfPath& root, CTextureFile& source, uint
 
     auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
     sampler.CreateIdAttr().Set(TfToken("UsdUVTexture"));
-    sampler.CreateInput(Tokens.file, SdfValueTypeNames->Asset).Set(SdfAssetPath("./textures/" + fileName));
+    sampler.CreateInput(Tokens.file, SdfValueTypeNames->Asset).Set(SdfAssetPath("textures/" + fileName));
     sampler.CreateInput(Tokens.st, SdfValueTypeNames->Float2);
     sampler.CreateOutput(Tokens.rgb, SdfValueTypeNames->Float3);
     sampler.CreateInput(UsdHydraTokens->wrapS, SdfValueTypeNames->Token).Set(convert(source.getWrapS()));
