@@ -27,9 +27,6 @@ public:
     void convert() override;
 
 protected:
-    pxr::VtArray<pxr::GfVec3f> convertVertices(const NL3D::CVertexBuffer& source) const;
-    pxr::VtArray<pxr::GfVec3f> convertNormals(const NL3D::CVertexBuffer& source) const;
-    pxr::VtArray<pxr::GfVec2f> convertUVs(const NL3D::CVertexBuffer& source) const;
     pxr::VtArray<int> convertIndices() const;
     pxr::VtArray<int> convertFaceCount(pxr::VtArray<int>& source) const;
     pxr::VtArray<int> convertFaceIndices(const NL3D::CIndexBuffer& source, int offset = 0) const;

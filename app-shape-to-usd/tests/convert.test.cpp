@@ -1,7 +1,12 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <nel-tools/usd/convert/convert.h>
+
 using ::testing::Eq;
+using namespace NL3D;
+using namespace pxr;
+using namespace nel_tools::usd;
 
 class convert_test : public testing::Test
 {
@@ -15,7 +20,17 @@ protected:
 	}
 };
 
-TEST_F(convert_test, shouldStartAtMinBaseport)
+TEST_F(convert_test, should_convert_vertices)
 {
-	EXPECT_THAT(10, Eq(10));
+	CVertexBuffer buffer;
+	buffer.setVertexFormat(CVertexBuffer::PositionFlag);
+	buffer.setNumVertices(3);
+	CVertexBufferReadWrite io;
+	buffer.lock(io);
+	io.setVertexCoord(0, 0.1f, 0.2f, 0.3f);
+	io.setVertexCoord(1, 0.4f, 0.5f, 0.6f);
+	io.setVertexCoord(2, 0.7f, 0.8f, 0.9f);
+	io.unlock();
+
+	EXPECT_THAT(convert::vertices(buffer), Eq(VtArray<GfVec3f>{{0.1f, 0.2f, 0.3f}, {0.4f, 0.5f, 0.6f}, {0.7f, 0.8f, 0.9f}}));
 }

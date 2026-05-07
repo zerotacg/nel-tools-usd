@@ -5,8 +5,10 @@ target_sources(nel-tools-lib-shape-to-usd
         PUBLIC
         FILE_SET HEADERS
         FILES
+        nel-tools/usd/convert/convert.h
         nel-tools/usd/mesh-converter/Converter.h
         PRIVATE
+        nel-tools/usd/convert/convert.cpp
         nel-tools/usd/mesh-converter/Converter.cpp
         nel-tools/usd/mesh-converter/ConverterCMesh.cpp
 )

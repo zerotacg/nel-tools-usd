@@ -21,10 +21,13 @@
 #include <pxr/usd/usdShade/shader.h>
 #include <pxr/usd/usdShade/tokens.h>
 
+#include <nel-tools/usd/convert/convert.h>
+
 using namespace NL3D;
 using namespace NLMISC;
 using namespace std;
 using namespace pxr;
+using namespace nel_tools::usd;
 
 uint32 getIndexAt(const CIndexBufferRead& buffer, const int index)
 {
@@ -47,11 +50,11 @@ void ConverterCMesh::convert()
     UsdModelAPI(modelRoot).SetKind(KindTokens->component);
     auto outMesh = UsdGeomMesh::Define(stage, meshPath);
 
-    outMesh.CreatePointsAttr().Set(convertVertices(mesh->getVertexBuffer()));
-    outMesh.CreateNormalsAttr().Set(convertNormals(mesh->getVertexBuffer()));
+    outMesh.CreatePointsAttr().Set(convert::vertices(mesh->getVertexBuffer()));
+    outMesh.CreateNormalsAttr().Set(convert::normals(mesh->getVertexBuffer()));
     UsdGeomPrimvarsAPI(outMesh)
         .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->varying)
-        .Set(convertUVs(mesh->getVertexBuffer()));
+        .Set(convert::uvs(mesh->getVertexBuffer()));
 
 
     outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
@@ -67,51 +70,6 @@ void ConverterCMesh::convert()
     auto indices = convertIndices();
     outMesh.CreateFaceVertexIndicesAttr().Set(indices);
     outMesh.CreateFaceVertexCountsAttr().Set(convertFaceCount(indices));
-}
-
-VtArray<GfVec3f> ConverterCMesh::convertVertices(const CVertexBuffer& source) const
-{
-    VtArray<GfVec3f> value;
-    CVertexBufferRead vertexBufferRead;
-    source.lock(vertexBufferRead);
-
-    for (auto i = 0; i < source.getNumVertices(); ++i)
-    {
-        auto vertex = *vertexBufferRead.getVertexCoordPointer(i);
-        value.emplace_back(vertex.x, vertex.y, vertex.z);
-    }
-
-    return value;
-}
-
-VtArray<GfVec3f> ConverterCMesh::convertNormals(const CVertexBuffer& source) const
-{
-    VtArray<GfVec3f> value;
-    CVertexBufferRead vertexBufferRead;
-    source.lock(vertexBufferRead);
-
-    for (auto i = 0; i < source.getNumVertices(); ++i)
-    {
-        auto normal = *vertexBufferRead.getNormalCoordPointer(i);
-        value.emplace_back(normal.x, normal.y, normal.z);
-    }
-
-    return value;
-}
-
-VtArray<GfVec2f> ConverterCMesh::convertUVs(const CVertexBuffer& source) const
-{
-    VtArray<GfVec2f> value;
-    CVertexBufferRead vertexBufferRead;
-    source.lock(vertexBufferRead);
-
-    for (auto i = 0; i < source.getNumVertices(); ++i)
-    {
-        auto uv = *vertexBufferRead.getTexCoordPointer(i);
-        value.emplace_back(uv.U, uv.V);
-    }
-
-    return value;
 }
 
 VtArray<int> ConverterCMesh::convertIndices() const
