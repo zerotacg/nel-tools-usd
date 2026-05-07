@@ -1,6 +1,7 @@
 #include <nel-tools/usd/mesh-converter/ConverterCMesh.h>
 
 #include <fmt/color.h>
+#include <pxr/usd/ar/resolver.h>
 #include <pxr/usd/kind/registry.h>
 #include <pxr/usd/usd/modelAPI.h>
 #include <pxr/usd/usdGeom/mesh.h>
@@ -42,8 +43,9 @@ void ConverterCMesh::convert(UsdStageRefPtr& output)
     outMesh.CreatePointsAttr().Set(convertVertices());
     outMesh.CreateNormalsAttr().Set(convertNormals());
     UsdGeomPrimvarsAPI(outMesh)
-        .CreatePrimvar(TfToken("st"), SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->varying)
+        .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->varying)
         .Set(convertUVs());
+
 
     auto material = UsdShadeMaterial::Define(output, SdfPath("/root/model/materialMAT"));
     auto pbrShader = UsdShadeShader::Define(output, SdfPath("/root/model/materialMAT/PBRShader"));
@@ -55,13 +57,26 @@ void ConverterCMesh::convert(UsdStageRefPtr& output)
 
     auto diffuseTextureSampler = UsdShadeShader::Define(output, SdfPath("/root/model/materialMAT/diffuseTexture"));
     diffuseTextureSampler.CreateIdAttr().Set(TfToken("UsdUVTexture"));
-    diffuseTextureSampler.CreateInput(TfToken("file"), SdfValueTypeNames->Asset).Set("./textures/ca_ship_front1.png");
-    diffuseTextureSampler.CreateInput(TfToken("st"), SdfValueTypeNames->Float2).ConnectToSource(stReader.ConnectableAPI(), TfToken("result"));
-    diffuseTextureSampler.CreateOutput(TfToken("rgb"), SdfValueTypeNames->Float3);
-    pbrShader.CreateInput(TfToken("diffuseColor"), SdfValueTypeNames->Color3f).ConnectToSource(diffuseTextureSampler.ConnectableAPI(), TfToken("rgb"));
+    auto& asserResolver = ArGetResolver();
+    auto fileAsset = asserResolver.ResolveForNewAsset("textures/ca_ship_front1.png");
+    if (fileAsset.IsEmpty())
+    {
+        fmt::print(fg(fmt::color::red), "Could not resolve asset {}\n", fileAsset.GetPathString());
+    }
+    else
+    {
+        fmt::print(fg(fmt::color::forest_green), "Could resolve asset {}\n", fileAsset.GetPathString());
+    }
+    diffuseTextureSampler.CreateInput(Tokens.file, SdfValueTypeNames->Asset).Set(
+        SdfAssetPath("textures/ca_ship_front1.png"));
+    diffuseTextureSampler.CreateInput(Tokens.st, SdfValueTypeNames->Float2).ConnectToSource(
+        stReader.ConnectableAPI(), Tokens.result);
+    diffuseTextureSampler.CreateOutput(Tokens.rgb, SdfValueTypeNames->Float3);
+    pbrShader.CreateInput(Tokens.diffuseColor, SdfValueTypeNames->Color3f).ConnectToSource(
+        diffuseTextureSampler.ConnectableAPI(), Tokens.rgb);
     auto stInput = material.CreateInput(TfToken("frame:stPrimvarName"), SdfValueTypeNames->Token);
-    stInput.Set(TfToken("st"));
-    stReader.CreateInput(TfToken("varname"),SdfValueTypeNames->Token).ConnectToSource(stInput);
+    stInput.Set(Tokens.st);
+    stReader.CreateInput(TfToken("varname"), SdfValueTypeNames->Token).ConnectToSource(stInput);
     outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
     UsdShadeMaterialBindingAPI(outMesh).Bind(material);
 

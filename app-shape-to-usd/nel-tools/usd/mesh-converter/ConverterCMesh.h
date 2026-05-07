@@ -29,6 +29,15 @@ private:
     NL3D::CMesh* mesh;
 
     const uint lodId = 0;
+
+    struct
+    {
+        const pxr::TfToken st = pxr::TfToken("st");
+        const pxr::TfToken file = pxr::TfToken("file");
+        const pxr::TfToken rgb = pxr::TfToken("rgb");
+        const pxr::TfToken result = pxr::TfToken("result");
+        const pxr::TfToken diffuseColor = pxr::TfToken("diffuseColor");
+    } Tokens;
 };
 
 #endif // MESH_MRM_PROCESSOR_H
