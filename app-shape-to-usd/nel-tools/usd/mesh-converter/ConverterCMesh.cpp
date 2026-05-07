@@ -42,6 +42,7 @@ uint32 getIndexAt(const CIndexBufferRead& buffer, const int index)
 void ConverterCMesh::convert()
 {
     UsdGeomSetStageUpAxis(stage, UsdGeomTokens->z);
+    UsdGeomSetStageMetersPerUnit(stage, 1.0);
     auto modelRoot = UsdGeomXform::Define(stage, SdfPath("/root"));
     UsdModelAPI(modelRoot).SetKind(KindTokens->component);
     auto outMesh = UsdGeomMesh::Define(stage, meshPath);
