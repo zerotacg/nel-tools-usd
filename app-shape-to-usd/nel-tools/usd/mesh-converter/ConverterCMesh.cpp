@@ -240,6 +240,8 @@ UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex
             auto sourceTexture = source.getTexture(textureIndex);
             auto sampler = convert(materialPath, sourceTexture, textureIndex);
             sampler.GetInput(Tokens.st).ConnectToSource(uvmapResult);
+            pbrShader.CreateInput(Tokens.diffuseColor, SdfValueTypeNames->Color3f).ConnectToSource(
+                sampler.ConnectableAPI(), Tokens.rgb);
         }
     }
 
