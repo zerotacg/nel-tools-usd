@@ -1,6 +1,8 @@
 #ifndef MESH_MRM_PROCESSOR_H
 #define MESH_MRM_PROCESSOR_H
 
+#include <string>
+
 #include <nel/3d/material.h>
 #include <nel/3d/mesh.h>
 #include <nel/3d/texture.h>
@@ -40,12 +42,15 @@ protected:
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureFile& source, uint32 index);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureMultiFile& source, uint32 index);
 
+    pxr::UsdShadeMaterial defineMaterial(uint32 index);
+
 private:
     NL3D::CMesh* mesh;
 
 
     const uint lodId = 0;
     const pxr::SdfPath meshPath = pxr::SdfPath("/root/model");
+    const std::string stPrimvarName = "st";
 
 
     struct
