@@ -12,6 +12,7 @@
 #include <pxr/usd/usdGeom/modelAPI.h>
 #include <pxr/usd/usdGeom/primvarsAPI.h>
 #include <pxr/usd/usdGeom/scope.h>
+#include <pxr/usd/usdGeom/subset.h>
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdGeom/xform.h>
 #include <pxr/usd/usdShade/material.h>
@@ -42,14 +43,14 @@ void ConverterCMesh::convert()
     UsdGeomSetStageUpAxis(stage, UsdGeomTokens->z);
     auto modelRoot = UsdGeomXform::Define(stage, SdfPath("/root"));
     UsdModelAPI(modelRoot).SetKind(KindTokens->component);
-    auto outMesh = UsdGeomMesh::Define(stage, SdfPath("/root/model"));
+    auto meshPath = SdfPath("/root/model");
+    auto outMesh = UsdGeomMesh::Define(stage, meshPath);
 
     outMesh.CreatePointsAttr().Set(convertVertices());
     outMesh.CreateNormalsAttr().Set(convertNormals());
     UsdGeomPrimvarsAPI(outMesh)
         .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->varying)
         .Set(convertUVs());
-
 
     auto material = UsdShadeMaterial::Define(stage, SdfPath("/root/model/materialMAT"));
     auto pbrShader = UsdShadeShader::Define(stage, SdfPath("/root/model/materialMAT/PBRShader"));
@@ -78,13 +79,16 @@ void ConverterCMesh::convert()
     diffuseTextureSampler.CreateOutput(Tokens.rgb, SdfValueTypeNames->Float3);
     pbrShader.CreateInput(Tokens.diffuseColor, SdfValueTypeNames->Color3f).ConnectToSource(
         diffuseTextureSampler.ConnectableAPI(), Tokens.rgb);
-    auto stInput = material.CreateInput(Tokens.frame_stPrimvarName, SdfValueTypeNames->Token);
+    auto stInput = material.CreateInput(Tokens.frame_stPrimvarName, SdfValueTypeNames->String);
     stInput.Set(Tokens.st);
-    stReader.CreateInput(Tokens.varname, SdfValueTypeNames->Token).ConnectToSource(stInput);
+    stReader.CreateInput(Tokens.varname, SdfValueTypeNames->String).ConnectToSource(stInput);
     outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
-    UsdShadeMaterialBindingAPI(outMesh).Bind(material);
+    auto materialBindingAPI = UsdShadeMaterialBindingAPI(outMesh);
+    materialBindingAPI.Bind(material);
+    materialBindingAPI.SetMaterialBindSubsetsFamilyType(UsdGeomTokens->nonOverlapping);
 
     convertMaterials();
+    convertSubsets(meshPath);
 
     auto indices = convertIndices();
     outMesh.CreateFaceVertexIndicesAttr().Set(indices);
@@ -145,9 +149,7 @@ VtArray<int> ConverterCMesh::convertIndices() const
     for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
     {
         auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
-        auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
-        auto material = mesh->getMaterial(materialIndex);
-        nlinfo("RenderPasss %i Elements %i Material %i", renderPass, indexBuffer.getNumIndexes(), materialIndex);
+        nlinfo("RenderPasss %i Elements %i", renderPass, indexBuffer.getNumIndexes());
 
         CIndexBufferRead indexBufferRead;
         indexBuffer.lock(indexBufferRead);
@@ -176,6 +178,30 @@ VtArray<int> ConverterCMesh::convertFaceCount(VtArray<int> indices) const
     return value;
 }
 
+void ConverterCMesh::convertSubsets(SdfPath& root)
+{
+    for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
+    {
+        auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
+        convertSubset(root, renderPass);
+    }
+}
+
+void ConverterCMesh::convertSubset(SdfPath& root, uint renderPass)
+{
+    auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
+    auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
+
+    auto material = UsdShadeMaterial::Define(stage, SdfPath(fmt::format("/root/_materials/material_{}_MAT", materialIndex)));
+    auto subset = UsdGeomSubset::Define(stage, root.AppendPath(SdfPath(fmt::format("subset_{}", renderPass))));
+
+    subset.CreateElementTypeAttr().Set(UsdGeomTokens->face);
+    subset.CreateFamilyNameAttr().Set(UsdShadeTokens->materialBind);
+    //subset.CreateIndicesAttr().Set(convert(indexBuffer));
+    subset.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
+    UsdShadeMaterialBindingAPI(subset).Bind(material);
+}
+
 void ConverterCMesh::convertMaterials()
 {
     UsdGeomScope::Define(stage, SdfPath("/root/_materials"));
@@ -186,6 +212,31 @@ void ConverterCMesh::convertMaterials()
     }
 }
 
+VtArray<int> ConverterCMesh::convert(CIndexBuffer& source) const
+{
+    VtArray<int> value;
+    for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
+    {
+        auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
+        nlinfo("RenderPasss %i Elements %i", renderPass, indexBuffer.getNumIndexes());
+
+        CIndexBufferRead indexBufferRead;
+        indexBuffer.lock(indexBufferRead);
+
+        for (auto i = 0; i < indexBuffer.getNumIndexes(); ++i)
+        {
+            if (uint32 idx = getIndexAt(indexBufferRead, i); idx != -1)
+            {
+                value.emplace_back(idx);
+            }
+        }
+        nldebug("index min %i max %i", *min_element(value.begin(), value.end()),
+                *max_element(value.begin(), value.end()));
+    }
+
+    return value;
+}
+
 UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex)
 {
     auto materialPath = SdfPath(fmt::format("/root/_materials/material_{}_MAT", materialIndex));
@@ -193,11 +244,12 @@ UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex
     auto pbrShader = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("PBRShader")));
     pbrShader.CreateIdAttr().Set(TfToken("UsdPreviewSurface"));
     material.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
-    material.CreateInput(Tokens.frame_stPrimvarName, SdfValueTypeNames->Token).Set(Tokens.st);
+    auto stInput = material.CreateInput(Tokens.frame_stPrimvarName, SdfValueTypeNames->String);
+    stInput.Set(Tokens.st);
 
     auto uvmap = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("uvmap")));
     uvmap.CreateIdAttr().Set(TfToken("UsdPrimvarReader_float2"));
-    uvmap.CreateInput(Tokens.varname, SdfValueTypeNames->Token);
+    uvmap.CreateInput(Tokens.varname, SdfValueTypeNames->String).ConnectToSource(stInput);
     uvmap.CreateOutput(Tokens.result, SdfValueTypeNames->Float2);
 
     if (source.getBlend())

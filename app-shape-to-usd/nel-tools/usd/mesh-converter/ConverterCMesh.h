@@ -30,7 +30,10 @@ protected:
     pxr::VtArray<pxr::GfVec2f> convertUVs() const;
     pxr::VtArray<int> convertIndices() const;
     pxr::VtArray<int> convertFaceCount(pxr::VtArray<int> indices) const;
+    void convertSubsets(pxr::SdfPath& root);
+    void convertSubset(pxr::SdfPath& root, uint renderPass);
     void convertMaterials();
+    pxr::VtArray<int> convert(NL3D::CIndexBuffer& source) const;
     pxr::UsdShadeMaterial convert(NL3D::CMaterial& source, uint32 index);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::ITexture* source, uint32 index);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureCube& source, uint32 index);
