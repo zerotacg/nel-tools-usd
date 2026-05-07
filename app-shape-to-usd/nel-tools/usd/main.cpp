@@ -24,8 +24,14 @@ int main(int argc, char** argv)
         args.addAdditionalArg("output", "Output usd file");
         if (!args.parse(argc, argv))
         {
-            args.displayHelp();
-            return EXIT_FAILURE;
+            if (args.haveLongArg("version") || args.haveLongArg("help"))
+            {
+                return EXIT_SUCCESS;
+            }
+            else
+            {
+                return EXIT_FAILURE;
+            }
         }
 
         std::string inputFilePath = args.getAdditionalArg("input").front();
@@ -38,8 +44,8 @@ int main(int argc, char** argv)
         NL3D::CShapeStream shapeStream;
         shapeStream.serial(inputFile);
         inputFile.close();
-        NL3D::IShape *shape = shapeStream.getShapePointer();
-        fmt::print( "Shape is of type {}\n", shape->getClassName());
+        NL3D::IShape* shape = shapeStream.getShapePointer();
+        fmt::print("Shape is of type {}\n", shape->getClassName());
 
         // Create a new USD stage
         pxr::UsdStageRefPtr stage = pxr::UsdStage::CreateNew(outputFilePath);
