@@ -31,11 +31,12 @@ protected:
     pxr::VtArray<pxr::GfVec3f> convertNormals(const NL3D::CVertexBuffer& source) const;
     pxr::VtArray<pxr::GfVec2f> convertUVs(const NL3D::CVertexBuffer& source) const;
     pxr::VtArray<int> convertIndices() const;
-    pxr::VtArray<int> convertFaceCount(pxr::VtArray<int> indices) const;
+    pxr::VtArray<int> convertFaceCount(pxr::VtArray<int>& source) const;
+    pxr::VtArray<int> convertFaceIndices(const NL3D::CIndexBuffer& source, int offset = 0) const;
     void convertSubsets(const pxr::SdfPath& root);
-    void convertSubset(const pxr::SdfPath& root, uint renderPass);
+    void convertSubset(const pxr::SdfPath& root, uint renderPass, int faceOffset);
     void convertMaterials();
-    pxr::VtArray<int> convert(NL3D::CIndexBuffer& source) const;
+    pxr::VtArray<int> convert(const NL3D::CIndexBuffer& source) const;
     pxr::UsdShadeMaterial convert(NL3D::CMaterial& source, uint32 index);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::ITexture* source, uint32 index);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureCube& source, uint32 index);

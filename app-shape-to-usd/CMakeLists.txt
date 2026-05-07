@@ -24,12 +24,15 @@ target_link_libraries(nel-tools-shape-to-usd
 
 target_compile_definitions(nel-tools-shape-to-usd PRIVATE $<$<CONFIG:Debug>:NL_DEBUG> $<$<CONFIG:Release>:NL_RELEASE>)
 
-add_test(NAME "${PROJECT_NAME}.can-start" COMMAND nel-tools-shape-to-usd)
+add_test(NAME "${PROJECT_NAME}.can-start" COMMAND nel-tools-shape-to-usd --version)
+
+
+add_subdirectory(tests)
 
 
 set_target_properties(nel-tools-shape-to-usd
         PROPERTIES
-            EXPORT_NAME from-shape
+            EXPORT_NAME shape-to-usd
             OUTPUT_NAME "${PROJECT_NAME}-shape-to-usd"
 )
 

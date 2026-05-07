@@ -20,6 +20,7 @@ set(package_components "")
 find_package(fmt REQUIRED)
 find_package(pxr REQUIRED)
 find_package(NeL REQUIRED COMPONENTS misc)
+find_package(GTest REQUIRED)
 
 
 add_subdirectory(app-shape-to-usd)

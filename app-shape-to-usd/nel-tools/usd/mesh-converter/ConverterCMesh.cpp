@@ -134,25 +134,42 @@ VtArray<int> ConverterCMesh::convertIndices() const
     return value;
 }
 
-VtArray<int> ConverterCMesh::convertFaceCount(VtArray<int> indices) const
+VtArray<int> ConverterCMesh::convertFaceCount(VtArray<int>& source) const
 {
-    VtArray<int> value;
-    for (auto i = 0; i < indices.size(); i += 3)
+    VtArray<int> target;
+
+    for (auto i = 0; i < source.size(); i += 3)
     {
-        value.emplace_back(3);
+        target.emplace_back(3);
     }
-    return value;
+
+    return target;
+}
+
+VtArray<int> ConverterCMesh::convertFaceIndices(const CIndexBuffer& source, int offset) const
+{
+    VtArray<int> target;
+    CIndexBufferRead indexBufferRead;
+    source.lock(indexBufferRead);
+
+    for (auto i = 0; i < source.getNumIndexes() / 3; ++i)
+    {
+        target.emplace_back(offset + i);
+    }
+
+    return target;
 }
 
 void ConverterCMesh::convertSubsets(const SdfPath& root)
 {
+    int faceCount = 0;
     for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
     {
-        convertSubset(root, renderPass);
+        convertSubset(root, renderPass, faceCount);
     }
 }
 
-void ConverterCMesh::convertSubset(const SdfPath& root, uint renderPass)
+void ConverterCMesh::convertSubset(const SdfPath& root, uint renderPass, int faceOffset)
 {
     auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
     auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
@@ -162,7 +179,7 @@ void ConverterCMesh::convertSubset(const SdfPath& root, uint renderPass)
 
     subset.CreateElementTypeAttr().Set(UsdGeomTokens->point);
     subset.CreateFamilyNameAttr().Set(UsdShadeTokens->materialBind);
-    //subset.CreateIndicesAttr().Set(convert(indexBuffer));
+    subset.CreateIndicesAttr().Set(convertFaceIndices(indexBuffer, faceOffset));
     subset.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
     UsdShadeMaterialBindingAPI(subset).Bind(material);
 }
@@ -177,9 +194,9 @@ void ConverterCMesh::convertMaterials()
     }
 }
 
-VtArray<int> ConverterCMesh::convert(CIndexBuffer& source) const
+VtArray<int> ConverterCMesh::convert(const CIndexBuffer& source) const
 {
-    VtArray<int> value;
+    VtArray<int> target;
     CIndexBufferRead indexBufferRead;
     source.lock(indexBufferRead);
 
@@ -187,11 +204,11 @@ VtArray<int> ConverterCMesh::convert(CIndexBuffer& source) const
     {
         if (uint32 idx = getIndexAt(indexBufferRead, i); idx != -1)
         {
-            value.emplace_back(idx);
+            target.emplace_back(idx);
         }
     }
 
-    return value;
+    return target;
 }
 
 UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex)
