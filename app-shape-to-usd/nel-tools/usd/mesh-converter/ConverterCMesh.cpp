@@ -36,7 +36,7 @@ uint32 getIndexAt(const CIndexBufferRead& buffer, const int index)
 }
 
 
-void ConverterCMesh::convert(UsdStageRefPtr& stage)
+void ConverterCMesh::convert()
 {
     UsdGeomSetStageUpAxis(stage, UsdGeomTokens->z);
     auto modelRoot = UsdGeomXform::Define(stage, SdfPath("/root"));
@@ -83,7 +83,7 @@ void ConverterCMesh::convert(UsdStageRefPtr& stage)
     outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
     UsdShadeMaterialBindingAPI(outMesh).Bind(material);
 
-    convertMaterials(stage);
+    convertMaterials();
 
     auto indices = convertIndices();
     outMesh.CreateFaceVertexIndicesAttr().Set(indices);
@@ -175,16 +175,16 @@ VtArray<int> ConverterCMesh::convertFaceCount(VtArray<int> indices) const
     return value;
 }
 
-void ConverterCMesh::convertMaterials(UsdStageRefPtr& stage)
+void ConverterCMesh::convertMaterials()
 {
     for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
     {
         auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
-        auto material = convert(stage, mesh->getMaterial(materialIndex), materialIndex);
+        auto material = convert( mesh->getMaterial(materialIndex), materialIndex);
     }
 }
 
-UsdShadeMaterial ConverterCMesh::convert(UsdStageRefPtr& stage, CMaterial& source, uint32 materialIndex)
+UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex)
 {
     auto materialPath = SdfPath(fmt::format("/root/model/material_{}_MAT", materialIndex));
     auto material = UsdShadeMaterial::Define(stage, materialPath);
@@ -208,20 +208,18 @@ UsdShadeMaterial ConverterCMesh::convert(UsdStageRefPtr& stage, CMaterial& sourc
         {
             auto texture = source.getTexture(textureIndex);
             nlinfo("Texture at index %i is %s", textureIndex, texture->getClassName().c_str());
-            convert(stage, materialPath, texture, textureIndex);
+            convert( materialPath, texture, textureIndex);
         }
     }
 
     return material;
 }
 
-UsdShadeShader ConverterCMesh::convert(UsdStageRefPtr& stage, SdfPath& root, ITexture* source, uint32 index)
+UsdShadeShader ConverterCMesh::convert(SdfPath& root, ITexture* source, uint32 index)
 {
     if (const auto specific = dynamic_cast<CTextureFile *>(source))
     {
-        const auto &fileName = specific->getFileName();
-        nlinfo("CTextureFile %s", fileName.c_str());
-        return convert(stage, root, specific, index);
+        return convert(root, *specific, index);
     }
     else if (const auto specific = dynamic_cast<CTextureMultiFile *>(source))
     {
@@ -244,9 +242,10 @@ UsdShadeShader ConverterCMesh::convert(UsdStageRefPtr& stage, SdfPath& root, ITe
     return UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
 }
 
-UsdShadeShader ConverterCMesh::convert(UsdStageRefPtr& stage, SdfPath& root, CTextureFile* source, uint32 index)
+UsdShadeShader ConverterCMesh::convert(SdfPath& root, CTextureFile& source, uint32 index)
 {
-    auto fileName = source->getFileName();
+    auto fileName = source.getFileName();
+    nlinfo("CTextureFile %s", fileName.c_str());
     fileName = toLower(fileName);
     fileName = CFile::getFilenameWithoutExtension(fileName);
     fileName += ".";

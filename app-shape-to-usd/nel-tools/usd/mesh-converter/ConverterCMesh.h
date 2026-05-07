@@ -17,12 +17,12 @@
 class ConverterCMesh : public Converter
 {
 public:
-    explicit ConverterCMesh(NL3D::CMesh* source)
-        : mesh(source)
+    explicit ConverterCMesh(pxr::UsdStageRefPtr& target, NL3D::CMesh* source)
+        : Converter(target), mesh(source)
     {
     }
 
-    void convert(pxr::UsdStageRefPtr& stage) override;
+    void convert() override;
 
 protected:
     pxr::VtArray<pxr::GfVec3f> convertVertices() const;
@@ -30,12 +30,12 @@ protected:
     pxr::VtArray<pxr::GfVec2f> convertUVs() const;
     pxr::VtArray<int> convertIndices() const;
     pxr::VtArray<int> convertFaceCount(pxr::VtArray<int> indices) const;
-    void convertMaterials(pxr::UsdStageRefPtr& stage);
-    pxr::UsdShadeMaterial convert(pxr::UsdStageRefPtr& stage, NL3D::CMaterial& source, uint32 index);
-    pxr::UsdShadeShader convert(pxr::UsdStageRefPtr& stage, pxr::SdfPath& root, NL3D::ITexture* source, uint32 index);
-    pxr::UsdShadeShader convert(pxr::UsdStageRefPtr& stage, pxr::SdfPath& root, NL3D::CTextureCube* source, uint32 index);
-    pxr::UsdShadeShader convert(pxr::UsdStageRefPtr& stage, pxr::SdfPath& root, NL3D::CTextureFile* source, uint32 index);
-    pxr::UsdShadeShader convert(pxr::UsdStageRefPtr& stage, pxr::SdfPath& root, NL3D::CTextureMultiFile* source, uint32 index);
+    void convertMaterials();
+    pxr::UsdShadeMaterial convert(NL3D::CMaterial& source, uint32 index);
+    pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::ITexture* source, uint32 index);
+    pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureCube& source, uint32 index);
+    pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureFile& source, uint32 index);
+    pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureMultiFile& source, uint32 index);
 
 private:
     NL3D::CMesh* mesh;

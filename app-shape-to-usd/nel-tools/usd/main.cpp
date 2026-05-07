@@ -49,7 +49,7 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
 
-        Converter::from(shape, nullptr)->convert(stage);
+        Converter::from(stage, shape, nullptr);
 
         // Save the stage
         if (!stage->GetRootLayer()->Save())
