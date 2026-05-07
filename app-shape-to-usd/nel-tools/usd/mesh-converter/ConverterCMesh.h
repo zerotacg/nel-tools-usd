@@ -42,6 +42,7 @@ protected:
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureCube& source, uint32 index);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureFile& source, uint32 index);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureMultiFile& source, uint32 index);
+    pxr::TfToken convert(NL3D::ITexture::TWrapMode source) const;
 
     pxr::UsdShadeMaterial defineMaterial(uint32 index);
 

@@ -18,6 +18,7 @@ target_link_libraries(nel-tools-lib-shape-to-usd
         NeL::misc
         usd
         usdGeom
+        usdHydra
         usdShade
 )
 

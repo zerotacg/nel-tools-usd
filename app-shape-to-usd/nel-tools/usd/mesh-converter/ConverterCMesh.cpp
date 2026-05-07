@@ -15,6 +15,7 @@
 #include <pxr/usd/usdGeom/subset.h>
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usdHydra/tokens.h>
 #include <pxr/usd/usdShade/material.h>
 #include <pxr/usd/usdShade/materialBindingAPI.h>
 #include <pxr/usd/usdShade/shader.h>
@@ -222,12 +223,10 @@ UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex
     auto pbrShader = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("PBRShader")));
     pbrShader.CreateIdAttr().Set(TfToken("UsdPreviewSurface"));
     material.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
-    auto stInput = material.CreateInput(Tokens.frame_stPrimvarName, SdfValueTypeNames->String);
-    stInput.Set(stPrimvarName);
 
     auto uvmap = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("uvmap")));
     uvmap.CreateIdAttr().Set(TfToken("UsdPrimvarReader_float2"));
-    uvmap.CreateInput(Tokens.varname, SdfValueTypeNames->String).ConnectToSource(stInput);
+    uvmap.CreateInput(Tokens.varname, SdfValueTypeNames->String).Set(stPrimvarName);
     auto uvmapResult = uvmap.CreateOutput(Tokens.result, SdfValueTypeNames->Float2);
 
     if (source.getBlend())
@@ -241,8 +240,6 @@ UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex
             auto sourceTexture = source.getTexture(textureIndex);
             auto sampler = convert(materialPath, sourceTexture, textureIndex);
             sampler.GetInput(Tokens.st).ConnectToSource(uvmapResult);
-            pbrShader.CreateInput(Tokens.diffuseColor, SdfValueTypeNames->Color3f).ConnectToSource(
-                sampler.ConnectableAPI(), Tokens.rgb);
         }
     }
 
@@ -288,11 +285,25 @@ UsdShadeShader ConverterCMesh::convert(SdfPath& root, CTextureFile& source, uint
 
     auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
     sampler.CreateIdAttr().Set(TfToken("UsdUVTexture"));
-    sampler.CreateInput(Tokens.file, SdfValueTypeNames->Asset).Set(SdfAssetPath("textures/" + fileName));
+    sampler.CreateInput(Tokens.file, SdfValueTypeNames->Asset).Set(SdfAssetPath("./textures/" + fileName));
     sampler.CreateInput(Tokens.st, SdfValueTypeNames->Float2);
     sampler.CreateOutput(Tokens.rgb, SdfValueTypeNames->Float3);
+    sampler.CreateInput(UsdHydraTokens->wrapS, SdfValueTypeNames->Token).Set(convert(source.getWrapS()));
+    sampler.CreateInput(UsdHydraTokens->wrapT, SdfValueTypeNames->Token).Set(convert(source.getWrapT()));
 
     return sampler;
+}
+
+TfToken ConverterCMesh::convert(ITexture::TWrapMode source) const
+{
+    switch (source)
+    {
+    case ITexture::TWrapMode::Repeat:
+        return UsdHydraTokens->repeat;
+    default:
+    case ITexture::TWrapMode::Clamp:
+        return UsdHydraTokens->clamp;
+    }
 }
 
 UsdShadeMaterial ConverterCMesh::defineMaterial(uint32 materialIndex)
