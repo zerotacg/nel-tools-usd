@@ -1,6 +1,9 @@
 #include <nel-tools/usd/mesh-converter/ConverterCMesh.h>
 
 #include <fmt/color.h>
+#include <fmt/format.h>
+#include <nel/misc/common.h>
+#include <nel/misc/path.h>
 #include <pxr/usd/ar/resolver.h>
 #include <pxr/usd/kind/registry.h>
 #include <pxr/usd/usd/modelAPI.h>
@@ -33,12 +36,12 @@ uint32 getIndexAt(const CIndexBufferRead& buffer, const int index)
 }
 
 
-void ConverterCMesh::convert(UsdStageRefPtr& output)
+void ConverterCMesh::convert(UsdStageRefPtr& stage)
 {
-    UsdGeomSetStageUpAxis(output, UsdGeomTokens->z);
-    auto modelRoot = UsdGeomXform::Define(output, SdfPath("/root"));
+    UsdGeomSetStageUpAxis(stage, UsdGeomTokens->z);
+    auto modelRoot = UsdGeomXform::Define(stage, SdfPath("/root"));
     UsdModelAPI(modelRoot).SetKind(KindTokens->component);
-    auto outMesh = UsdGeomMesh::Define(output, SdfPath("/root/model"));
+    auto outMesh = UsdGeomMesh::Define(stage, SdfPath("/root/model"));
 
     outMesh.CreatePointsAttr().Set(convertVertices());
     outMesh.CreateNormalsAttr().Set(convertNormals());
@@ -47,15 +50,15 @@ void ConverterCMesh::convert(UsdStageRefPtr& output)
         .Set(convertUVs());
 
 
-    auto material = UsdShadeMaterial::Define(output, SdfPath("/root/model/materialMAT"));
-    auto pbrShader = UsdShadeShader::Define(output, SdfPath("/root/model/materialMAT/PBRShader"));
+    auto material = UsdShadeMaterial::Define(stage, SdfPath("/root/model/materialMAT"));
+    auto pbrShader = UsdShadeShader::Define(stage, SdfPath("/root/model/materialMAT/PBRShader"));
     pbrShader.CreateIdAttr().Set(TfToken("UsdPreviewSurface"));
     material.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
 
-    auto stReader = UsdShadeShader::Define(output, SdfPath("/root/model/materialMAT/stReader"));
+    auto stReader = UsdShadeShader::Define(stage, SdfPath("/root/model/materialMAT/stReader"));
     stReader.CreateIdAttr().Set(TfToken("UsdPrimvarReader_float2"));
 
-    auto diffuseTextureSampler = UsdShadeShader::Define(output, SdfPath("/root/model/materialMAT/diffuseTexture"));
+    auto diffuseTextureSampler = UsdShadeShader::Define(stage, SdfPath("/root/model/materialMAT/diffuseTexture"));
     diffuseTextureSampler.CreateIdAttr().Set(TfToken("UsdUVTexture"));
     auto& asserResolver = ArGetResolver();
     auto fileAsset = asserResolver.ResolveForNewAsset("textures/ca_ship_front1.png");
@@ -80,6 +83,7 @@ void ConverterCMesh::convert(UsdStageRefPtr& output)
     outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
     UsdShadeMaterialBindingAPI(outMesh).Bind(material);
 
+    convertMaterials(stage);
 
     auto indices = convertIndices();
     outMesh.CreateFaceVertexIndicesAttr().Set(indices);
@@ -169,4 +173,87 @@ VtArray<int> ConverterCMesh::convertFaceCount(VtArray<int> indices) const
         value.emplace_back(3);
     }
     return value;
+}
+
+void ConverterCMesh::convertMaterials(UsdStageRefPtr& stage)
+{
+    for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
+    {
+        auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
+        auto material = convert(stage, mesh->getMaterial(materialIndex), materialIndex);
+    }
+}
+
+UsdShadeMaterial ConverterCMesh::convert(UsdStageRefPtr& stage, CMaterial& source, uint32 materialIndex)
+{
+    auto materialPath = SdfPath(fmt::format("/root/model/material_{}_MAT", materialIndex));
+    auto material = UsdShadeMaterial::Define(stage, materialPath);
+    auto pbrShader = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("PBRShader")));
+    pbrShader.CreateIdAttr().Set(TfToken("UsdPreviewSurface"));
+    material.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
+
+    auto stReader = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("stReader")));
+    stReader.CreateIdAttr().Set(TfToken("UsdPrimvarReader_float2"));
+
+    if (source.getBlend())
+    {
+        nlinfo("Material Blend");
+    }
+    for (auto textureIndex = 0; textureIndex < IDRV_MAT_MAXTEXTURES; ++textureIndex)
+    {
+        if (source.texturePresent(textureIndex))
+        {
+            auto texture = source.getTexture(textureIndex);
+            nlinfo("Texture at index %i is %s", textureIndex, texture->getClassName().c_str());
+            convert(stage, materialPath, texture, textureIndex);
+        }
+    }
+
+    return material;
+}
+
+UsdShadeShader ConverterCMesh::convert(UsdStageRefPtr& stage, SdfPath& root, ITexture* source, uint32 index)
+{
+    if (const auto specific = dynamic_cast<CTextureFile *>(source))
+    {
+        const auto &fileName = specific->getFileName();
+        nlinfo("CTextureFile %s", fileName.c_str());
+        return convert(stage, root, specific, index);
+    }
+    else if (const auto specific = dynamic_cast<CTextureMultiFile *>(source))
+    {
+        nlinfo("CTextureMultiFile count %i", specific->getNumFileName());
+        for (auto i = 0; i < specific->getNumFileName(); ++i)
+        {
+            const auto &fileName = specific->getFileName(i);
+            nlinfo("CTextureMultiFile %i %s ", i, fileName.c_str());
+        }
+    }
+    else if (const auto specific = dynamic_cast<CTextureCube *>(source))
+    {
+        nlinfo("CTextureCube");
+    }
+    else
+    {
+        nlwarning("Texture type not supported", source->getClassName().c_str());
+    }
+
+    return UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
+}
+
+UsdShadeShader ConverterCMesh::convert(UsdStageRefPtr& stage, SdfPath& root, CTextureFile* source, uint32 index)
+{
+    auto fileName = source->getFileName();
+    fileName = toLower(fileName);
+    fileName = CFile::getFilenameWithoutExtension(fileName);
+    fileName += ".";
+    fileName += "png";
+
+    auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
+    sampler.CreateIdAttr().Set(TfToken("UsdUVTexture"));
+    sampler.CreateInput(Tokens.file, SdfValueTypeNames->Asset).Set( SdfAssetPath(fileName));
+    sampler.CreateInput(Tokens.st, SdfValueTypeNames->Float2);
+    sampler.CreateOutput(Tokens.rgb, SdfValueTypeNames->Float3);
+
+    return sampler;
 }

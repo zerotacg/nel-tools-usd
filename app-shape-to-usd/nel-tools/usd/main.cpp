@@ -58,13 +58,13 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
 
-        fmt::print(fg(fmt::color::green), "Successfully created USD file with a sphere at {}\n", outputFilePath);
+        fmt::print(fg(fmt::color::green), "Successfully created USD file at {}\n", outputFilePath);
 
         return EXIT_SUCCESS;
     }
     catch (const std::exception& e)
     {
-        fmt::print(fg(fmt::color::red), "Error converting shape file file: {}\n", e.what());
+        fmt::print(fg(fmt::color::red), "Error converting shape file: {}\n", e.what());
         return EXIT_FAILURE;
     }
 }
