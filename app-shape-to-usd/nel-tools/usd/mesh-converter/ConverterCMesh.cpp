@@ -58,7 +58,7 @@ void ConverterCMesh::convert()
 
 
     outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
-    auto material = UsdShadeMaterial::Define(stage, SdfPath("/root/_materials/material_0_MAT"));
+    auto material = defineMaterial(0);
     auto materialBindingAPI = UsdShadeMaterialBindingAPI(outMesh);
     materialBindingAPI.Bind(material);
     materialBindingAPI.SetMaterialBindSubsetsFamilyType(UsdGeomTokens->nonOverlapping);
