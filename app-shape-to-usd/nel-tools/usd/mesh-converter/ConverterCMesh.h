@@ -25,13 +25,13 @@ public:
     void convert() override;
 
 protected:
-    pxr::VtArray<pxr::GfVec3f> convertVertices() const;
-    pxr::VtArray<pxr::GfVec3f> convertNormals() const;
-    pxr::VtArray<pxr::GfVec2f> convertUVs() const;
+    pxr::VtArray<pxr::GfVec3f> convertVertices(const NL3D::CVertexBuffer& source) const;
+    pxr::VtArray<pxr::GfVec3f> convertNormals(const NL3D::CVertexBuffer& source) const;
+    pxr::VtArray<pxr::GfVec2f> convertUVs(const NL3D::CVertexBuffer& source) const;
     pxr::VtArray<int> convertIndices() const;
     pxr::VtArray<int> convertFaceCount(pxr::VtArray<int> indices) const;
-    void convertSubsets(pxr::SdfPath& root);
-    void convertSubset(pxr::SdfPath& root, uint renderPass);
+    void convertSubsets(const pxr::SdfPath& root);
+    void convertSubset(const pxr::SdfPath& root, uint renderPass);
     void convertMaterials();
     pxr::VtArray<int> convert(NL3D::CIndexBuffer& source) const;
     pxr::UsdShadeMaterial convert(NL3D::CMaterial& source, uint32 index);
@@ -43,7 +43,10 @@ protected:
 private:
     NL3D::CMesh* mesh;
 
+
     const uint lodId = 0;
+    const pxr::SdfPath meshPath = pxr::SdfPath("/root/model");
+
 
     struct
     {

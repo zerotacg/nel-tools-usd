@@ -43,14 +43,14 @@ void ConverterCMesh::convert()
     UsdGeomSetStageUpAxis(stage, UsdGeomTokens->z);
     auto modelRoot = UsdGeomXform::Define(stage, SdfPath("/root"));
     UsdModelAPI(modelRoot).SetKind(KindTokens->component);
-    auto meshPath = SdfPath("/root/model");
     auto outMesh = UsdGeomMesh::Define(stage, meshPath);
 
-    outMesh.CreatePointsAttr().Set(convertVertices());
-    outMesh.CreateNormalsAttr().Set(convertNormals());
+    outMesh.CreatePointsAttr().Set(convertVertices(mesh->getVertexBuffer()));
+    outMesh.CreateNormalsAttr().Set(convertNormals(mesh->getVertexBuffer()));
     UsdGeomPrimvarsAPI(outMesh)
         .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->varying)
-        .Set(convertUVs());
+        .Set(convertUVs(mesh->getVertexBuffer()));
+
 
     auto material = UsdShadeMaterial::Define(stage, SdfPath("/root/model/materialMAT"));
     auto pbrShader = UsdShadeShader::Define(stage, SdfPath("/root/model/materialMAT/PBRShader"));
@@ -87,6 +87,7 @@ void ConverterCMesh::convert()
     materialBindingAPI.Bind(material);
     materialBindingAPI.SetMaterialBindSubsetsFamilyType(UsdGeomTokens->nonOverlapping);
 
+
     convertMaterials();
     convertSubsets(meshPath);
 
@@ -95,14 +96,13 @@ void ConverterCMesh::convert()
     outMesh.CreateFaceVertexCountsAttr().Set(convertFaceCount(indices));
 }
 
-VtArray<GfVec3f> ConverterCMesh::convertVertices() const
+VtArray<GfVec3f> ConverterCMesh::convertVertices(const CVertexBuffer& source) const
 {
-    CVertexBuffer vertexBuffer = mesh->getVertexBuffer();
-    CVertexBufferRead vertexBufferRead;
-    vertexBuffer.lock(vertexBufferRead);
     VtArray<GfVec3f> value;
+    CVertexBufferRead vertexBufferRead;
+    source.lock(vertexBufferRead);
 
-    for (auto i = 0; i < vertexBuffer.getNumVertices(); ++i)
+    for (auto i = 0; i < source.getNumVertices(); ++i)
     {
         auto vertex = *vertexBufferRead.getVertexCoordPointer(i);
         value.emplace_back(vertex.x, vertex.y, vertex.z);
@@ -111,14 +111,13 @@ VtArray<GfVec3f> ConverterCMesh::convertVertices() const
     return value;
 }
 
-VtArray<GfVec3f> ConverterCMesh::convertNormals() const
+VtArray<GfVec3f> ConverterCMesh::convertNormals(CVertexBuffer& source) const
 {
-    CVertexBuffer vertexBuffer = mesh->getVertexBuffer();
-    CVertexBufferRead vertexBufferRead;
-    vertexBuffer.lock(vertexBufferRead);
     VtArray<GfVec3f> value;
+    CVertexBufferRead vertexBufferRead;
+    source.lock(vertexBufferRead);
 
-    for (auto i = 0; i < vertexBuffer.getNumVertices(); ++i)
+    for (auto i = 0; i < source.getNumVertices(); ++i)
     {
         auto normal = *vertexBufferRead.getNormalCoordPointer(i);
         value.emplace_back(normal.x, normal.y, normal.z);
@@ -127,14 +126,13 @@ VtArray<GfVec3f> ConverterCMesh::convertNormals() const
     return value;
 }
 
-VtArray<GfVec2f> ConverterCMesh::convertUVs() const
+VtArray<GfVec2f> ConverterCMesh::convertUVs(CVertexBuffer& source) const
 {
-    CVertexBuffer vertexBuffer = mesh->getVertexBuffer();
-    CVertexBufferRead vertexBufferRead;
-    vertexBuffer.lock(vertexBufferRead);
     VtArray<GfVec2f> value;
+    CVertexBufferRead vertexBufferRead;
+    source.lock(vertexBufferRead);
 
-    for (auto i = 0; i < vertexBuffer.getNumVertices(); ++i)
+    for (auto i = 0; i < source.getNumVertices(); ++i)
     {
         auto uv = *vertexBufferRead.getTexCoordPointer(i);
         value.emplace_back(uv.U, uv.V);
@@ -178,7 +176,7 @@ VtArray<int> ConverterCMesh::convertFaceCount(VtArray<int> indices) const
     return value;
 }
 
-void ConverterCMesh::convertSubsets(SdfPath& root)
+void ConverterCMesh::convertSubsets(const SdfPath& root)
 {
     for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
     {
@@ -187,7 +185,7 @@ void ConverterCMesh::convertSubsets(SdfPath& root)
     }
 }
 
-void ConverterCMesh::convertSubset(SdfPath& root, uint renderPass)
+void ConverterCMesh::convertSubset(const SdfPath& root, uint renderPass)
 {
     auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
     auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
