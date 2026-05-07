@@ -154,6 +154,7 @@ VtArray<int> ConverterCMesh::convertFaceIndices(const CIndexBuffer& source, int 
 
     for (auto i = 0; i < source.getNumIndexes() / 3; ++i)
     {
+        // TODO handle -1 indices
         target.emplace_back(offset + i);
     }
 
@@ -165,11 +166,11 @@ void ConverterCMesh::convertSubsets(const SdfPath& root)
     int faceCount = 0;
     for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
     {
-        convertSubset(root, renderPass, faceCount);
+        faceCount += convertSubset(root, renderPass, faceCount);
     }
 }
 
-void ConverterCMesh::convertSubset(const SdfPath& root, uint renderPass, int faceOffset)
+size_t ConverterCMesh::convertSubset(const SdfPath& root, uint renderPass, int faceOffset)
 {
     auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
     auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
@@ -179,9 +180,12 @@ void ConverterCMesh::convertSubset(const SdfPath& root, uint renderPass, int fac
 
     subset.CreateElementTypeAttr().Set(UsdGeomTokens->point);
     subset.CreateFamilyNameAttr().Set(UsdShadeTokens->materialBind);
-    subset.CreateIndicesAttr().Set(convertFaceIndices(indexBuffer, faceOffset));
+    auto faceIndices = convertFaceIndices(indexBuffer, faceOffset);
+    subset.CreateIndicesAttr().Set(faceIndices);
     subset.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
     UsdShadeMaterialBindingAPI(subset).Bind(material);
+
+    return faceIndices.size();
 }
 
 void ConverterCMesh::convertMaterials()
@@ -224,7 +228,7 @@ UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex
     auto uvmap = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("uvmap")));
     uvmap.CreateIdAttr().Set(TfToken("UsdPrimvarReader_float2"));
     uvmap.CreateInput(Tokens.varname, SdfValueTypeNames->String).ConnectToSource(stInput);
-    uvmap.CreateOutput(Tokens.result, SdfValueTypeNames->Float2);
+    auto uvmapResult = uvmap.CreateOutput(Tokens.result, SdfValueTypeNames->Float2);
 
     if (source.getBlend())
     {
@@ -235,8 +239,10 @@ UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex
         if (source.texturePresent(textureIndex))
         {
             auto sourceTexture = source.getTexture(textureIndex);
-            nlinfo("Texture at index %i is %s", textureIndex, sourceTexture->getClassName().c_str());
             auto sampler = convert(materialPath, sourceTexture, textureIndex);
+            sampler.GetInput(Tokens.st).ConnectToSource(uvmapResult);
+            pbrShader.CreateInput(Tokens.diffuseColor, SdfValueTypeNames->Color3f).ConnectToSource(
+                sampler.ConnectableAPI(), Tokens.rgb);
         }
     }
 
@@ -245,6 +251,7 @@ UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex
 
 UsdShadeShader ConverterCMesh::convert(SdfPath& root, ITexture* source, uint32 index)
 {
+    nlinfo("Texture at index %i is %s", index, source->getClassName().c_str());
     if (const auto specific = dynamic_cast<CTextureFile*>(source))
     {
         return convert(root, *specific, index);
@@ -281,7 +288,7 @@ UsdShadeShader ConverterCMesh::convert(SdfPath& root, CTextureFile& source, uint
 
     auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
     sampler.CreateIdAttr().Set(TfToken("UsdUVTexture"));
-    sampler.CreateInput(Tokens.file, SdfValueTypeNames->Asset).Set(SdfAssetPath(fileName));
+    sampler.CreateInput(Tokens.file, SdfValueTypeNames->Asset).Set(SdfAssetPath("textures/" + fileName));
     sampler.CreateInput(Tokens.st, SdfValueTypeNames->Float2);
     sampler.CreateOutput(Tokens.rgb, SdfValueTypeNames->Float3);
 

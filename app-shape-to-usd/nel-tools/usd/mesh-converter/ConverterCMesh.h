@@ -34,7 +34,7 @@ protected:
     pxr::VtArray<int> convertFaceCount(pxr::VtArray<int>& source) const;
     pxr::VtArray<int> convertFaceIndices(const NL3D::CIndexBuffer& source, int offset = 0) const;
     void convertSubsets(const pxr::SdfPath& root);
-    void convertSubset(const pxr::SdfPath& root, uint renderPass, int faceOffset);
+    size_t convertSubset(const pxr::SdfPath& root, uint renderPass, int faceOffset);
     void convertMaterials();
     pxr::VtArray<int> convert(const NL3D::CIndexBuffer& source) const;
     pxr::UsdShadeMaterial convert(NL3D::CMaterial& source, uint32 index);
