@@ -15,11 +15,6 @@ namespace nel_tools::usd::shape_to_usd
         const std::string input;
         const std::string output;
 
-        const struct
-        {
-            const std::vector<std::string> searchPaths;
-        } assets;
-
         const Converter::Settings texture;
 
         static Settings from(const NLMISC::CCmdArgs& args)
@@ -27,11 +22,11 @@ namespace nel_tools::usd::shape_to_usd
             return {
                 .input = args.getAdditionalArg("input").front(),
                 .output = args.getAdditionalArg("output").front(),
-                .assets = {.searchPaths = args.getLongArg("add-search-path")},
                 .texture = {
                     .convertToLowerCase = args.haveLongArg("texture-file-to-lower-case"),
                     .replaceExtension = args.haveLongArg("texture-file-replace-extension"),
-                    .extension = firstOrEmpty(args.getLongArg("texture-file-replace-extension"))
+                    .extension = firstOrEmpty(args.getLongArg("texture-file-replace-extension")),
+                    .prefix = firstOrEmpty(args.getLongArg("texture-file-prefix"))
                 }
             };
         }

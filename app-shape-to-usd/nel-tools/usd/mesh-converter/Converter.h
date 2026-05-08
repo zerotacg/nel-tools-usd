@@ -14,6 +14,7 @@ public:
         const bool convertToLowerCase;
         const bool replaceExtension;
         const std::string extension;
+        const std::string prefix;
     }& settings;
 
     static void from(const Settings& settings,pxr::UsdStageRefPtr& target, NL3D::IShape* shape, NL3D::IShape* skeleton);

@@ -242,18 +242,9 @@ UsdShadeShader ConverterCMesh::convert(const SdfPath& root, const CTextureFile& 
 {
     nldebug("CTextureFile %s", source.getFileName().c_str());
     auto fileName = transformFilename(source.getFileName());
-    auto resolvedPath = ArGetResolver().Resolve(fileName);
-    if (resolvedPath.IsEmpty())
-    {
-        fmt::print(fg(fmt::color::red), "Could not resolve asset {}\n", fileName);
-    }
-    else
-    {
-        fmt::print(fg(fmt::color::forest_green), "Could resolve asset {} to {}\n", fileName, resolvedPath.GetPathString());
-    }
     auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
     sampler.CreateIdAttr().Set(TfToken("UsdUVTexture"));
-    sampler.CreateInput(Tokens.file, SdfValueTypeNames->Asset).Set(SdfAssetPath( fileName, resolvedPath.GetPathString()));
+    sampler.CreateInput(Tokens.file, SdfValueTypeNames->Asset).Set(SdfAssetPath(fileName));
     sampler.CreateInput(Tokens.st, SdfValueTypeNames->Float2);
     sampler.CreateInput(UsdHydraTokens->wrapS, SdfValueTypeNames->Token).Set(convert(source.getWrapS()));
     sampler.CreateInput(UsdHydraTokens->wrapT, SdfValueTypeNames->Token).Set(convert(source.getWrapT()));
@@ -317,15 +308,18 @@ UsdShadeMaterial ConverterCMesh::defineMaterial(uint materialIndex)
 std::string ConverterCMesh::transformFilename(const std::string& input) const
 {
     auto transformed = input;
+
     if (settings.convertToLowerCase)
     {
         transformed = toLower(transformed);
     }
+
     if (settings.replaceExtension)
     {
         transformed = CFile::getFilenameWithoutExtension(transformed);
         transformed += ".";
         transformed += "png";
     }
-    return transformed;
+
+    return settings.prefix + transformed;
 }

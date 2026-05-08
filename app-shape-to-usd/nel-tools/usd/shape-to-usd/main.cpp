@@ -26,9 +26,9 @@ int main(int argc, char** argv)
 
         args.addAdditionalArg("input", "Input shape file");
         args.addAdditionalArg("output", "Output usd file");
-        args.addArg("", "add-search-path", "path", "additional path to search for assets, can be supplied multiple times");
         args.addArg("", "texture-file-to-lower-case", "", "convert texture filename to lower case");
         args.addArg("", "texture-file-replace-extension", "ext", "replace texture file extension with <ext>");
+        args.addArg("", "texture-file-prefix", "path", "prefix texture filename with <path>");
 
         if (!args.parse(argc, argv))
         {
@@ -40,8 +40,6 @@ int main(int argc, char** argv)
         }
 
         auto settings = Settings::from(args);
-
-        pxr::ArDefaultResolver::SetDefaultSearchPath(settings.assets.searchPaths);
 
         NL3D::registerSerial3d();
         NL3D::CScene::registerBasics();
