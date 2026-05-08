@@ -3,6 +3,7 @@
 namespace nel_tools::usd::convert
 {
     using namespace NL3D;
+    using namespace NLMISC;
     using namespace pxr;
 
     VtArray<GfVec3f> vertices(const CVertexBuffer& source)
@@ -50,4 +51,13 @@ namespace nel_tools::usd::convert
         return target;
     }
 
+    GfVec4f value(const CRGBAF& source)
+    {
+        return {source.R, source.G, source.B, source.A};
+    }
+
+    GfVec3f rgb(const GfVec4f& source)
+    {
+        return {source[0], source[1], source[2]};
+    }
 }

@@ -68,11 +68,26 @@ private:
         const pxr::TfToken rgb = pxr::TfToken("rgb");
         const pxr::TfToken a = pxr::TfToken("a");
         const pxr::TfToken result = pxr::TfToken("result");
-        const pxr::TfToken diffuseColor = pxr::TfToken("diffuseColor");
-        const pxr::TfToken opacity = pxr::TfToken("opacity");
         const pxr::TfToken varname = pxr::TfToken("varname");
         const pxr::TfToken frame_stPrimvarName = pxr::TfToken("frame:stPrimvarName");
     } Tokens;
+    struct
+    {
+        const pxr::TfToken diffuseColor = pxr::TfToken("diffuseColor");
+        const pxr::TfToken emissiveColor = pxr::TfToken("emissiveColor");
+        const pxr::TfToken useSpecularWorkflow = pxr::TfToken("useSpecularWorkflow");
+        const pxr::TfToken specularColor = pxr::TfToken("specularColor");
+        const pxr::TfToken metallic = pxr::TfToken("metallic");
+        const pxr::TfToken roughness = pxr::TfToken("roughness");
+        const pxr::TfToken clearcoat = pxr::TfToken("clearcoat");
+        const pxr::TfToken clearcoatRoughness = pxr::TfToken("clearcoatRoughness");
+        const pxr::TfToken opacity = pxr::TfToken("opacity");
+        const pxr::TfToken opacityMode = pxr::TfToken("opacityMode");
+        const pxr::TfToken opacityThreshold = pxr::TfToken("opacityThreshold");
+        const pxr::TfToken ior = pxr::TfToken("ior");
+        const pxr::TfToken displacement = pxr::TfToken("displacement");
+        const pxr::TfToken occlusion = pxr::TfToken("occlusion");
+    } UsdPreviewSurfaceTokens;
 };
 
 #endif // MESH_MRM_PROCESSOR_H
