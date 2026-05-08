@@ -151,10 +151,10 @@ size_t ConverterCMesh::convertSubset(const SdfPath& root, uint renderPass, int f
 void ConverterCMesh::convertMaterials()
 {
     UsdGeomScope::Define(stage, SdfPath("/root/_materials"));
-    for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
+    for (auto i = 0; i < mesh->getNbMaterial(); ++i)
     {
-        auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
-        auto material = convert(mesh->getMaterial(materialIndex), materialIndex);
+        auto target = defineMaterial(i);
+        convert(target, mesh->getMaterial(i));
     }
 }
 
@@ -175,9 +175,9 @@ VtArray<int> ConverterCMesh::convert(const CIndexBuffer& source) const
     return target;
 }
 
-UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex)
+void ConverterCMesh::convert(UsdShadeMaterial& target, const CMaterial& source)
 {
-    auto material = defineMaterial(materialIndex);
+    auto material = target;
     auto materialPath = material.GetPath();
     auto pbrShader = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("PBRShader")));
     pbrShader.CreateIdAttr().Set(TfToken("UsdPreviewSurface"));
@@ -203,8 +203,6 @@ UsdShadeMaterial ConverterCMesh::convert(CMaterial& source, uint32 materialIndex
                 sampler.ConnectableAPI(), Tokens.rgb);
         }
     }
-
-    return material;
 }
 
 UsdShadeShader ConverterCMesh::convert(SdfPath& root, ITexture* source, uint32 index)
@@ -267,7 +265,7 @@ TfToken ConverterCMesh::convert(ITexture::TWrapMode source) const
     }
 }
 
-UsdShadeMaterial ConverterCMesh::defineMaterial(uint32 materialIndex)
+UsdShadeMaterial ConverterCMesh::defineMaterial(uint materialIndex)
 {
     return UsdShadeMaterial::Define(stage, SdfPath(fmt::format("/root/_materials/material_{}_MAT", materialIndex)));
 }

@@ -34,7 +34,7 @@ protected:
     size_t convertSubset(const pxr::SdfPath& root, uint renderPass, int faceOffset);
     void convertMaterials();
     pxr::VtArray<int> convert(const NL3D::CIndexBuffer& source) const;
-    pxr::UsdShadeMaterial convert(NL3D::CMaterial& source, uint32 index);
+    void convert(pxr::UsdShadeMaterial &target, const NL3D::CMaterial& source);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::ITexture* source, uint32 index);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureCube& source, uint32 index);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureFile& source, uint32 index);
