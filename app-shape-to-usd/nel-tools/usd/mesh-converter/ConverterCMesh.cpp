@@ -246,26 +246,61 @@ UsdShadeShader ConverterCMesh::convert(SdfPath& root, CTextureFile& source, uint
     sampler.CreateIdAttr().Set(TfToken("UsdUVTexture"));
     sampler.CreateInput(Tokens.file, SdfValueTypeNames->Asset).Set(SdfAssetPath("textures/" + fileName));
     sampler.CreateInput(Tokens.st, SdfValueTypeNames->Float2);
-    sampler.CreateOutput(Tokens.rgb, SdfValueTypeNames->Float3);
     sampler.CreateInput(UsdHydraTokens->wrapS, SdfValueTypeNames->Token).Set(convert(source.getWrapS()));
     sampler.CreateInput(UsdHydraTokens->wrapT, SdfValueTypeNames->Token).Set(convert(source.getWrapT()));
+    sampler.CreateInput(UsdHydraTokens->magFilter, SdfValueTypeNames->Token).Set(convert(source.getMagFilter()));
+    sampler.CreateInput(UsdHydraTokens->minFilter, SdfValueTypeNames->Token).Set(convert(source.getMinFilter()));
+    sampler.CreateOutput(Tokens.rgb, SdfValueTypeNames->Color3f);
 
     return sampler;
 }
 
-TfToken ConverterCMesh::convert(ITexture::TWrapMode source) const
+const TfToken& ConverterCMesh::convert(const ITexture::TWrapMode& source) const
 {
     switch (source)
     {
+    default:
     case ITexture::TWrapMode::Repeat:
         return UsdHydraTokens->repeat;
-    default:
     case ITexture::TWrapMode::Clamp:
         return UsdHydraTokens->clamp;
     }
 }
 
+const TfToken& ConverterCMesh::convert(const ITexture::TMinFilter& source) const
+{
+    switch (source)
+    {
+    default:
+    case ITexture::NearestMipMapOff:
+        return UsdHydraTokens->nearest;
+    case ITexture::NearestMipMapNearest:
+        return UsdHydraTokens->nearestMipmapNearest;
+    case ITexture::NearestMipMapLinear:
+        return UsdHydraTokens->nearestMipmapLinear;
+    case ITexture::LinearMipMapOff:
+        return UsdHydraTokens->linear;
+    case ITexture::LinearMipMapNearest:
+        return UsdHydraTokens->linearMipmapNearest;
+    case ITexture::LinearMipMapLinear:
+        return UsdHydraTokens->linearMipmapLinear;
+    }
+}
+
+const TfToken& ConverterCMesh::convert(const ITexture::TMagFilter& source) const
+{
+    switch (source)
+    {
+    default:
+    case ITexture::Nearest:
+        return UsdHydraTokens->nearest;
+    case ITexture::Linear:
+        return UsdHydraTokens->linear;
+    }
+}
+
 UsdShadeMaterial ConverterCMesh::defineMaterial(uint materialIndex)
 {
-    return UsdShadeMaterial::Define(stage, Paths.materials.AppendPath(SdfPath(fmt::format("material_{}_MAT", materialIndex))));
+    return UsdShadeMaterial::Define(
+        stage, Paths.materials.AppendPath(SdfPath(fmt::format("material_{}_MAT", materialIndex))));
 }
