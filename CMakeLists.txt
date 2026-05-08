@@ -16,11 +16,20 @@ set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(version_config "${generated_dir}/${PROJECT_NAME}-config-version.cmake")
 set(project_config "${generated_dir}/${PROJECT_NAME}-config.cmake")
 set(package_components "")
+set(INSTALL_GTEST OFF)
 
 find_package(fmt REQUIRED)
 find_package(pxr REQUIRED)
 find_package(NeL REQUIRED COMPONENTS misc)
 find_package(GTest REQUIRED)
+
+if(NOT TARGET pxr::usd)
+    add_library(pxr::ar ALIAS ar)
+    add_library(pxr::usd ALIAS usd)
+    add_library(pxr::Geom ALIAS usdGeom)
+    add_library(pxr::Hydra ALIAS usdHydra)
+    add_library(pxr::Shade ALIAS usdShade)
+endif ()
 
 
 add_subdirectory(app-shape-to-usd)

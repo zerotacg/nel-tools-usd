@@ -10,6 +10,9 @@
 #include <nel/misc/file.h>
 
 #include <nel-tools/usd/mesh-converter/Converter.h>
+#include <nel-tools/usd/shape-to-usd/Settings.h>
+
+using nel_tools::usd::shape_to_usd::Settings;
 
 int main(int argc, char** argv)
 {
@@ -17,7 +20,7 @@ int main(int argc, char** argv)
 
     try
     {
-        NLMISC::CApplicationContext myApplicationContext;
+        NLMISC::CApplicationContext context;
         NLMISC::CCmdArgs args;
 
         args.addAdditionalArg("input", "Input shape file");
@@ -34,13 +37,12 @@ int main(int argc, char** argv)
             }
         }
 
-        std::string inputFilePath = args.getAdditionalArg("input").front();
-        std::string outputFilePath = args.getAdditionalArg("output").front();
+        auto settings = Settings::from(args);
 
         NL3D::registerSerial3d();
         NL3D::CScene::registerBasics();
 
-        NLMISC::CIFile inputFile(inputFilePath);
+        NLMISC::CIFile inputFile(settings.input);
         NL3D::CShapeStream shapeStream;
         shapeStream.serial(inputFile);
         inputFile.close();
@@ -48,10 +50,10 @@ int main(int argc, char** argv)
         fmt::print("Shape is of type {}\n", shape->getClassName());
 
         // Create a new USD stage
-        pxr::UsdStageRefPtr stage = pxr::UsdStage::CreateNew(outputFilePath);
+        pxr::UsdStageRefPtr stage = pxr::UsdStage::CreateNew(settings.output);
         if (!stage)
         {
-            fmt::print(fg(fmt::color::red), "Failed to create stage at {}\n", outputFilePath);
+            fmt::print(fg(fmt::color::red), "Failed to create stage at {}\n", settings.output);
             return EXIT_FAILURE;
         }
 
@@ -60,11 +62,11 @@ int main(int argc, char** argv)
         // Save the stage
         if (!stage->GetRootLayer()->Save())
         {
-            fmt::print(fg(fmt::color::red), "Failed to save file at {}\n", outputFilePath);
+            fmt::print(fg(fmt::color::red), "Failed to save file at {}\n", settings.output);
             return EXIT_FAILURE;
         }
 
-        fmt::print(fg(fmt::color::green), "Successfully created USD file at {}\n", outputFilePath);
+        fmt::print(fg(fmt::color::green), "Successfully created USD file at {}\n", settings.output);
 
         return EXIT_SUCCESS;
     }

@@ -7,6 +7,7 @@ target_sources(nel-tools-lib-shape-to-usd
         FILES
         nel-tools/usd/convert/convert.h
         nel-tools/usd/mesh-converter/Converter.h
+        nel-tools/usd/shape-to-usd/Settings.h
         PRIVATE
         nel-tools/usd/convert/convert.cpp
         nel-tools/usd/mesh-converter/Converter.cpp
@@ -18,10 +19,11 @@ target_link_libraries(nel-tools-lib-shape-to-usd
         fmt::fmt
         NeL::3d
         NeL::misc
-        usd
-        usdGeom
-        usdHydra
-        usdShade
+        pxr::usd
+        pxr::ar
+        pxr::Geom
+        pxr::Hydra
+        pxr::Shade
 )
 
 target_compile_definitions(nel-tools-lib-shape-to-usd PUBLIC $<$<CONFIG:Debug>:NL_DEBUG> $<$<CONFIG:Release>:NL_RELEASE>)
@@ -31,7 +33,7 @@ add_executable(${PROJECT_NAME}::app::shape-to-usd ALIAS nel-tools-shape-to-usd)
 
 target_sources(nel-tools-shape-to-usd
         PRIVATE
-        nel-tools/usd/main.cpp
+        nel-tools/usd/shape-to-usd/main.cpp
 )
 
 target_link_libraries(nel-tools-shape-to-usd
