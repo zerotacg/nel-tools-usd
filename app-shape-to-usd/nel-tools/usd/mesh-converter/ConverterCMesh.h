@@ -48,9 +48,14 @@ private:
 
 
     const uint lodId = 0;
-    const pxr::SdfPath meshPath = pxr::SdfPath("/root/model");
     const std::string stPrimvarName = "st";
 
+    struct
+    {
+        const pxr::SdfPath root = pxr::SdfPath("/root");
+        const pxr::SdfPath model = root.AppendPath(pxr::SdfPath("model"));
+        const pxr::SdfPath materials = root.AppendPath(pxr::SdfPath("_materials"));
+    } Paths;
 
     struct
     {

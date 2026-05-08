@@ -46,9 +46,9 @@ void ConverterCMesh::convert()
 {
     UsdGeomSetStageUpAxis(stage, UsdGeomTokens->z);
     UsdGeomSetStageMetersPerUnit(stage, 1.0);
-    auto modelRoot = UsdGeomXform::Define(stage, SdfPath("/root"));
+    auto modelRoot = UsdGeomXform::Define(stage, Paths.root);
     UsdModelAPI(modelRoot).SetKind(KindTokens->component);
-    auto outMesh = UsdGeomMesh::Define(stage, meshPath);
+    auto outMesh = UsdGeomMesh::Define(stage, Paths.model);
 
     outMesh.CreatePointsAttr().Set(convert::vertices(mesh->getVertexBuffer()));
     outMesh.CreateNormalsAttr().Set(convert::normals(mesh->getVertexBuffer()));
@@ -65,7 +65,7 @@ void ConverterCMesh::convert()
 
 
     convertMaterials();
-    convertSubsets(meshPath);
+    convertSubsets(Paths.model);
 
     auto indices = convertIndices();
     outMesh.CreateFaceVertexIndicesAttr().Set(indices);
@@ -150,7 +150,7 @@ size_t ConverterCMesh::convertSubset(const SdfPath& root, uint renderPass, int f
 
 void ConverterCMesh::convertMaterials()
 {
-    UsdGeomScope::Define(stage, SdfPath("/root/_materials"));
+    UsdGeomScope::Define(stage, Paths.materials);
     for (auto i = 0; i < mesh->getNbMaterial(); ++i)
     {
         auto target = defineMaterial(i);
@@ -267,5 +267,5 @@ TfToken ConverterCMesh::convert(ITexture::TWrapMode source) const
 
 UsdShadeMaterial ConverterCMesh::defineMaterial(uint materialIndex)
 {
-    return UsdShadeMaterial::Define(stage, SdfPath(fmt::format("/root/_materials/material_{}_MAT", materialIndex)));
+    return UsdShadeMaterial::Define(stage, Paths.materials.AppendPath(SdfPath(fmt::format("material_{}_MAT", materialIndex))));
 }
