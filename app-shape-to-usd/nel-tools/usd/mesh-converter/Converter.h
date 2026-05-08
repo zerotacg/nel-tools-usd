@@ -1,26 +1,32 @@
 #ifndef MESH_CONVERTER_H
 #define MESH_CONVERTER_H
 
-#include <memory>
-
 #include <pxr/usd/usd/stage.h>
 #include <nel/3d/mesh.h>
 
 class Converter
 {
 public:
-	virtual ~Converter() = default;
+    virtual ~Converter() = default;
 
-	static void from(pxr::UsdStageRefPtr& target, NL3D::IShape *shape, NL3D::IShape *skeleton);
+    const struct Settings
+    {
+        const bool convertToLowerCase;
+        const bool replaceExtension;
+        const std::string extension;
+    }& settings;
+
+    static void from(const Settings& settings,pxr::UsdStageRefPtr& target, NL3D::IShape* shape, NL3D::IShape* skeleton);
+
 protected:
-	explicit Converter(pxr::UsdStageRefPtr& target)
-		: stage(target)
-	{
-	}
+    explicit Converter(const Settings& settings, pxr::UsdStageRefPtr& target)
+        : settings(settings), stage(target)
+    {
+    }
 
-	virtual void convert() = 0;
+    virtual void convert() = 0;
 
-	pxr::UsdStageRefPtr& stage;
+    pxr::UsdStageRefPtr& stage;
 };
 
 #endif // MESH_CONVERTER_H

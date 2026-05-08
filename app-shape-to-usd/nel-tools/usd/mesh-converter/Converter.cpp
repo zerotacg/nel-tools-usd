@@ -13,22 +13,22 @@ using namespace NL3D;
 using namespace std;
 using namespace pxr;
 
-void Converter::from(UsdStageRefPtr& target, IShape *shape, IShape *skeleton)
+void Converter::from(const Settings& settings, UsdStageRefPtr& target, IShape* shape, IShape* skeleton)
 {
-	if (dynamic_cast<CMesh *>(shape))
-	{
-		std::make_unique<ConverterCMesh>(target, dynamic_cast<CMesh *>(shape))->convert();
-	}
-	if (dynamic_cast<CMeshMRM *>(shape))
-	{
-	}
-	if (dynamic_cast<CMeshMRMSkinned *>(shape))
-	{
-	}
-	if (dynamic_cast<CMeshMultiLod *>(shape))
-	{
-	}
-	if (dynamic_cast<CWaterShape *>(shape))
-	{
-	}
+    if (dynamic_cast<CMesh*>(shape))
+    {
+        std::make_unique<ConverterCMesh>(settings, target, dynamic_cast<CMesh*>(shape))->convert();
+    }
+    if (dynamic_cast<CMeshMRM*>(shape))
+    {
+    }
+    if (dynamic_cast<CMeshMRMSkinned*>(shape))
+    {
+    }
+    if (dynamic_cast<CMeshMultiLod*>(shape))
+    {
+    }
+    if (dynamic_cast<CWaterShape*>(shape))
+    {
+    }
 }

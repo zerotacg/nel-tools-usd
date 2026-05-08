@@ -19,8 +19,8 @@
 class ConverterCMesh : public Converter
 {
 public:
-    explicit ConverterCMesh(pxr::UsdStageRefPtr& target, NL3D::CMesh* source)
-        : Converter(target), mesh(source)
+    explicit ConverterCMesh(const Settings& settings, pxr::UsdStageRefPtr& target, NL3D::CMesh* source)
+        : Converter(settings, target), mesh(source)
     {
     }
 

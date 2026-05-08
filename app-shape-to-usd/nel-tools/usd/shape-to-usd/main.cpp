@@ -1,4 +1,5 @@
 #include <fmt/color.h>
+#include <pxr/usd/ar/resolver.h>
 #include <pxr/usd/ar/defaultResolver.h>
 #include <pxr/usd/usd/stage.h>
 #include <nel/3d/register_3d.h>
@@ -25,19 +26,22 @@ int main(int argc, char** argv)
 
         args.addAdditionalArg("input", "Input shape file");
         args.addAdditionalArg("output", "Output usd file");
+        args.addArg("", "add-search-path", "path", "additional path to search for assets, can be supplied multiple times");
+        args.addArg("", "texture-file-to-lower-case", "", "convert texture filename to lower case");
+        args.addArg("", "texture-file-replace-extension", "ext", "replace texture file extension with <ext>");
+
         if (!args.parse(argc, argv))
         {
             if (args.haveLongArg("version") || args.haveLongArg("help"))
             {
                 return EXIT_SUCCESS;
             }
-            else
-            {
-                return EXIT_FAILURE;
-            }
+            return EXIT_FAILURE;
         }
 
         auto settings = Settings::from(args);
+
+        pxr::ArDefaultResolver::SetDefaultSearchPath({settings.input});
 
         NL3D::registerSerial3d();
         NL3D::CScene::registerBasics();
@@ -57,7 +61,7 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
 
-        Converter::from(stage, shape, nullptr);
+        Converter::from(settings.texture, stage, shape, nullptr);
 
         // Save the stage
         if (!stage->GetRootLayer()->Save())

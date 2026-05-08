@@ -40,9 +40,10 @@ target_link_libraries(nel-tools-shape-to-usd
         PRIVATE
         ${PROJECT_NAME}::shape-to-usd
 )
+target_compile_features(nel-tools-shape-to-usd PRIVATE cxx_std_20)
 
 
-add_test(NAME "${PROJECT_NAME}.can-start" COMMAND nel-tools-shape-to-usd --version)
+add_test(NAME "${PROJECT_NAME}.can-start" COMMAND nel-tools-shape-to-usd --help)
 
 
 add_subdirectory(tests)
