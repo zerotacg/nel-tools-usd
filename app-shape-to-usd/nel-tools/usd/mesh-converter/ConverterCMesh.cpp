@@ -201,6 +201,8 @@ void ConverterCMesh::convert(UsdShadeMaterial& target, const CMaterial& source)
             sampler.GetInput(Tokens.st).ConnectToSource(uvmapResult);
             pbrShader.CreateInput(Tokens.diffuseColor, SdfValueTypeNames->Color3f).ConnectToSource(
                 sampler.ConnectableAPI(), Tokens.rgb);
+            pbrShader.CreateInput(Tokens.opacity, SdfValueTypeNames->Float).ConnectToSource(
+                sampler.ConnectableAPI(), Tokens.a);
         }
     }
 }
