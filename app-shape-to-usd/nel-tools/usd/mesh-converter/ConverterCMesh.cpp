@@ -48,8 +48,10 @@ void ConverterCMesh::convert()
     UsdGeomSetStageMetersPerUnit(stage, 1.0);
     auto modelRoot = UsdGeomXform::Define(stage, Paths.root);
     UsdModelAPI(modelRoot).SetKind(KindTokens->component);
-    auto outMesh = UsdGeomMesh::Define(stage, Paths.model);
 
+    auto outMesh = UsdGeomMesh::Define(stage, Paths.model);
+    outMesh.CreateDoubleSidedAttr().Set(true);
+    outMesh.CreateSubdivisionSchemeAttr().Set(UsdGeomTokens->none);
     outMesh.CreatePointsAttr().Set(convert::vertices(mesh->getVertexBuffer()));
     outMesh.CreateNormalsAttr().Set(convert::normals(mesh->getVertexBuffer()));
     UsdGeomPrimvarsAPI(outMesh)
