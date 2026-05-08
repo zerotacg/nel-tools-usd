@@ -188,8 +188,11 @@ void ConverterCMesh::convert(UsdShadeMaterial& target, const CMaterial& source)
     pbrShader.CreateInput(UsdPreviewSurfaceTokens.specularColor, SdfValueTypeNames->Color3f).Set(
         convert::rgb(convert::value(source.getSpecular())));
     pbrShader.CreateInput(UsdPreviewSurfaceTokens.roughness, SdfValueTypeNames->Float).Set(0.9f);
-    pbrShader.CreateInput(UsdPreviewSurfaceTokens.opacityThreshold, SdfValueTypeNames->Float).Set(
-        source.getAlphaTestThreshold());
+    if (source.getAlphaTest())
+    {
+        pbrShader.CreateInput(UsdPreviewSurfaceTokens.opacityThreshold, SdfValueTypeNames->Float).Set(
+            source.getAlphaTestThreshold());
+    }
     target.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
 
     auto uvmap = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("uvmap")));
