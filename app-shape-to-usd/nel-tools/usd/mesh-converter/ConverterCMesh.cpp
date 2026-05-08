@@ -185,8 +185,11 @@ void ConverterCMesh::convert(UsdShadeMaterial& target, const CMaterial& source)
     auto diffuseColor = pbrShader.CreateInput(UsdPreviewSurfaceTokens.diffuseColor, SdfValueTypeNames->Color3f);
     diffuseColor.Set(convert::rgb(convert::value(source.getDiffuse())));
     pbrShader.CreateInput(UsdPreviewSurfaceTokens.useSpecularWorkflow, SdfValueTypeNames->Int).Set(1);
-    pbrShader.CreateInput(UsdPreviewSurfaceTokens.specularColor, SdfValueTypeNames->Color3f).Set(convert::rgb(convert::value(source.getSpecular())));
+    pbrShader.CreateInput(UsdPreviewSurfaceTokens.specularColor, SdfValueTypeNames->Color3f).Set(
+        convert::rgb(convert::value(source.getSpecular())));
     pbrShader.CreateInput(UsdPreviewSurfaceTokens.roughness, SdfValueTypeNames->Float).Set(0.9f);
+    pbrShader.CreateInput(UsdPreviewSurfaceTokens.opacityThreshold, SdfValueTypeNames->Float).Set(
+        source.getAlphaTestThreshold());
     target.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
 
     auto uvmap = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("uvmap")));
@@ -209,7 +212,7 @@ void ConverterCMesh::convert(UsdShadeMaterial& target, const CMaterial& source)
             auto sourceTexture = source.getTexture(textureIndex);
             auto sampler = convert(root, sourceTexture, textureIndex);
             sampler.GetInput(Tokens.st).ConnectToSource(uvmapResult);
-            diffuseColor.ConnectToSource( sampler.ConnectableAPI(), Tokens.rgb);
+            diffuseColor.ConnectToSource(sampler.ConnectableAPI(), Tokens.rgb);
             pbrShader.CreateInput(UsdPreviewSurfaceTokens.opacity, SdfValueTypeNames->Float).ConnectToSource(
                 sampler.ConnectableAPI(), Tokens.a);
         }
