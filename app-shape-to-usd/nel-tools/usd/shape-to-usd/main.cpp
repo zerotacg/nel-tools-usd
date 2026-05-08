@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 
         auto settings = Settings::from(args);
 
-        pxr::ArDefaultResolver::SetDefaultSearchPath({settings.input});
+        pxr::ArDefaultResolver::SetDefaultSearchPath(settings.assets.searchPaths);
 
         NL3D::registerSerial3d();
         NL3D::CScene::registerBasics();
