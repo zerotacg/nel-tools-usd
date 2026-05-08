@@ -177,27 +177,30 @@ VtArray<int> ConverterCMesh::convert(const CIndexBuffer& source) const
 
 void ConverterCMesh::convert(UsdShadeMaterial& target, const CMaterial& source)
 {
-    auto material = target;
-    auto materialPath = material.GetPath();
-    auto pbrShader = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("PBRShader")));
+    auto root = target.GetPath();
+    auto pbrShader = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("PBRShader")));
     pbrShader.CreateIdAttr().Set(TfToken("UsdPreviewSurface"));
-    material.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
+    target.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
 
-    auto uvmap = UsdShadeShader::Define(stage, materialPath.AppendPath(SdfPath("uvmap")));
+    auto uvmap = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("uvmap")));
     uvmap.CreateIdAttr().Set(TfToken("UsdPrimvarReader_float2"));
     uvmap.CreateInput(Tokens.varname, SdfValueTypeNames->String).Set(stPrimvarName);
     auto uvmapResult = uvmap.CreateOutput(Tokens.result, SdfValueTypeNames->Float2);
 
+    if (source.getDoubleSided())
+    {
+        nldebug("Material DoubleSided");
+    }
     if (source.getBlend())
     {
-        nlinfo("Material Blend");
+        nldebug("Material Blend");
     }
     for (auto textureIndex = 0; textureIndex < IDRV_MAT_MAXTEXTURES; ++textureIndex)
     {
         if (source.texturePresent(textureIndex))
         {
             auto sourceTexture = source.getTexture(textureIndex);
-            auto sampler = convert(materialPath, sourceTexture, textureIndex);
+            auto sampler = convert(root, sourceTexture, textureIndex);
             sampler.GetInput(Tokens.st).ConnectToSource(uvmapResult);
             pbrShader.CreateInput(Tokens.diffuseColor, SdfValueTypeNames->Color3f).ConnectToSource(
                 sampler.ConnectableAPI(), Tokens.rgb);
@@ -209,23 +212,23 @@ void ConverterCMesh::convert(UsdShadeMaterial& target, const CMaterial& source)
 
 UsdShadeShader ConverterCMesh::convert(SdfPath& root, ITexture* source, uint32 index)
 {
-    nlinfo("Texture at index %i is %s", index, source->getClassName().c_str());
+    nldebug("Texture at index %i is %s", index, source->getClassName().c_str());
     if (const auto specific = dynamic_cast<CTextureFile*>(source))
     {
         return convert(root, *specific, index);
     }
     else if (const auto specific = dynamic_cast<CTextureMultiFile*>(source))
     {
-        nlinfo("CTextureMultiFile count %i", specific->getNumFileName());
+        nldebug("CTextureMultiFile count %i", specific->getNumFileName());
         for (auto i = 0; i < specific->getNumFileName(); ++i)
         {
             const auto& fileName = specific->getFileName(i);
-            nlinfo("CTextureMultiFile %i %s ", i, fileName.c_str());
+            nldebug("CTextureMultiFile %i %s ", i, fileName.c_str());
         }
     }
     else if (const auto specific = dynamic_cast<CTextureCube*>(source))
     {
-        nlinfo("CTextureCube");
+        nldebug("CTextureCube");
     }
     else
     {
@@ -238,7 +241,7 @@ UsdShadeShader ConverterCMesh::convert(SdfPath& root, ITexture* source, uint32 i
 UsdShadeShader ConverterCMesh::convert(SdfPath& root, CTextureFile& source, uint32 index)
 {
     auto fileName = source.getFileName();
-    nlinfo("CTextureFile %s", fileName.c_str());
+    nldebug("CTextureFile %s", fileName.c_str());
     fileName = toLower(fileName);
     fileName = CFile::getFilenameWithoutExtension(fileName);
     fileName += ".";
