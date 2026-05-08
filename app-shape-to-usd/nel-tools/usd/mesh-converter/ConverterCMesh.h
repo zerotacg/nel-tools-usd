@@ -37,13 +37,15 @@ protected:
     void convert(pxr::UsdShadeMaterial &target, const NL3D::CMaterial& source);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::ITexture* source, uint32 index);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureCube& source, uint32 index);
-    pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureFile& source, uint32 index);
+    pxr::UsdShadeShader convert(const pxr::SdfPath& root, const NL3D::CTextureFile& source, uint32 index) const;
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureMultiFile& source, uint32 index);
     const pxr::TfToken& convert(const NL3D::ITexture::TWrapMode& source) const;
     const pxr::TfToken& convert(const NL3D::ITexture::TMagFilter& source) const;
     const pxr::TfToken& convert(const NL3D::ITexture::TMinFilter& source) const;
 
     pxr::UsdShadeMaterial defineMaterial(uint32 index);
+
+    std::string transformFilename(const std::string& fileName) const;
 
 private:
     NL3D::CMesh* mesh;

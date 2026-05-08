@@ -238,14 +238,10 @@ UsdShadeShader ConverterCMesh::convert(SdfPath& root, ITexture* source, uint32 i
     return UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
 }
 
-UsdShadeShader ConverterCMesh::convert(SdfPath& root, CTextureFile& source, uint32 index)
+UsdShadeShader ConverterCMesh::convert(const SdfPath& root, const CTextureFile& source, uint32 index) const
 {
-    auto fileName = source.getFileName();
-    nldebug("CTextureFile %s", fileName.c_str());
-    fileName = toLower(fileName);
-    fileName = CFile::getFilenameWithoutExtension(fileName);
-    fileName += ".";
-    fileName += "png";
+    nldebug("CTextureFile %s", source.getFileName().c_str());
+    auto fileName = transformFilename(source.getFileName());
 
     auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
     sampler.CreateIdAttr().Set(TfToken("UsdUVTexture"));
@@ -308,4 +304,20 @@ UsdShadeMaterial ConverterCMesh::defineMaterial(uint materialIndex)
 {
     return UsdShadeMaterial::Define(
         stage, Paths.materials.AppendPath(SdfPath(fmt::format("material_{}_MAT", materialIndex))));
+}
+
+std::string ConverterCMesh::transformFilename(const std::string& input) const
+{
+    auto transformed = input;
+    if (settings.convertToLowerCase)
+    {
+        transformed = toLower(transformed);
+    }
+    if (settings.replaceExtension)
+    {
+        transformed = CFile::getFilenameWithoutExtension(transformed);
+        transformed += ".";
+        transformed += "png";
+    }
+    return transformed;
 }
