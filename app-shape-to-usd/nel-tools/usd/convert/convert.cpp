@@ -45,7 +45,7 @@ namespace nel_tools::usd::convert
         for (auto i = 0; i < source.getNumVertices(); ++i)
         {
             const auto uv = reader.getTexCoordPointer(i);
-            target.emplace_back(uv->U, uv->V);
+            target.emplace_back(uv->U, - uv->V);
         }
 
         return target;

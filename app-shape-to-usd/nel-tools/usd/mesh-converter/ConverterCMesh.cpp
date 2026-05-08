@@ -186,6 +186,7 @@ void ConverterCMesh::convert(UsdShadeMaterial& target, const CMaterial& source)
     diffuseColor.Set(convert::rgb(convert::value(source.getDiffuse())));
     pbrShader.CreateInput(UsdPreviewSurfaceTokens.useSpecularWorkflow, SdfValueTypeNames->Int).Set(1);
     pbrShader.CreateInput(UsdPreviewSurfaceTokens.specularColor, SdfValueTypeNames->Color3f).Set(convert::rgb(convert::value(source.getSpecular())));
+    pbrShader.CreateInput(UsdPreviewSurfaceTokens.roughness, SdfValueTypeNames->Float).Set(0.9f);
     target.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
 
     auto uvmap = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("uvmap")));
