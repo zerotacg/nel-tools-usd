@@ -22,6 +22,7 @@
 #include <pxr/usd/usdShade/tokens.h>
 
 #include <nel-tools/usd/convert/convert.h>
+#include <nel-tools/usd/format.h>
 
 using namespace NL3D;
 using namespace NLMISC;
@@ -224,7 +225,7 @@ void ConverterCMesh::convert(UsdShadeMaterial& target, const CMaterial& source)
 
 UsdShadeShader ConverterCMesh::convert(SdfPath& root, ITexture* source, uint32 index)
 {
-    fmt::print(fg(fmt::terminal_color::blue),"Texture at index {} is {}\n", index, source->getClassName());
+    fmt::print(fg(fmt::terminal_color::blue),"Texture at index {} is {} upload format {}\n", index, source->getClassName(), source->getUploadFormat());
 
     if (const auto specific = dynamic_cast<CTextureFile*>(source))
     {
