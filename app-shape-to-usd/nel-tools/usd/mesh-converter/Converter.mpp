@@ -17,7 +17,7 @@ public:
         const std::string prefix;
     }& settings;
 
-    static void from(const Settings& settings, pxr::UsdStageRefPtr& target, NL3D::IShape* shape);
+    static void convert(const Settings& settings, pxr::UsdStageRefPtr& target, NL3D::IShape* shape);
 
 protected:
     explicit Converter(const Settings& settings, pxr::UsdStageRefPtr& target)

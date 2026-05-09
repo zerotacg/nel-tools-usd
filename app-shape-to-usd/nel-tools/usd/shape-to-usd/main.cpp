@@ -14,7 +14,7 @@
 import nel_tools.usd.mesh_converter.Converter;
 import nel_tools.usd.shape_to_usd.Settings;
 
-using nel_tools::usd::shape_to_usd::Settings;
+using namespace nel_tools::usd::shape_to_usd;
 
 int main(int argc, char** argv)
 {
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
 
-        Converter::from(settings.texture, stage, shape);
+        Converter::convert(settings.texture, stage, shape);
 
         // Save the stage
         if (!stage->GetRootLayer()->Save())
