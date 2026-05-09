@@ -12,9 +12,9 @@ module;
 #include <pxr/usd/usdGeom/mesh.h>
 #include <pxr/usd/usdShade/material.h>
 
-export module nel_tools.usd.mesh_converter.ConverterCMesh;
+export module nel_tools.usd.convert.mesh.ConverterCMesh;
 
-import nel_tools.usd.mesh_converter.Converter;
+import nel_tools.usd.convert.mesh.Converter;
 
 export class ConverterCMesh : public Converter
 {

@@ -2,7 +2,7 @@ module;
 #include <pxr/usd/usd/stage.h>
 #include <nel/3d/mesh.h>
 
-export module nel_tools.usd.mesh_converter.Converter;
+export module nel_tools.usd.convert.mesh.Converter;
 
 export class Converter
 {

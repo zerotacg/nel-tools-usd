@@ -5,7 +5,7 @@ module;
 #include <nel/misc/cmd_args.h>
 
 export module nel_tools.usd.shape_to_usd.Settings;
-import nel_tools.usd.mesh_converter.Converter;
+import nel_tools.usd.convert.mesh.Converter;
 
 export namespace nel_tools::usd::shape_to_usd
 {

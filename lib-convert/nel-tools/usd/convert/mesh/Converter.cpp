@@ -6,8 +6,8 @@ module;
 #include <nel/3d/water_shape.h>
 #include <pxr/usd/usd/stage.h>
 
-module nel_tools.usd.mesh_converter.Converter;
-import nel_tools.usd.mesh_converter.ConverterCMesh;
+module nel_tools.usd.convert.mesh.Converter;
+import nel_tools.usd.convert.mesh.ConverterCMesh;
 
 using namespace NL3D;
 using namespace std;

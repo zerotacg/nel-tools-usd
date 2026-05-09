@@ -11,16 +11,16 @@ target_sources(${PROJECT_NAME}-convert
         FILE_SET CXX_MODULES
         FILES
         nel-tools/usd/convert/convert.mpp
-        nel-tools/usd/mesh-converter/Converter.mpp
+        nel-tools/usd/convert/mesh/Converter.mpp
         PRIVATE
         FILE_SET private_modules
         TYPE CXX_MODULES
         FILES
-        nel-tools/usd/mesh-converter/ConverterCMesh.mpp
+        nel-tools/usd/convert/mesh/ConverterCMesh.mpp
         PRIVATE
         nel-tools/usd/convert/convert.cpp
-        nel-tools/usd/mesh-converter/Converter.cpp
-        nel-tools/usd/mesh-converter/ConverterCMesh.cpp
+        nel-tools/usd/convert/mesh/Converter.cpp
+        nel-tools/usd/convert/mesh/ConverterCMesh.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}-convert

@@ -28,7 +28,7 @@ module;
 #include <pxr/usd/usdShade/shader.h>
 #include <pxr/usd/usdShade/tokens.h>
 
-module nel_tools.usd.mesh_converter.ConverterCMesh;
+module nel_tools.usd.convert.mesh.ConverterCMesh;
 import nel_tools.usd.convert;
 import nel_tools.usd.format;
 

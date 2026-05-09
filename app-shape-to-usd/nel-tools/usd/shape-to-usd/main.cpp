@@ -11,7 +11,7 @@
 #include <nel/misc/file.h>
 
 
-import nel_tools.usd.mesh_converter.Converter;
+import nel_tools.usd.convert.mesh.Converter;
 import nel_tools.usd.shape_to_usd.Settings;
 
 using namespace nel_tools::usd::shape_to_usd;
