@@ -65,8 +65,8 @@ namespace nel_tools::usd::convert::mesh
         materialBindingAPI.SetMaterialBindSubsetsFamilyType(UsdGeomTokens->nonOverlapping);
 
 
-        convertMaterials();
-        convertSubsets(Paths.model);
+        materials();
+        subsets(Paths.model);
 
         auto indices = convertIndices();
         outMesh.CreateFaceVertexIndicesAttr().Set(indices);
@@ -114,16 +114,16 @@ namespace nel_tools::usd::convert::mesh
         return target;
     }
 
-    void ConverterCMesh::convertSubsets(const SdfPath& root)
+    void ConverterCMesh::subsets(const SdfPath& root)
     {
         int faceCount = 0;
         for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
         {
-            faceCount += convertSubset(root, renderPass, faceCount);
+            faceCount += subset(root, renderPass, faceCount);
         }
     }
 
-    size_t ConverterCMesh::convertSubset(const SdfPath& root, uint renderPass, int faceOffset)
+    size_t ConverterCMesh::subset(const SdfPath& root, uint renderPass, int faceOffset)
     {
         auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
         auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
@@ -141,7 +141,7 @@ namespace nel_tools::usd::convert::mesh
         return faceIndices.size();
     }
 
-    void ConverterCMesh::convertMaterials()
+    void ConverterCMesh::materials()
     {
         UsdGeomScope::Define(stage, Paths.materials);
         for (auto i = 0; i < mesh->getNbMaterial(); ++i)
