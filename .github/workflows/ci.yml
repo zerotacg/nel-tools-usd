@@ -3,15 +3,9 @@ name: "CI / CD"
 on:
   push:
     branches: [ "main", "feature/*", "bugfix/*" ]
-    paths-ignore:
-      - '.github/**.yml'
-      - '!.github/workflows/ci.yml'
 
   pull_request:
     branches: [ "main" ]
-    paths-ignore:
-      - '.github/**.yml'
-      - '!.github/workflows/ci.yml'
 
   workflow_dispatch:
 
@@ -22,14 +16,12 @@ jobs:
   strings:
     runs-on: ubuntu-latest
     outputs:
-      build-dir: ${{ steps.strings.outputs.build-dir }}
       build-version: ${{ steps.strings.outputs.build-version }}
     steps:
       - name: Set reusable strings
         id: strings
         shell: bash
         run: |
-          echo "build-dir=build" >> "$GITHUB_OUTPUT"
           COMMIT_HASH=${{ github.sha }}
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
@@ -40,18 +32,9 @@ jobs:
 
   build-test-package:
     needs: [ strings ]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-22.04, ubuntu-latest, windows-latest, macos-latest ]
-        preset: [ ci ]
-        include:
-          - os: ubuntu-latest
-            preset: ci-x64-linux-dynamic
+    runs-on: ubuntu-latest
     steps:
-      - name: Dependencies ${{ runner.os }}
-        if: runner.os == 'Linux'
+      - name: Dependencies
         run: |
           sudo apt update
           sudo apt install --yes \
@@ -69,21 +52,6 @@ jobs:
             libxkbcommon-dev \
             libxkbcommon-x11-dev
 
-      - name: Dependencies ${{ runner.os }}
-        if: runner.os == 'Windows'
-        run: >
-          choco install
-          nsis
-
-      - name: Dependencies ${{ runner.os }}
-        if: runner.os == 'macOS'
-        run: >
-          brew install
-          autoconf
-          autoconf-archive
-          automake
-          libtool
-
       - uses: actions/checkout@v5
 
       - uses: lukka/get-cmake@latest
@@ -94,12 +62,12 @@ jobs:
         id: cache-vcpkg
         with:
           path: ${{ github.workspace }}/.vcpkg
-          key: vcpkg-${{ matrix.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
-          restore-keys: vcpkg-${{ matrix.os }}-
+          key: vcpkg-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          restore-keys: vcpkg-
 
 
       - name: Configure CMake
-        run: cmake --preset ${{ matrix.preset }}
+        run: cmake --preset ci
 
       - uses: actions/cache/save@v5
         if: ( ! cancelled() )
@@ -108,7 +76,7 @@ jobs:
           key: ${{ steps.cache-vcpkg.outputs.cache-primary-key }}
 
       - name: Build
-        run: cmake --build ${{ needs.strings.outputs.build-dir }}/ci --config Debug
+        run: cmake --build build/ci --config Debug
 
       - name: Test
         run: ctest --preset ci
@@ -118,6 +86,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: learning-vcpkg-${{ matrix.os }}-${{ matrix.preset }}-${{ needs.strings.outputs.build-version }}
-          path: ${{ needs.strings.outputs.build-dir }}/ci/learning-vcpkg-*
+          name: nel-tools-usd-${{ needs.strings.outputs.build-version }}
+          path: build/ci/learning-vcpkg-*
           if-no-files-found: error

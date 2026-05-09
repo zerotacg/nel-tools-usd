@@ -5,22 +5,13 @@
       "name": "debug",
       "inherits": [
         "ninja",
+        "clang",
         "vcpkg",
         "default"
       ],
       "environment": {
         "VCPKG_ROOT": "$env{HOME}/.local/opt/vcpkg",
         "PATH": "$env{HOME}/ninja/bin:$penv{PATH}"
-      }
-    },
-    {
-      "name": "mingw",
-      "inherits": [
-        "vcpkg",
-        "mingw-x64-static",
-        "default"
-      ],
-      "cacheVariables": {
       }
     }
   ]
