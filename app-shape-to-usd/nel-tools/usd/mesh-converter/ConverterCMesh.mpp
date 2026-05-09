@@ -24,8 +24,9 @@ public:
     {
     }
 
-protected:
     void convert() override;
+
+protected:
 
     pxr::VtArray<int> convertIndices() const;
     pxr::VtArray<int> convertFaceCount(pxr::VtArray<int>& source) const;

@@ -17,6 +17,8 @@ public:
         const std::string prefix;
     }& settings;
 
+    virtual void convert() = 0;
+
     static void convert(const Settings& settings, pxr::UsdStageRefPtr& target, NL3D::IShape* shape);
 
 protected:
@@ -24,8 +26,6 @@ protected:
         : settings(settings), stage(target)
     {
     }
-
-    virtual void convert() = 0;
 
     pxr::UsdStageRefPtr& stage;
 };
