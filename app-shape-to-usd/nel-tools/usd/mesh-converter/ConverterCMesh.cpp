@@ -39,7 +39,7 @@ using namespace pxr;
 using namespace nel_tools::usd;
 
 
-void ConverterCMesh::convert()
+void ConverterCMesh::run()
 {
     UsdGeomSetStageUpAxis(stage, UsdGeomTokens->z);
     UsdGeomSetStageMetersPerUnit(stage, 1.0);

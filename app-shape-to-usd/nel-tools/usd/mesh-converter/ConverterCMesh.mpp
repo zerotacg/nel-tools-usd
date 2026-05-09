@@ -24,7 +24,7 @@ public:
     {
     }
 
-    void convert() override;
+    void run() override;
 
 protected:
 

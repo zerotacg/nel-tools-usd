@@ -17,7 +17,7 @@ void Converter::convert(const Settings& settings, UsdStageRefPtr& target, IShape
 {
     if (dynamic_cast<CMesh*>(shape))
     {
-        std::make_unique<ConverterCMesh>(settings, target, dynamic_cast<CMesh*>(shape))->convert();
+        std::make_unique<ConverterCMesh>(settings, target, dynamic_cast<CMesh*>(shape))->run();
     }
     if (dynamic_cast<CMeshMRM*>(shape))
     {
