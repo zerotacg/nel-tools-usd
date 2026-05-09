@@ -55,6 +55,7 @@ void ConverterCMesh::convert()
 {
     UsdGeomSetStageUpAxis(stage, UsdGeomTokens->z);
     UsdGeomSetStageMetersPerUnit(stage, 1.0);
+    stage->GetRootLayer()->SetDefaultPrim(Tokens.root);
     auto modelRoot = UsdGeomXform::Define(stage, Paths.root);
     UsdModelAPI(modelRoot).SetKind(KindTokens->component);
 

@@ -63,6 +63,7 @@ private:
 
     struct
     {
+        const pxr::TfToken root = pxr::TfToken("root");
         const pxr::TfToken st = pxr::TfToken("st");
         const pxr::TfToken result = pxr::TfToken("result");
         const pxr::TfToken varname = pxr::TfToken("varname");
