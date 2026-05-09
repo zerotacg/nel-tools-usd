@@ -1,10 +1,12 @@
 module;
+#include <nel/3d/texture.h>
 #include <nel/3d/vertex_buffer.h>
 #include <nel/misc/rgba.h>
 #include <pxr/base/gf/vec2f.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/gf/vec4f.h>
 #include <pxr/base/vt/array.h>
+#include <pxr/usd/usdHydra/tokens.h>
 
 module nel_tools.usd.convert;
 
@@ -67,5 +69,50 @@ namespace nel_tools::usd::convert
     GfVec3f rgb(const CRGBAF& source)
     {
         return {source.R, source.G, source.B};
+    }
+
+
+    const TfToken& value(const ITexture::TWrapMode& source)
+    {
+        switch (source)
+        {
+        default:
+        case ITexture::TWrapMode::Repeat:
+            return UsdHydraTokens->repeat;
+        case ITexture::TWrapMode::Clamp:
+            return UsdHydraTokens->clamp;
+        }
+    }
+
+    const TfToken& value(const ITexture::TMinFilter& source)
+    {
+        switch (source)
+        {
+        default:
+        case ITexture::NearestMipMapOff:
+            return UsdHydraTokens->nearest;
+        case ITexture::NearestMipMapNearest:
+            return UsdHydraTokens->nearestMipmapNearest;
+        case ITexture::NearestMipMapLinear:
+            return UsdHydraTokens->nearestMipmapLinear;
+        case ITexture::LinearMipMapOff:
+            return UsdHydraTokens->linear;
+        case ITexture::LinearMipMapNearest:
+            return UsdHydraTokens->linearMipmapNearest;
+        case ITexture::LinearMipMapLinear:
+            return UsdHydraTokens->linearMipmapLinear;
+        }
+    }
+
+    const TfToken& value(const ITexture::TMagFilter& source)
+    {
+        switch (source)
+        {
+        default:
+        case ITexture::Nearest:
+            return UsdHydraTokens->nearest;
+        case ITexture::Linear:
+            return UsdHydraTokens->linear;
+        }
     }
 }
