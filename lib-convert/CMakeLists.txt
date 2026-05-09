@@ -11,7 +11,6 @@ target_sources(${PROJECT_NAME}-convert
         FILE_SET CXX_MODULES
         FILES
         nel-tools/usd/convert/convert.mpp
-        nel-tools/usd/format.mpp
         nel-tools/usd/mesh-converter/Converter.mpp
         PRIVATE
         FILE_SET private_modules
@@ -34,6 +33,7 @@ target_link_libraries(${PROJECT_NAME}-convert
         pxr::Geom
         pxr::Hydra
         pxr::Shade
+        ${PROJECT_NAME}::format
 )
 
 target_compile_definitions(${PROJECT_NAME}-convert PUBLIC $<$<CONFIG:Debug>:NL_DEBUG> $<$<CONFIG:Release>:NL_RELEASE>)
