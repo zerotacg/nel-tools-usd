@@ -60,7 +60,7 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
 
-        Converter::from(settings.texture, stage, shape, nullptr);
+        Converter::from(settings.texture, stage, shape);
 
         // Save the stage
         if (!stage->GetRootLayer()->Save())

@@ -13,7 +13,7 @@ using namespace NL3D;
 using namespace std;
 using namespace pxr;
 
-void Converter::from(const Settings& settings, UsdStageRefPtr& target, IShape* shape, IShape* skeleton)
+void Converter::from(const Settings& settings, UsdStageRefPtr& target, IShape* shape)
 {
     if (dynamic_cast<CMesh*>(shape))
     {
