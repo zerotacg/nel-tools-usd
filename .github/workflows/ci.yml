@@ -42,15 +42,7 @@ jobs:
             autoconf-archive \
             automake \
             libtool \
-            libltdl-dev \
-            '^libxcb.*-dev' \
-            libx11-xcb-dev \
-            libgl1-mesa-dev \
-            libxrender-dev \
-            libxi-dev \
-            libxtst-dev \
-            libxkbcommon-dev \
-            libxkbcommon-x11-dev
+            libltdl-dev
 
       - uses: actions/checkout@v5
 
