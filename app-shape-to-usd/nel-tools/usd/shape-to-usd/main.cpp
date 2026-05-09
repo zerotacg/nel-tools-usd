@@ -16,6 +16,12 @@ import nel_tools.usd.shape_to_usd.Settings;
 
 using namespace nel_tools::usd::shape_to_usd;
 
+void loadInto(NL3D::CShapeStream& target, const std::string& path)
+{
+    NLMISC::CIFile file(path);
+    target.serial(file);
+}
+
 int main(int argc, char** argv)
 {
     fmt::print(fmt::emphasis::bold, "shape-to-usd:\n");
@@ -45,10 +51,8 @@ int main(int argc, char** argv)
         NL3D::registerSerial3d();
         NL3D::CScene::registerBasics();
 
-        NLMISC::CIFile inputFile(settings.input);
         NL3D::CShapeStream shapeStream;
-        shapeStream.serial(inputFile);
-        inputFile.close();
+        loadInto(shapeStream, settings.input);
         NL3D::IShape* shape = shapeStream.getShapePointer();
         fmt::print(fg(fmt::terminal_color::blue), "Shape is of type {}\n", shape->getClassName());
 
