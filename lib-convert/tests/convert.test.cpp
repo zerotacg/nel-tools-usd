@@ -7,7 +7,7 @@
 
 import nel_tools.usd.convert;
 
-using ::testing::Eq;
+using testing::Eq;
 using namespace NL3D;
 using namespace pxr;
 using namespace nel_tools::usd;

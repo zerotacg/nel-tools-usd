@@ -32,14 +32,14 @@ module nel_tools.usd.convert.mesh.ConverterCMesh;
 import nel_tools.usd.convert;
 import nel_tools.usd.format;
 
-using namespace NL3D;
-using namespace NLMISC;
-using namespace std;
-using namespace pxr;
-using namespace nel_tools::usd;
 
 namespace nel_tools::usd::convert::mesh
 {
+    using namespace NL3D;
+    using namespace NLMISC;
+    using namespace std;
+    using namespace pxr;
+
     void ConverterCMesh::run()
     {
         UsdGeomSetStageUpAxis(stage, UsdGeomTokens->z);
@@ -51,11 +51,11 @@ namespace nel_tools::usd::convert::mesh
         auto outMesh = UsdGeomMesh::Define(stage, Paths.model);
         outMesh.CreateDoubleSidedAttr().Set(true);
         outMesh.CreateSubdivisionSchemeAttr().Set(UsdGeomTokens->none);
-        outMesh.CreatePointsAttr().Set(convert::vertices(mesh->getVertexBuffer()));
-        outMesh.CreateNormalsAttr().Set(convert::normals(mesh->getVertexBuffer()));
+        outMesh.CreatePointsAttr().Set(vertices(mesh->getVertexBuffer()));
+        outMesh.CreateNormalsAttr().Set(normals(mesh->getVertexBuffer()));
         UsdGeomPrimvarsAPI(outMesh)
             .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->varying)
-            .Set(convert::uvs(mesh->getVertexBuffer()));
+            .Set(uvs(mesh->getVertexBuffer()));
 
 
         outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
@@ -80,7 +80,7 @@ namespace nel_tools::usd::convert::mesh
         {
             auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
 
-            auto pass = convert::value(indexBuffer);
+            auto pass = value(indexBuffer);
             all.insert(all.end(), pass.begin(), pass.end());
         }
 
@@ -158,10 +158,10 @@ namespace nel_tools::usd::convert::mesh
         pbrShader.CreateIdAttr().Set(UsdPreviewSurfaceTokens.id);
         auto diffuseColor = pbrShader.CreateInput(UsdPreviewSurfaceTokens.inputs.diffuseColor,
                                                   SdfValueTypeNames->Color3f);
-        diffuseColor.Set(convert::rgb(source.getDiffuse()));
+        diffuseColor.Set(rgb(source.getDiffuse()));
         pbrShader.CreateInput(UsdPreviewSurfaceTokens.inputs.useSpecularWorkflow, SdfValueTypeNames->Int).Set(1);
         pbrShader.CreateInput(UsdPreviewSurfaceTokens.inputs.specularColor, SdfValueTypeNames->Color3f).Set(
-            convert::rgb(source.getSpecular()));
+            rgb(source.getSpecular()));
         pbrShader.CreateInput(UsdPreviewSurfaceTokens.inputs.roughness, SdfValueTypeNames->Float).Set(0.9f);
         if (source.getAlphaTest())
         {
@@ -236,13 +236,13 @@ namespace nel_tools::usd::convert::mesh
         sampler.CreateInput(UsdUVTextureTokens.inputs.file, SdfValueTypeNames->Asset).Set(SdfAssetPath(fileName));
         sampler.CreateInput(UsdUVTextureTokens.inputs.st, SdfValueTypeNames->Float2);
         sampler.CreateInput(UsdUVTextureTokens.inputs.wrapS, SdfValueTypeNames->Token).Set(
-            convert::value(source.getWrapS()));
+            value(source.getWrapS()));
         sampler.CreateInput(UsdUVTextureTokens.inputs.wrapT, SdfValueTypeNames->Token).Set(
-            convert::value(source.getWrapT()));
+            value(source.getWrapT()));
         sampler.CreateInput(UsdHydraTokens->magFilter, SdfValueTypeNames->Token).Set(
-            convert::value(source.getMagFilter()));
+            value(source.getMagFilter()));
         sampler.CreateInput(UsdHydraTokens->minFilter, SdfValueTypeNames->Token).Set(
-            convert::value(source.getMinFilter()));
+            value(source.getMinFilter()));
         sampler.CreateOutput(UsdUVTextureTokens.outputs.rgb, SdfValueTypeNames->Float3);
 
         return sampler;

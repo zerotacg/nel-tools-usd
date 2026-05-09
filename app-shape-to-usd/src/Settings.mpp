@@ -9,7 +9,7 @@ import nel_tools.usd.convert.mesh.Converter;
 
 export namespace nel_tools::usd::shape_to_usd
 {
-    using namespace nel_tools::usd::convert::mesh;
+    using namespace convert::mesh;
 
     struct Settings
     {
