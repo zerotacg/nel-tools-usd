@@ -38,18 +38,6 @@ using namespace std;
 using namespace pxr;
 using namespace nel_tools::usd;
 
-uint32 getIndexAt(const CIndexBufferRead& buffer, const int index)
-{
-    switch (buffer.getFormat())
-    {
-    case CIndexBuffer::Indices32:
-        return *(static_cast<const uint32*>(buffer.getPtr()) + index);
-    case CIndexBuffer::Indices16:
-    default:
-        return *(static_cast<const uint16*>(buffer.getPtr()) + index);
-    }
-}
-
 
 void ConverterCMesh::convert()
 {
@@ -86,24 +74,16 @@ void ConverterCMesh::convert()
 
 VtArray<int> ConverterCMesh::convertIndices() const
 {
-    VtArray<int> value;
+    VtArray<int> all;
     for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
     {
         auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
 
-        CIndexBufferRead indexBufferRead;
-        indexBuffer.lock(indexBufferRead);
-
-        for (auto i = 0; i < indexBuffer.getNumIndexes(); ++i)
-        {
-            if (uint32 idx = getIndexAt(indexBufferRead, i); idx != -1)
-            {
-                value.emplace_back(idx);
-            }
-        }
+        auto pass = convert::value(indexBuffer);
+        all.insert(all.end(), pass.begin(), pass.end());
     }
 
-    return value;
+    return all;
 }
 
 VtArray<int> ConverterCMesh::convertFaceCount(VtArray<int>& source) const
@@ -168,23 +148,6 @@ void ConverterCMesh::convertMaterials()
         auto target = defineMaterial(i);
         convert(target, mesh->getMaterial(i));
     }
-}
-
-VtArray<int> ConverterCMesh::convert(const CIndexBuffer& source) const
-{
-    VtArray<int> target;
-    CIndexBufferRead indexBufferRead;
-    source.lock(indexBufferRead);
-
-    for (auto i = 0; i < source.getNumIndexes(); ++i)
-    {
-        if (uint32 idx = getIndexAt(indexBufferRead, i); idx != -1)
-        {
-            target.emplace_back(idx);
-        }
-    }
-
-    return target;
 }
 
 void ConverterCMesh::convert(UsdShadeMaterial& target, const CMaterial& source)

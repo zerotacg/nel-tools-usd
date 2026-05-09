@@ -1,4 +1,5 @@
 module;
+#include <nel/3d/index_buffer.h>
 #include <nel/3d/texture.h>
 #include <nel/3d/vertex_buffer.h>
 #include <nel/misc/rgba.h>
@@ -55,10 +56,39 @@ namespace nel_tools::usd::convert
         for (auto i = 0; i < source.getNumVertices(); ++i)
         {
             const auto uv = reader.getTexCoordPointer(i);
-            target.emplace_back(uv->U, - uv->V);
+            target.emplace_back(uv->U, -uv->V);
         }
 
         return target;
+    }
+
+    VtArray<int> value(const CIndexBuffer& source)
+    {
+        VtArray<int> target;
+        CIndexBufferRead reader;
+        source.lock(reader);
+
+        for (auto i = 0; i < source.getNumIndexes(); ++i)
+        {
+            if (auto index = getIndexAt(reader, i); index != -1)
+            {
+                target.emplace_back(index);
+            }
+        }
+
+        return target;
+    }
+
+    int getIndexAt(const CIndexBufferRead& reader, const int index)
+    {
+        switch (reader.getFormat())
+        {
+        case CIndexBuffer::Indices32:
+            return *(static_cast<const uint32*>(reader.getPtr()) + index);
+        case CIndexBuffer::Indices16:
+        default:
+            return *(static_cast<const uint16*>(reader.getPtr()) + index);
+        }
     }
 
     GfVec4f value(const CRGBAF& source)
