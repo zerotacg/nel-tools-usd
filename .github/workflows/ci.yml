@@ -51,7 +51,7 @@ jobs:
       - uses: lukka/run-vcpkg@v11.5
 
       - uses: actions/cache/restore@v5
-        id: cache-vcpkg
+        id: vcpkg-cache
         with:
           path: ${{ github.workspace }}/.vcpkg
           key: vcpkg-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
