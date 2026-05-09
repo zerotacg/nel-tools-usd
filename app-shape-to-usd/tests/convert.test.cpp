@@ -1,7 +1,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <nel-tools/usd/convert/convert.h>
+#include <nel/3d/vertex_buffer.h>
+#include <pxr/base/gf/vec3f.h>
+#include <pxr/base/vt/array.h>
+
+import nel_tools.usd.convert;
 
 using ::testing::Eq;
 using namespace NL3D;

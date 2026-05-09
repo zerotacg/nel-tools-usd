@@ -1,10 +1,10 @@
-#ifndef MESH_CONVERTER_H
-#define MESH_CONVERTER_H
-
+module;
 #include <pxr/usd/usd/stage.h>
 #include <nel/3d/mesh.h>
 
-class Converter
+export module nel_tools.usd.mesh_converter.Converter;
+
+export class Converter
 {
 public:
     virtual ~Converter() = default;
@@ -29,5 +29,3 @@ protected:
 
     pxr::UsdStageRefPtr& stage;
 };
-
-#endif // MESH_CONVERTER_H

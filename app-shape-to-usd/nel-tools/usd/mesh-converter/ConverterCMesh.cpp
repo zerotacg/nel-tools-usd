@@ -1,10 +1,17 @@
-#include <nel-tools/usd/mesh-converter/ConverterCMesh.h>
-
+module;
+#include <string>
 #include <fmt/color.h>
 #include <fmt/format.h>
+#include <nel/3d/material.h>
+#include <nel/3d/mesh.h>
+#include <nel/3d/texture.h>
+#include <nel/3d/texture_cube.h>
+#include <nel/3d/texture_file.h>
+#include <nel/3d/texture_multi_file.h>
 #include <nel/misc/common.h>
 #include <nel/misc/path.h>
-#include <pxr/usd/ar/resolver.h>
+#include <pxr/base/gf/vec2f.h>
+#include <pxr/base/gf/vec3f.h>
 #include <pxr/usd/kind/registry.h>
 #include <pxr/usd/usd/modelAPI.h>
 #include <pxr/usd/usdGeom/mesh.h>
@@ -21,8 +28,9 @@
 #include <pxr/usd/usdShade/shader.h>
 #include <pxr/usd/usdShade/tokens.h>
 
-#include <nel-tools/usd/convert/convert.h>
-#include <nel-tools/usd/format.h>
+module nel_tools.usd.mesh_converter.ConverterCMesh;
+import nel_tools.usd.convert;
+import nel_tools.usd.format;
 
 using namespace NL3D;
 using namespace NLMISC;
@@ -319,7 +327,7 @@ UsdShadeMaterial ConverterCMesh::defineMaterial(uint materialIndex)
         stage, Paths.materials.AppendPath(SdfPath(fmt::format("material_{}_MAT", materialIndex))));
 }
 
-std::string ConverterCMesh::transformFilename(const std::string& input) const
+string ConverterCMesh::transformFilename(const string& input) const
 {
     auto transformed = input;
 

@@ -1,6 +1,4 @@
-#ifndef MESH_MRM_PROCESSOR_H
-#define MESH_MRM_PROCESSOR_H
-
+module;
 #include <string>
 
 #include <nel/3d/material.h>
@@ -14,9 +12,11 @@
 #include <pxr/usd/usdGeom/mesh.h>
 #include <pxr/usd/usdShade/material.h>
 
-#include <nel-tools/usd/mesh-converter/Converter.h>
+export module nel_tools.usd.mesh_converter.ConverterCMesh;
 
-class ConverterCMesh : public Converter
+import nel_tools.usd.mesh_converter.Converter;
+
+export class ConverterCMesh : public Converter
 {
 public:
     explicit ConverterCMesh(const Settings& settings, pxr::UsdStageRefPtr& target, NL3D::CMesh* source)
@@ -125,5 +125,3 @@ private:
         } outputs;
     } UsdPreviewSurfaceTokens; // @see https://openusd.org/release/spec_usdpreviewsurface.html#preview-surface
 };
-
-#endif // MESH_MRM_PROCESSOR_H

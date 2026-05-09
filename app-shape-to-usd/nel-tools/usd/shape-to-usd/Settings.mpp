@@ -1,14 +1,13 @@
-#ifndef NEL_TOOLS_USD_SETTINGS_H
-#define NEL_TOOLS_USD_SETTINGS_H
-
+module;
 #include <string>
 #include <vector>
 
 #include <nel/misc/cmd_args.h>
 
-#include <nel-tools/usd/mesh-converter/Converter.h>
+export module nel_tools.usd.shape_to_usd.Settings;
+import nel_tools.usd.mesh_converter.Converter;
 
-namespace nel_tools::usd::shape_to_usd
+export namespace nel_tools::usd::shape_to_usd
 {
     struct Settings
     {
@@ -42,5 +41,3 @@ namespace nel_tools::usd::shape_to_usd
         }
     };
 }
-
-#endif //NEL_TOOLS_USD_SETTINGS_H

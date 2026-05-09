@@ -10,8 +10,9 @@
 #include <nel/misc/common.h>
 #include <nel/misc/file.h>
 
-#include <nel-tools/usd/mesh-converter/Converter.h>
-#include <nel-tools/usd/shape-to-usd/Settings.h>
+
+import nel_tools.usd.mesh_converter.Converter;
+import nel_tools.usd.shape_to_usd.Settings;
 
 using nel_tools::usd::shape_to_usd::Settings;
 

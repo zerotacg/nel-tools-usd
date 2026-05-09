@@ -13,4 +13,4 @@ target_link_libraries(convert_test
 )
 
 add_test(NAME "convert_test" COMMAND "convert_test")
-target_compile_features("convert_test" PRIVATE cxx_std_17)
+target_compile_features("convert_test" PRIVATE cxx_std_20)

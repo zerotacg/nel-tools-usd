@@ -1,4 +1,12 @@
-#include <nel-tools/usd/convert/convert.h>
+module;
+#include <nel/3d/vertex_buffer.h>
+#include <nel/misc/rgba.h>
+#include <pxr/base/gf/vec2f.h>
+#include <pxr/base/gf/vec3f.h>
+#include <pxr/base/gf/vec4f.h>
+#include <pxr/base/vt/array.h>
+
+module nel_tools.usd.convert;
 
 namespace nel_tools::usd::convert
 {
