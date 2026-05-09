@@ -34,7 +34,7 @@ protected:
     size_t convertSubset(const pxr::SdfPath& root, uint renderPass, int faceOffset);
     void convertMaterials();
     pxr::VtArray<int> convert(const NL3D::CIndexBuffer& source) const;
-    void convert(pxr::UsdShadeMaterial &target, const NL3D::CMaterial& source);
+    void convert(pxr::UsdShadeMaterial& target, const NL3D::CMaterial& source);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::ITexture* source, uint32 index);
     pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureCube& source, uint32 index);
     pxr::UsdShadeShader convert(const pxr::SdfPath& root, const NL3D::CTextureFile& source, uint32 index) const;
@@ -64,30 +64,66 @@ private:
     struct
     {
         const pxr::TfToken st = pxr::TfToken("st");
-        const pxr::TfToken file = pxr::TfToken("file");
-        const pxr::TfToken rgb = pxr::TfToken("rgb");
-        const pxr::TfToken a = pxr::TfToken("a");
         const pxr::TfToken result = pxr::TfToken("result");
         const pxr::TfToken varname = pxr::TfToken("varname");
         const pxr::TfToken frame_stPrimvarName = pxr::TfToken("frame:stPrimvarName");
     } Tokens;
+
     struct
     {
-        const pxr::TfToken diffuseColor = pxr::TfToken("diffuseColor");
-        const pxr::TfToken emissiveColor = pxr::TfToken("emissiveColor");
-        const pxr::TfToken useSpecularWorkflow = pxr::TfToken("useSpecularWorkflow");
-        const pxr::TfToken specularColor = pxr::TfToken("specularColor");
-        const pxr::TfToken metallic = pxr::TfToken("metallic");
-        const pxr::TfToken roughness = pxr::TfToken("roughness");
-        const pxr::TfToken clearcoat = pxr::TfToken("clearcoat");
-        const pxr::TfToken clearcoatRoughness = pxr::TfToken("clearcoatRoughness");
-        const pxr::TfToken opacity = pxr::TfToken("opacity");
-        const pxr::TfToken opacityMode = pxr::TfToken("opacityMode");
-        const pxr::TfToken opacityThreshold = pxr::TfToken("opacityThreshold");
-        const pxr::TfToken ior = pxr::TfToken("ior");
-        const pxr::TfToken displacement = pxr::TfToken("displacement");
-        const pxr::TfToken occlusion = pxr::TfToken("occlusion");
-    } UsdPreviewSurfaceTokens;
+        const pxr::TfToken id = pxr::TfToken("UsdUVTexture");
+
+        struct
+        {
+            const pxr::TfToken file = pxr::TfToken("file");
+            const pxr::TfToken st = pxr::TfToken("st");
+            const pxr::TfToken wrapS = pxr::TfToken("wrapS");
+            const pxr::TfToken wrapT = pxr::TfToken("wrapT");
+            const pxr::TfToken fallback = pxr::TfToken("fallback");
+            const pxr::TfToken scale = pxr::TfToken("scale");
+            const pxr::TfToken bias = pxr::TfToken("bias");
+            const pxr::TfToken sourceColorSpace = pxr::TfToken("sourceColorSpace");
+        } inputs;
+
+        struct
+        {
+            const pxr::TfToken r = pxr::TfToken("r");
+            const pxr::TfToken g = pxr::TfToken("g");
+            const pxr::TfToken b = pxr::TfToken("b");
+            const pxr::TfToken a = pxr::TfToken("a");
+            const pxr::TfToken rgb = pxr::TfToken("rgb");
+        } outputs;
+    } UsdUVTextureTokens; // @see https://openusd.org/release/spec_usdpreviewsurface.html#texture-reader
+
+    struct
+    {
+        const pxr::TfToken id = pxr::TfToken("UsdPreviewSurface");
+
+        struct
+        {
+            const pxr::TfToken diffuseColor = pxr::TfToken("diffuseColor");
+            const pxr::TfToken emissiveColor = pxr::TfToken("emissiveColor");
+            const pxr::TfToken useSpecularWorkflow = pxr::TfToken("useSpecularWorkflow");
+            const pxr::TfToken specularColor = pxr::TfToken("specularColor");
+            const pxr::TfToken metallic = pxr::TfToken("metallic");
+            const pxr::TfToken roughness = pxr::TfToken("roughness");
+            const pxr::TfToken clearcoat = pxr::TfToken("clearcoat");
+            const pxr::TfToken clearcoatRoughness = pxr::TfToken("clearcoatRoughness");
+            const pxr::TfToken opacity = pxr::TfToken("opacity");
+            const pxr::TfToken opacityMode = pxr::TfToken("opacityMode");
+            const pxr::TfToken opacityThreshold = pxr::TfToken("opacityThreshold");
+            const pxr::TfToken ior = pxr::TfToken("ior");
+            const pxr::TfToken normal = pxr::TfToken("normal");
+            const pxr::TfToken displacement = pxr::TfToken("displacement");
+            const pxr::TfToken occlusion = pxr::TfToken("occlusion");
+        } inputs;
+
+        struct
+        {
+            const pxr::TfToken surface = pxr::TfToken("surface");
+            const pxr::TfToken displacement = pxr::TfToken("displacement");
+        } outputs;
+    } UsdPreviewSurfaceTokens; // @see https://openusd.org/release/spec_usdpreviewsurface.html#preview-surface
 };
 
 #endif // MESH_MRM_PROCESSOR_H
