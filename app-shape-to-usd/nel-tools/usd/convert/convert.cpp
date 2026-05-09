@@ -56,8 +56,8 @@ namespace nel_tools::usd::convert
         return {source.R, source.G, source.B, source.A};
     }
 
-    GfVec3f rgb(const GfVec4f& source)
+    GfVec3f rgb(const CRGBAF& source)
     {
-        return {source[0], source[1], source[2]};
+        return {source.R, source.G, source.B};
     }
 }

@@ -184,10 +184,10 @@ void ConverterCMesh::convert(UsdShadeMaterial& target, const CMaterial& source)
     auto pbrShader = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("PBRShader")));
     pbrShader.CreateIdAttr().Set(UsdPreviewSurfaceTokens.id);
     auto diffuseColor = pbrShader.CreateInput(UsdPreviewSurfaceTokens.inputs.diffuseColor, SdfValueTypeNames->Color3f);
-    diffuseColor.Set(convert::rgb(convert::value(source.getDiffuse())));
+    diffuseColor.Set(convert::rgb(source.getDiffuse()));
     pbrShader.CreateInput(UsdPreviewSurfaceTokens.inputs.useSpecularWorkflow, SdfValueTypeNames->Int).Set(1);
     pbrShader.CreateInput(UsdPreviewSurfaceTokens.inputs.specularColor, SdfValueTypeNames->Color3f).Set(
-        convert::rgb(convert::value(source.getSpecular())));
+        convert::rgb(source.getSpecular()));
     pbrShader.CreateInput(UsdPreviewSurfaceTokens.inputs.roughness, SdfValueTypeNames->Float).Set(0.9f);
     if (source.getAlphaTest())
     {
