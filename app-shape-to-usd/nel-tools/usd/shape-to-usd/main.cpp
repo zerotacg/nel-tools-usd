@@ -49,13 +49,13 @@ int main(int argc, char** argv)
         shapeStream.serial(inputFile);
         inputFile.close();
         NL3D::IShape* shape = shapeStream.getShapePointer();
-        fmt::print("Shape is of type {}\n", shape->getClassName());
+        fmt::print(fg(fmt::terminal_color::blue), "Shape is of type {}\n", shape->getClassName());
 
         // Create a new USD stage
         pxr::UsdStageRefPtr stage = pxr::UsdStage::CreateNew(settings.output);
         if (!stage)
         {
-            fmt::print(fg(fmt::color::red), "Failed to create stage at {}\n", settings.output);
+            fmt::print(fg(fmt::terminal_color::red), "Failed to create stage at {}\n", settings.output);
             return EXIT_FAILURE;
         }
 
@@ -64,17 +64,17 @@ int main(int argc, char** argv)
         // Save the stage
         if (!stage->GetRootLayer()->Save())
         {
-            fmt::print(fg(fmt::color::red), "Failed to save file at {}\n", settings.output);
+            fmt::print(fg(fmt::terminal_color::red), "Failed to save file at {}\n", settings.output);
             return EXIT_FAILURE;
         }
 
-        fmt::print(fg(fmt::color::green), "Successfully created USD file at {}\n", settings.output);
+        fmt::print(fg(fmt::terminal_color::green), "Successfully created USD file at {}\n", settings.output);
 
         return EXIT_SUCCESS;
     }
     catch (const std::exception& e)
     {
-        fmt::print(fg(fmt::color::red), "Error converting shape file: {}\n", e.what());
+        fmt::print(fg(fmt::terminal_color::red), "Error converting shape file: {}\n", e.what());
         return EXIT_FAILURE;
     }
 }

@@ -224,7 +224,8 @@ void ConverterCMesh::convert(UsdShadeMaterial& target, const CMaterial& source)
 
 UsdShadeShader ConverterCMesh::convert(SdfPath& root, ITexture* source, uint32 index)
 {
-    nldebug("Texture at index %i is %s", index, source->getClassName().c_str());
+    fmt::print(fg(fmt::terminal_color::blue),"Texture at index {} is {}\n", index, source->getClassName());
+
     if (const auto specific = dynamic_cast<CTextureFile*>(source))
     {
         return convert(root, *specific, index);
