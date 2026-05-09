@@ -10,17 +10,17 @@ target_sources(${PROJECT_NAME}-convert
         PUBLIC
         FILE_SET CXX_MODULES
         FILES
-        nel-tools/usd/convert/convert.mpp
-        nel-tools/usd/convert/mesh/Converter.mpp
+        src/convert.mpp
+        src/mesh/Converter.mpp
         PRIVATE
         FILE_SET private_modules
         TYPE CXX_MODULES
         FILES
-        nel-tools/usd/convert/mesh/ConverterCMesh.mpp
+        src/mesh/ConverterCMesh.mpp
         PRIVATE
-        nel-tools/usd/convert/convert.cpp
-        nel-tools/usd/convert/mesh/Converter.cpp
-        nel-tools/usd/convert/mesh/ConverterCMesh.cpp
+        src/convert.cpp
+        src/mesh/Converter.cpp
+        src/mesh/ConverterCMesh.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}-convert

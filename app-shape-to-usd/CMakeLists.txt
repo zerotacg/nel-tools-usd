@@ -7,9 +7,9 @@ target_sources(${PROJECT_NAME}-shape-to-usd
         PRIVATE
         FILE_SET CXX_MODULES
         FILES
-        nel-tools/usd/shape-to-usd/Settings.mpp
+        src/Settings.mpp
         PRIVATE
-        nel-tools/usd/shape-to-usd/main.cpp
+        src/main.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}-shape-to-usd
