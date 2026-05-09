@@ -4,28 +4,31 @@ module;
 
 export module nel_tools.usd.convert.mesh.Converter;
 
-export class Converter
+export namespace nel_tools::usd::convert::mesh
 {
-public:
-    virtual ~Converter() = default;
-
-    const struct Settings
+    class Converter
     {
-        const bool convertToLowerCase;
-        const bool replaceExtension;
-        const std::string extension;
-        const std::string prefix;
-    }& settings;
+    public:
+        virtual ~Converter() = default;
 
-    virtual void run() = 0;
+        const struct Settings
+        {
+            const bool convertToLowerCase;
+            const bool replaceExtension;
+            const std::string extension;
+            const std::string prefix;
+        }& settings;
 
-    static void convert(const Settings& settings, pxr::UsdStageRefPtr& target, NL3D::IShape* shape);
+        virtual void run() = 0;
 
-protected:
-    explicit Converter(const Settings& settings, pxr::UsdStageRefPtr& target)
-        : settings(settings), stage(target)
-    {
-    }
+        static void convert(const Settings& settings, pxr::UsdStageRefPtr& target, NL3D::IShape* shape);
 
-    pxr::UsdStageRefPtr& stage;
-};
+    protected:
+        explicit Converter(const Settings& settings, pxr::UsdStageRefPtr& target)
+            : settings(settings), stage(target)
+        {
+        }
+
+        pxr::UsdStageRefPtr& stage;
+    };
+}

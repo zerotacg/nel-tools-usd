@@ -9,26 +9,29 @@ module;
 module nel_tools.usd.convert.mesh.Converter;
 import nel_tools.usd.convert.mesh.ConverterCMesh;
 
-using namespace NL3D;
-using namespace std;
-using namespace pxr;
-
-void Converter::convert(const Settings& settings, UsdStageRefPtr& target, IShape* shape)
+namespace nel_tools::usd::convert::mesh
 {
-    if (dynamic_cast<CMesh*>(shape))
+    using namespace NL3D;
+    using namespace std;
+    using namespace pxr;
+
+    void Converter::convert(const Settings& settings, UsdStageRefPtr& target, IShape* shape)
     {
-        std::make_unique<ConverterCMesh>(settings, target, dynamic_cast<CMesh*>(shape))->run();
-    }
-    if (dynamic_cast<CMeshMRM*>(shape))
-    {
-    }
-    if (dynamic_cast<CMeshMRMSkinned*>(shape))
-    {
-    }
-    if (dynamic_cast<CMeshMultiLod*>(shape))
-    {
-    }
-    if (dynamic_cast<CWaterShape*>(shape))
-    {
+        if (dynamic_cast<CMesh*>(shape))
+        {
+            std::make_unique<ConverterCMesh>(settings, target, dynamic_cast<CMesh*>(shape))->run();
+        }
+        if (dynamic_cast<CMeshMRM*>(shape))
+        {
+        }
+        if (dynamic_cast<CMeshMRMSkinned*>(shape))
+        {
+        }
+        if (dynamic_cast<CMeshMultiLod*>(shape))
+        {
+        }
+        if (dynamic_cast<CWaterShape*>(shape))
+        {
+        }
     }
 }
