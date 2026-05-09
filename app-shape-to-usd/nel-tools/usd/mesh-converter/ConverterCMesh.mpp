@@ -24,9 +24,9 @@ public:
     {
     }
 
+protected:
     void convert() override;
 
-protected:
     pxr::VtArray<int> convertIndices() const;
     pxr::VtArray<int> convertFaceCount(pxr::VtArray<int>& source) const;
     pxr::VtArray<int> convertFaceIndices(const NL3D::CIndexBuffer& source, int offset = 0) const;
