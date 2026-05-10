@@ -53,9 +53,12 @@ namespace nel_tools::usd::convert::mesh
         outMesh.CreateSubdivisionSchemeAttr().Set(UsdGeomTokens->none);
         outMesh.CreatePointsAttr().Set(vertices(mesh->getVertexBuffer()));
         outMesh.CreateNormalsAttr().Set(normals(mesh->getVertexBuffer()));
-        UsdGeomPrimvarsAPI(outMesh)
-            .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->varying)
-            .Set(uvs(mesh->getVertexBuffer()));
+        if (mesh->getVertexBuffer().getVertexFormat() & CVertexBuffer::TexCoord0Flag)
+        {
+            UsdGeomPrimvarsAPI(outMesh)
+                .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->varying)
+                .Set(uvs(mesh->getVertexBuffer()));
+        }
 
 
         outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();

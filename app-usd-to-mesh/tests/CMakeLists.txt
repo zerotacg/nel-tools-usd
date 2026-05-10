@@ -1,6 +1,4 @@
-find_package(LibXml2 REQUIRED)
-
-add_test(NAME "usd-to-mesh.can-start" COMMAND ${PROJECT_NAME}::usd-to-mesh --help)
+add_test(NAME "usd-to-mesh.help" COMMAND ${PROJECT_NAME}::usd-to-mesh --help)
 
 add_test(NAME "usd-to-mesh.write_cube"
         COMMAND ${PROJECT_NAME}::usd-to-mesh
