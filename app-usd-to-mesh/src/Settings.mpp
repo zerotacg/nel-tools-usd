@@ -5,22 +5,25 @@ module;
 #include <nel/misc/cmd_args.h>
 
 export module nel_tools.usd.usd_to_mesh.Settings;
-import nel_tools.usd.convert.mesh.Converter;
+import nel_tools.usd.usd_to_mesh.convert.Converter;
 
 export namespace nel_tools::usd::usd_to_mesh
 {
-    using namespace convert::mesh;
+    using namespace convert;
 
     struct Settings
     {
         const std::string input;
         const std::string output;
 
+        const Converter::Settings unused;
+
         static Settings from(const NLMISC::CCmdArgs& args)
         {
             return {
                 .input = args.getAdditionalArg("input").front(),
-                .output = args.getAdditionalArg("output").front()
+                .output = args.getAdditionalArg("output").front(),
+                .unused = {}
             };
         }
     };

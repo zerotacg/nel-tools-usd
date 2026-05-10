@@ -1,0 +1,28 @@
+module;
+#include <memory>
+
+#include <nel/3d/shape.h>
+#include <pxr/usd/usd/stage.h>
+
+export module nel_tools.usd.usd_to_mesh.convert.Converter;
+
+export namespace nel_tools::usd::usd_to_mesh::convert
+{
+    class Converter
+    {
+    public:
+        const struct Settings
+        {
+        }& settings;
+
+        explicit Converter(const Settings& settings, const pxr::UsdStageRefPtr& source)
+            : settings(settings), stage(source)
+        {
+        }
+
+        auto convert() -> std::unique_ptr<NL3D::IShape>;
+
+    private:
+        const pxr::UsdStageRefPtr& stage;
+    };
+}

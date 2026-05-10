@@ -4,11 +4,11 @@
 #include <nel/3d/shape.h>
 #include <nel/misc/app_context.h>
 #include <nel/misc/cmd_args.h>
-#include <nel/misc/common.h>
 #include <nel/misc/file.h>
+#include <pxr/usd/usd/stage.h>
 
 
-import nel_tools.usd.convert.mesh.Converter;
+import nel_tools.usd.usd_to_mesh.convert;
 import nel_tools.usd.usd_to_mesh.Settings;
 
 using namespace nel_tools::usd::usd_to_mesh;
@@ -22,8 +22,8 @@ int main(int argc, char** argv)
         NLMISC::CApplicationContext context;
         NLMISC::CCmdArgs args;
 
-        args.addAdditionalArg("input", "Input shape file");
-        args.addAdditionalArg("output", "Output usd file");
+        args.addAdditionalArg("input", "Input usd file");
+        args.addAdditionalArg("output", "Output shape file");
 
         if (!args.parse(argc, argv))
         {
@@ -36,13 +36,26 @@ int main(int argc, char** argv)
 
         auto settings = Settings::from(args);
 
+        pxr::UsdStageRefPtr source = pxr::UsdStage::Open(settings.input);
+        if (!source)
+        {
+            fmt::print(fg(fmt::terminal_color::red), "Failed to open stage at {}\n", settings.input);
+            return EXIT_FAILURE;
+        }
+
         NL3D::registerSerial3d();
         NL3D::CScene::registerBasics();
 
-        NL3D::IShape* shape = nullptr; // do conversion
-        NL3D::CShapeStream shapeStream(shape);
+        auto target = convert::convert(settings, source);
+        if (!target)
+        {
+            fmt::print(fg(fmt::terminal_color::red), "Failed to convert stage at {}\n", settings.input);
+            return EXIT_FAILURE;
+        }
+        NL3D::CShapeStream shapeStream(target.get());
         NLMISC::COFile file(settings.output);
         shapeStream.serial(file);
+        file.close();
 
         fmt::print(fg(fmt::terminal_color::green), "Successfully created shape file at {}\n", settings.output);
 
