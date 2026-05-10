@@ -48,7 +48,7 @@ jobs:
 
       - uses: lukka/get-cmake@latest
 
-      - uses: lukka/run-vcpkg@v11.5
+      - uses: lukka/run-vcpkg@v11.6
 
       - uses: actions/cache/restore@v5
         id: vcpkg-cache
