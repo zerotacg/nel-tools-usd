@@ -7,7 +7,7 @@ target_sources(${PROJECT_NAME}-format
         PUBLIC
         FILE_SET CXX_MODULES
         FILES
-        nel-tools/usd/format.mpp
+        src/format.mpp
 )
 
 target_link_libraries(${PROJECT_NAME}-format

@@ -1,0 +1,34 @@
+module;
+#include <string>
+#include <vector>
+
+#include <nel/misc/cmd_args.h>
+
+export module nel_tools.usd.arguments;
+
+export namespace nel_tools::usd::arguments
+{
+    inline auto getFirstAdditionalArg(const NLMISC::CCmdArgs& args, const std::string& name,
+                                const std::string& defaultValue = "") -> std::string
+    {
+        auto values = args.getAdditionalArg(name);
+        if (values.empty())
+        {
+            return defaultValue;
+        }
+
+        return values.front();
+    }
+
+    inline auto getFirstLongArg(const NLMISC::CCmdArgs& args, const std::string& name,
+                                const std::string& defaultValue = "") -> std::string
+    {
+        auto values = args.getLongArg(name);
+        if (values.empty())
+        {
+            return defaultValue;
+        }
+
+        return values.front();
+    }
+}

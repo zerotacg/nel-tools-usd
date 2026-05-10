@@ -7,7 +7,7 @@ target_sources(${PROJECT_NAME}-arguments
         PUBLIC
         FILE_SET CXX_MODULES
         FILES
-        nel-tools/usd/arguments.mpp
+        src/arguments.mpp
 )
 
 target_link_libraries(${PROJECT_NAME}-arguments

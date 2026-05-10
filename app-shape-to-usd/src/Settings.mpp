@@ -5,6 +5,7 @@ module;
 #include <nel/misc/cmd_args.h>
 
 export module nel_tools.usd.shape_to_usd.Settings;
+import nel_tools.usd.arguments;
 import nel_tools.usd.convert.mesh.Converter;
 
 export namespace nel_tools::usd::shape_to_usd
@@ -26,8 +27,8 @@ export namespace nel_tools::usd::shape_to_usd
                 .texture = {
                     .convertToLowerCase = args.haveLongArg("texture-file-to-lower-case"),
                     .replaceExtension = args.haveLongArg("texture-file-replace-extension"),
-                    .extension = firstOrEmpty(args.getLongArg("texture-file-replace-extension")),
-                    .prefix = firstOrEmpty(args.getLongArg("texture-file-prefix"))
+                    .extension = arguments::getFirstLongArg(args, "texture-file-replace-extension"),
+                    .prefix = arguments::getFirstLongArg(args, "texture-file-prefix")
                 }
             };
         }
