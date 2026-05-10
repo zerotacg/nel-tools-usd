@@ -1,4 +1,5 @@
 module;
+#include <fmt/color.h>
 #include <memory>
 #include <ranges>
 #include <vector>
@@ -35,6 +36,15 @@ namespace nel_tools::usd::usd_to_mesh::convert
         return UsdGeomMesh(prim);
     }
 
+    bool isTriangular(const auto &mesh)
+    {
+        VtArray<int> faceCounts;
+
+        mesh.GetFaceVertexCountsAttr().Get(&faceCounts);
+
+        return ranges::all_of(faceCounts, [](int count) { return count == 3; });
+    }
+
     CMaterial defaultMaterial()
     {
         CMaterial material;
@@ -57,6 +67,13 @@ namespace nel_tools::usd::usd_to_mesh::convert
         UsdGeomMesh mesh = findMesh(stage);
         if (!mesh)
         {
+            fmt::print(fg(fmt::terminal_color::red), "Failed to find mesh prim\n");
+            return nullptr;
+        }
+
+        if (!isTriangular(mesh))
+        {
+            fmt::print(fg(fmt::terminal_color::red), "Mesh is not triangular, all face counts need to be 3\n");
             return nullptr;
         }
 
