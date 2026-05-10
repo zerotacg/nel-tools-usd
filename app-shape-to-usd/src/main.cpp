@@ -1,7 +1,4 @@
 #include <fmt/color.h>
-#include <pxr/usd/ar/resolver.h>
-#include <pxr/usd/ar/defaultResolver.h>
-#include <pxr/usd/usd/stage.h>
 #include <nel/3d/register_3d.h>
 #include <nel/3d/scene.h>
 #include <nel/3d/shape.h>
@@ -9,6 +6,9 @@
 #include <nel/misc/cmd_args.h>
 #include <nel/misc/common.h>
 #include <nel/misc/file.h>
+#include <pxr/usd/ar/resolver.h>
+#include <pxr/usd/ar/defaultResolver.h>
+#include <pxr/usd/usd/stage.h>
 
 
 import nel_tools.usd.convert.mesh.Converter;
