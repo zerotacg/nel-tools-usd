@@ -27,8 +27,10 @@ void writeXml(const std::string& target, const std::unique_ptr<NL3D::IShape>& so
     NLMISC::COFile file(target);
     NLMISC::COXml xml;
     xml.init(&file);
-    xml.flush();
+    xml.xmlPush("SHAPE");
     shapeStream.serial(xml);
+    xml.xmlPop();
+    xml.flush();
 }
 
 int main(int argc, char** argv)

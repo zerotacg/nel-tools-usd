@@ -3,3 +3,4 @@ build/
 cmake-build-*
 CMakeUserPresets.json
 vcpkg_installed
+*.received.*
