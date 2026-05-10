@@ -1,6 +1,8 @@
 module;
 #include <memory>
 #include <ranges>
+#include <vector>
+#include <nel/3d/material.h>
 #include <nel/3d/mesh_base.h>
 #include <nel/3d/mesh.h>
 #include <nel/3d/vertex_buffer.h>
@@ -22,7 +24,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
     using namespace std;
     using namespace pxr;
 
-    UsdGeomMesh findMesh(auto stage)
+    UsdGeomMesh findMesh(const auto &stage)
     {
         auto prim = stage->GetDefaultPrim();
         auto isMesh = [](const UsdPrim& p) { return p.IsA<UsdGeomMesh>(); };
@@ -31,6 +33,23 @@ namespace nel_tools::usd::usd_to_mesh::convert
             return UsdGeomMesh(child);
         }
         return UsdGeomMesh(prim);
+    }
+
+    CMaterial defaultMaterial()
+    {
+        CMaterial material;
+        material.initLighted();
+        material.setLighting(true, CRGBA::Black, CRGBA::White, CRGBA::White, CRGBA::Black);
+
+        return material;
+    }
+
+    vector<CMaterial> buildMaterials(const auto &stage)
+    {
+        vector<CMaterial> materials;
+        materials.push_back(defaultMaterial());
+
+        return materials;
     }
 
     auto Converter::convert() -> unique_ptr<IShape>
@@ -45,6 +64,8 @@ namespace nel_tools::usd::usd_to_mesh::convert
         CMeshBase::CMeshBaseBuild buildBaseMesh;
         // todo implement mesh base build
         // @see CExportNel::buildBaseMeshInterface (buildBaseMesh, maxBaseBuild, node, time, nodeMatrix);
+        // @see CExportNel::buildMaterials
+        buildBaseMesh.Materials = buildMaterials(stage);
 
         // todo implement mesh build
         CMesh::CMeshBuild buildMesh;
