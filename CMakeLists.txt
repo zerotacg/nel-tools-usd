@@ -11,7 +11,7 @@ set(INSTALL_GTEST OFF)
 
 find_package(fmt REQUIRED)
 find_package(pxr REQUIRED)
-find_package(NeL REQUIRED COMPONENTS misc)
+find_package(NeL REQUIRED COMPONENTS 3d misc)
 find_package(GTest REQUIRED)
 
 if(NOT TARGET pxr::usd)
