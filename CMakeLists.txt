@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1..4.2)
+cmake_minimum_required(VERSION 4.1..4.3)
 
 project(nel-tools-usd VERSION 1.0.0 LANGUAGES CXX)
 

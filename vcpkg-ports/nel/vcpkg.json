@@ -6,6 +6,9 @@
   "homepage": "https://github.com/ryzom/ryzomcore",
   "license": "AGPL-3.0-only",
   "dependencies": [
+    "giflib",
+    "libpng",
+    "libjpeg-turbo",
     {
       "name": "libxml2",
       "default-features": false,
@@ -13,6 +16,7 @@
         "zlib"
       ]
     },
+    "openssl",
     "zlib",
     {
       "name": "vcpkg-cmake",
@@ -30,12 +34,47 @@
       "description": [],
       "dependencies": [
         {
+          "name": "directxsdk",
+          "platform": "windows"
+        },
+        {
           "name": "freetype",
           "default-features": false,
           "features": [
             "error-strings"
           ]
-        }
+        },
+        "opengl"
+      ]
+    },
+    "gui": {
+      "description": [],
+      "dependencies": [
+        "curl",
+        "lua",
+        "luabind"
+      ]
+    },
+    "sound": {
+      "description": [],
+      "dependencies": [
+        "libogg",
+        "libvorbis",
+        "openal-soft"
+      ]
+    },
+    "web": {
+      "description": [],
+      "dependencies": [
+        "curl",
+        "lua",
+        "luabind"
+      ]
+    },
+    "msquic": {
+      "description": [],
+      "dependencies": [
+        "msquic"
       ]
     }
   }
