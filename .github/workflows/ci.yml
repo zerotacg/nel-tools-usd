@@ -30,7 +30,7 @@ jobs:
           echo VERSION=$VERSION
           echo "build-version=${VERSION}" >> "$GITHUB_OUTPUT"
 
-  build-test-package:
+  build:
     needs: [ strings ]
     runs-on: ubuntu-latest
     steps:
@@ -79,5 +79,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: nel-tools-usd-${{ needs.strings.outputs.build-version }}
-          path: build/ci/learning-vcpkg-*
+          path: build/ci/nel-tools-usd-*
           if-no-files-found: error
