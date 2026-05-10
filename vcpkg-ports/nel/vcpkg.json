@@ -6,6 +6,7 @@
   "homepage": "https://github.com/ryzom/ryzomcore",
   "license": "AGPL-3.0-only",
   "dependencies": [
+    "curl",
     "giflib",
     "libpng",
     "libjpeg-turbo",
@@ -50,7 +51,6 @@
     "gui": {
       "description": [],
       "dependencies": [
-        "curl",
         "lua",
         "luabind"
       ]

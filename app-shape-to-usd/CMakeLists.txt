@@ -30,6 +30,7 @@ set(targets_export_name "${PROJECT_NAME}-targets-shape-to-usd")
 
 install(
         TARGETS ${PROJECT_NAME}-shape-to-usd
+        RUNTIME_DEPENDENCIES
         COMPONENT "${PROJECT_NAME}"
 )
 

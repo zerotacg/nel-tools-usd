@@ -33,6 +33,8 @@ RUN mkdir --parents "$CMAKE_INSTALL_DIR" \
 ARG VCPKG_ROOT="/home/$USERNAME/vcpkg"
 ARG PATH="$PATH:$VCPKG_ROOT:/usr/local/bin"
 
+USER $USERNAME
+
 RUN git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT \
     && $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics \
     && vcpkg --version
@@ -41,5 +43,9 @@ COPY ./ /app
 
 WORKDIR /app
 
-RUN find /opt
 RUN cmake --workflow ci
+
+ARG APP_HOME=/app
+
+ENV LD_LIBRARY_PATH=$APP_HOME/lib:$LD_LIBRARY_PATH
+ENV PATH=$APP_HOME/bin:$PATH

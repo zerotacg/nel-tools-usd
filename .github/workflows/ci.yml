@@ -41,8 +41,10 @@ jobs:
             autoconf \
             autoconf-archive \
             automake \
+            libltdl-dev \
             libtool \
-            libltdl-dev
+            linux-libc-dev \
+            pkg-config
 
       - uses: actions/checkout@v6
 
