@@ -74,6 +74,9 @@
       "execution": {
         "noTestsAction": "error",
         "stopOnFailure": false
+      },
+      "environment": {
+        "GTEST_OUTPUT": "xml:${sourceDir}/build/reports/"
       }
     }
   ],
