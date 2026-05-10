@@ -5,6 +5,7 @@
 #include <nel/misc/app_context.h>
 #include <nel/misc/cmd_args.h>
 #include <nel/misc/file.h>
+#include <nel/misc/o_xml.h>
 #include <pxr/usd/usd/stage.h>
 
 
@@ -12,6 +13,23 @@ import nel_tools.usd.usd_to_mesh.convert;
 import nel_tools.usd.usd_to_mesh.Settings;
 
 using namespace nel_tools::usd::usd_to_mesh;
+
+void writeFile(const std::string& target, const std::unique_ptr<NL3D::IShape>& source)
+{
+    NL3D::CShapeStream shapeStream(source.get());
+    NLMISC::COFile file(target);
+    shapeStream.serial(file);
+}
+
+void writeXml(const std::string& target, const std::unique_ptr<NL3D::IShape>& source)
+{
+    NL3D::CShapeStream shapeStream(source.get());
+    NLMISC::COFile file(target);
+    NLMISC::COXml xml;
+    xml.init(&file);
+    xml.flush();
+    shapeStream.serial(xml);
+}
 
 int main(int argc, char** argv)
 {
@@ -53,10 +71,13 @@ int main(int argc, char** argv)
             fmt::print(fg(fmt::terminal_color::red), "Failed to convert stage at {}\n", settings.input);
             return EXIT_FAILURE;
         }
-        NL3D::CShapeStream shapeStream(target.get());
-        NLMISC::COFile file(settings.output);
-        shapeStream.serial(file);
-        file.close();
+
+        writeFile(settings.output, target);
+
+        if (settings.outputXml)
+        {
+            writeXml(*settings.outputXml, target);
+        }
 
         fmt::print(fg(fmt::terminal_color::green), "Successfully created shape file at {}\n", settings.output);
 

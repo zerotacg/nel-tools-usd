@@ -16,7 +16,7 @@ export namespace nel_tools::usd::usd_to_mesh
     {
         const std::string input;
         const std::string output;
-        const std::optional<std::string> xml_output;
+        const std::optional<std::string> outputXml;
 
         const Converter::Settings unused;
 
@@ -25,7 +25,7 @@ export namespace nel_tools::usd::usd_to_mesh
             return {
                 .input = arguments::getFirstAdditionalArg(args, "input"),
                 .output = arguments::getFirstAdditionalArg(args,"output"),
-                .xml_output = arguments::optional(args, "output-xml"),
+                .outputXml = arguments::optional(args, "output-xml"),
                 .unused = {}
             };
         }
