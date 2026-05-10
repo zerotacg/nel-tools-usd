@@ -1,5 +1,6 @@
 module;
 #include <memory>
+#include <ranges>
 #include <nel/3d/mesh_base.h>
 #include <nel/3d/mesh.h>
 #include <nel/3d/vertex_buffer.h>
@@ -23,13 +24,10 @@ namespace nel_tools::usd::usd_to_mesh::convert
     UsdGeomMesh findMesh(auto stage)
     {
         auto prim = stage->GetDefaultPrim();
-        for ( auto child : stage->Traverse())
+        auto isMesh = [](const UsdPrim &p) { return p.IsA<UsdGeomMesh>(); };
+        for (auto child : stage->Traverse() | std::views::filter(isMesh))
         {
-            if (auto found = UsdGeokmMesh(child))
-            {
-                return found;
-            }
-
+            return UsdGeomMesh(child);
         }
         return UsdGeomMesh(prim);
     }
