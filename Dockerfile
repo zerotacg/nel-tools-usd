@@ -33,19 +33,30 @@ RUN mkdir --parents "$CMAKE_INSTALL_DIR" \
 ARG VCPKG_ROOT="/home/$USERNAME/vcpkg"
 ARG PATH="$PATH:$VCPKG_ROOT:/usr/local/bin"
 
-USER $USERNAME
-
 RUN git clone https://github.com/microsoft/vcpkg.git $VCPKG_ROOT \
     && $VCPKG_ROOT/bootstrap-vcpkg.sh -disableMetrics \
     && vcpkg --version
 
-COPY ./ /app
 
-WORKDIR /app
+WORKDIR /build
+COPY --parents ./vcpkg.json ./vcpkg-configuration.json ./vcpkg-ports/ /build/
+RUN vcpkg install
 
-RUN cmake --workflow ci
+COPY ./ /build
+RUN cmake --workflow docker
+
+
+FROM ubuntu:26.04@sha256:f3d28607ddd78734bb7f71f117f3c6706c666b8b76cbff7c9ff6e5718d46ff64
 
 ARG APP_HOME=/app
+ARG USERNAME=ubuntu
 
-ENV LD_LIBRARY_PATH=$APP_HOME/lib:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=$APP_HOME/lib
 ENV PATH=$APP_HOME/bin:$PATH
+ENV APP_HOME=$APP_HOME
+
+COPY --from=build /build/build/install/ci /app
+
+USER $USERNAME
+
+ENTRYPOINT ["/app/bin/nel-tools-usd-usd-to-mesh"]

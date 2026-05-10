@@ -1,0 +1,4 @@
+services:
+  app:
+    image: nel-tools-usd/app
+    build: .

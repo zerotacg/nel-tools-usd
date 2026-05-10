@@ -39,7 +39,6 @@
         "ninja",
         "default"
       ],
-      "binaryDir": "build/ci",
       "cacheVariables": {
         "BUILD_SHARED_LIBS": false
       }
@@ -57,6 +56,15 @@
     {
       "name": "ci/install",
       "inherits": "ci",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "docker",
+      "configurePreset": "ci",
+      "configuration": "Release",
+      "cleanFirst": true,
       "targets": [
         "install"
       ]
@@ -112,6 +120,19 @@
         {
           "type": "build",
           "name": "ci/install"
+        }
+      ]
+    },
+    {
+      "name": "docker",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci"
+        },
+        {
+          "type": "build",
+          "name": "docker"
         }
       ]
     }
