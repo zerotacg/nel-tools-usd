@@ -24,6 +24,7 @@ int main(int argc, char** argv)
 
         args.addAdditionalArg("input", "Input usd file");
         args.addAdditionalArg("output", "Output shape file");
+        args.addArg("", "output-xml", "path", "Output shape file in xml format to <path>");
 
         if (!args.parse(argc, argv))
         {

@@ -1,4 +1,5 @@
 module;
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -27,6 +28,18 @@ export namespace nel_tools::usd::arguments
         if (values.empty())
         {
             return defaultValue;
+        }
+
+        return values.front();
+    }
+
+    inline auto optional(const NLMISC::CCmdArgs& args, const std::string& name) -> std::optional<std::string>
+    {
+        auto values = args.getLongArg(name);
+
+        if (values.empty())
+        {
+            return std::nullopt;
         }
 
         return values.front();
