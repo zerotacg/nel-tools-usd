@@ -4,6 +4,7 @@ module;
 #include <nel/3d/mesh_base.h>
 #include <nel/3d/mesh.h>
 #include <nel/3d/vertex_buffer.h>
+#include <nel/misc/vector.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/primRange.h>
@@ -24,7 +25,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
     UsdGeomMesh findMesh(auto stage)
     {
         auto prim = stage->GetDefaultPrim();
-        auto isMesh = [](const UsdPrim &p) { return p.IsA<UsdGeomMesh>(); };
+        auto isMesh = [](const UsdPrim& p) { return p.IsA<UsdGeomMesh>(); };
         for (auto child : stage->Traverse() | std::views::filter(isMesh))
         {
             return UsdGeomMesh(child);
@@ -49,6 +50,26 @@ namespace nel_tools::usd::usd_to_mesh::convert
         CMesh::CMeshBuild buildMesh;
         buildMesh.VertexFlags = CVertexBuffer::PositionFlag | CVertexBuffer::NormalFlag;
         //@see CExportNel::buildMeshInterface (*tri, buildMesh, buildBaseMesh, maxBaseBuild, node, time, nodeMap);
+        VtArray<GfVec3f> vertices;
+        mesh.GetPointsAttr().Get(&vertices);
+        buildMesh.Vertices.resize(vertices.size());
+        for (size_t i = 0; i < vertices.size(); ++i)
+        {
+            auto vertex = vertices[i];
+            buildMesh.Vertices[i] = CVector(vertex[0], vertex[1], vertex[2]);
+        }
+
+        VtArray<int> faceIndices;
+        mesh.GetFaceVertexIndicesAttr().Get(&faceIndices);
+        auto nNumFaces = mesh.GetFaceCount();
+        buildMesh.Faces.resize(nNumFaces);
+        for (auto face = 0; face < nNumFaces; ++face)
+        {
+            for (auto corner = 0; corner < 3; ++corner)
+            {
+                buildMesh.Faces[face].Corner[corner].Vertex = faceIndices[face * 3 + corner];
+            }
+        }
 
         target->build(buildBaseMesh, buildMesh);
         //target->optimizeMaterialUsage();
