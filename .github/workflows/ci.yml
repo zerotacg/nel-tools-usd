@@ -67,7 +67,7 @@ jobs:
         if: ( ! cancelled() )
         with:
           path: ${{ github.workspace }}/.vcpkg
-          key: ${{ steps.cache-vcpkg.outputs.cache-primary-key }}
+          key: ${{ steps.vcpkg-cache.outputs.cache-primary-key }}
 
       - name: Build
         run: cmake --build build/ci --config Debug
