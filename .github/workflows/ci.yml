@@ -76,7 +76,7 @@ jobs:
       - name: Package
         run: cpack --preset ci -R "${{ needs.strings.outputs.build-version }}"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: nel-tools-usd-${{ needs.strings.outputs.build-version }}
           path: build/ci/nel-tools-usd-*
