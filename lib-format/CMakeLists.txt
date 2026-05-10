@@ -13,6 +13,7 @@ target_sources(${PROJECT_NAME}-format
 target_link_libraries(${PROJECT_NAME}-format
         PUBLIC
         fmt::fmt
+        NeL::3d
 )
 
 target_compile_definitions(${PROJECT_NAME}-format PUBLIC $<$<CONFIG:Debug>:NL_DEBUG> $<$<CONFIG:Release>:NL_RELEASE>)
