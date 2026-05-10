@@ -78,7 +78,8 @@
       "configuration": "Debug",
       "output": {
         "outputOnFailure": true,
-        "subprojectSummary": true
+        "subprojectSummary": true,
+        "outputJUnitFile": "${sourceDir}/build/reports/junit.xml"
       },
       "execution": {
         "noTestsAction": "error",
