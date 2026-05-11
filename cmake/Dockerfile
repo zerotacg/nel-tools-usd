@@ -12,5 +12,6 @@ ADD --unpack=true nel-tools-usd-*-Linux.tar.gz /tmp
 RUN mv /tmp/nel-tools-usd-*-Linux /app
 
 USER $USERNAME
+WORKDIR $APP_HOME
 
 ENTRYPOINT ["/app/bin/nel-tools-usd-usd-to-mesh"]
