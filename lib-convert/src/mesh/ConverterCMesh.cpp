@@ -53,6 +53,8 @@ namespace nel_tools::usd::convert::mesh
         outMesh.CreateSubdivisionSchemeAttr().Set(UsdGeomTokens->none);
         outMesh.CreatePointsAttr().Set(vertices(mesh->getVertexBuffer()));
         outMesh.CreateNormalsAttr().Set(normals(mesh->getVertexBuffer()));
+        outMesh.SetNormalsInterpolation(UsdGeomTokens->vertex);
+
         if (mesh->getVertexBuffer().getVertexFormat() & CVertexBuffer::TexCoord0Flag)
         {
             UsdGeomPrimvarsAPI(outMesh)
