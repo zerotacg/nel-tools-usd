@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       build-version: ${{ steps.strings.outputs.build-version }}
+      docker-group: ${{ steps.strings.outputs.docker-group }}
     steps:
       - name: Set reusable strings
         id: strings
@@ -27,8 +28,10 @@ jobs:
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
           [ "$VERSION" == "${{ github.event.repository.default_branch }}" ] && VERSION=latest
           VERSION="$VERSION+sha.${COMMIT_HASH:0:8}"
-          echo VERSION=$VERSION
+          DOCKER_GROUP=$(echo "ghcr.io/${{ github.repository_owner }}" | tr '[A-Z]' '[a-z]')
           echo "build-version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "docker-group=${DOCKER_GROUP}" >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
 
   build:
     needs: [ strings ]
