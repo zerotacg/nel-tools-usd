@@ -134,16 +134,22 @@ namespace nel_tools::usd::usd_to_mesh::convert
             }
             buildMesh.Vertices = vertices;
         }
-        auto uvs = uv(UsdGeomPrimvarsAPI(mesh).GetPrimvar(Tokens.st));
-        auto uvIndices = indices(UsdGeomPrimvarsAPI(mesh).GetPrimvar(Tokens.stIndices));
+        auto primVarSt = UsdGeomPrimvarsAPI(mesh).GetPrimvar(Tokens.st);
+        auto uvs = uv(primVarSt);
+        VtArray<int> uvIndices;
+        primVarSt.GetIndices(&uvIndices);
         if (!uvs.empty())
         {
-            //buildMesh.VertexFlags |= CVertexBuffer::TexCoord0Flag;
+            buildMesh.VertexFlags |= CVertexBuffer::TexCoord0Flag;
             for (auto face = 0; face < nNumFaces; ++face)
             {
                 for (auto corner = 0; corner < 3; ++corner)
                 {
-                    //buildMesh.Faces[face].Corner[corner].UV = uvs[(face * 3 + corner)];
+                    auto uvIndex = uvIndices[face * 3 + corner];
+                    auto uv = uvs[uvIndex];
+                    buildMesh.Faces[face].Corner[corner].Uvws[0].U = uv.U;
+                    buildMesh.Faces[face].Corner[corner].Uvws[0].V = uv.V;
+                    buildMesh.Faces[face].Corner[corner].Uvws[0].W = 0;
                 }
             }
         }
