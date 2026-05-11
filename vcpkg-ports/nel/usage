@@ -1,5 +1,5 @@
 nel provides CMake targets:
 
-find_package(NeL REQUIRED misc)
+find_package(NeL REQUIRED COMPONENTS misc)
 
 target_link_libraries(main PRIVATE NeL::misc)
