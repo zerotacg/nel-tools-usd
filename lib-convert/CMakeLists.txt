@@ -36,8 +36,6 @@ target_link_libraries(${PROJECT_NAME}-convert
         ${PROJECT_NAME}::format
 )
 
-target_compile_definitions(${PROJECT_NAME}-convert PUBLIC $<$<CONFIG:Debug>:NL_DEBUG> $<$<CONFIG:Release>:NL_RELEASE>)
-
 
 set_target_properties(${PROJECT_NAME}-convert
         PROPERTIES

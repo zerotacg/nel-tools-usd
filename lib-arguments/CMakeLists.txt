@@ -15,8 +15,6 @@ target_link_libraries(${PROJECT_NAME}-arguments
         NeL::misc
 )
 
-target_compile_definitions(${PROJECT_NAME}-arguments PUBLIC $<$<CONFIG:Debug>:NL_DEBUG> $<$<CONFIG:Release>:NL_RELEASE>)
-
 
 set_target_properties(${PROJECT_NAME}-arguments
         PROPERTIES
