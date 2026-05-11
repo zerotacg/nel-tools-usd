@@ -21,17 +21,24 @@ namespace nel_tools::usd::usd_to_mesh::convert
         return converter.run();
     }
 
-    auto convertVector(const pxr::UsdAttribute& source) -> std::vector<NLMISC::CVector>
+    auto convert(const pxr::VtArray<pxr::GfVec3f>& source) -> std::vector<NLMISC::CVector>
     {
         std::vector<NLMISC::CVector> target;
-        pxr::VtArray<pxr::GfVec3f> temp;
-        source.Get(&temp);
-        target.reserve(temp.size());
-        for (auto element : temp)
+        target.reserve(source.size());
+        for (auto element : source)
         {
             target.emplace_back(element[0], element[1], element[2]);
         }
 
         return target;
+    }
+
+    auto convertVector(const pxr::UsdAttribute& source) -> std::vector<NLMISC::CVector>
+    {
+        std::vector<NLMISC::CVector> target;
+        pxr::VtArray<pxr::GfVec3f> temp;
+        source.Get(&temp);
+
+        return convert(temp);
     }
 }

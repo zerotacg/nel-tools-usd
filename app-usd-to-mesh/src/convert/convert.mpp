@@ -13,5 +13,8 @@ export namespace nel_tools::usd::usd_to_mesh::convert
 {
     auto convert(const Settings& settings, const pxr::UsdStageRefPtr& source) -> std::unique_ptr<NL3D::IShape>;
 
+    auto convert(const pxr::VtArray<pxr::GfVec3f>& source) -> std::vector<NLMISC::CVector>;
+
     auto convertVector(const pxr::UsdAttribute& source) -> std::vector<NLMISC::CVector>;
+
 }

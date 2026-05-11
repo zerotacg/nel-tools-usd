@@ -93,6 +93,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
 
         VtArray<int> faceIndices;
         mesh.GetFaceVertexIndicesAttr().Get(&faceIndices);
+        auto normals = convertVector(mesh.GetNormalsAttr());
         auto nNumFaces = mesh.GetFaceCount();
         buildMesh.Faces.resize(nNumFaces);
         for (auto face = 0; face < nNumFaces; ++face)
@@ -100,6 +101,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
             for (auto corner = 0; corner < 3; ++corner)
             {
                 buildMesh.Faces[face].Corner[corner].Vertex = faceIndices[face * 3 + corner];
+                //buildMesh.Faces[face].Corner[corner].Normal = normals[face * 3 + corner];
             }
         }
 
