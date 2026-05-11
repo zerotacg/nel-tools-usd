@@ -10,6 +10,7 @@ module;
 #include <pxr/base/vt/array.h>
 #include <pxr/usd/usd/attribute.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/primvar.h>
 
 module nel_tools.usd.usd_to_mesh.convert;
 import nel_tools.usd.usd_to_mesh.convert.Converter;
@@ -54,11 +55,11 @@ namespace nel_tools::usd::usd_to_mesh::convert
         return temp;
     }
 
-    auto uv(const pxr::UsdAttribute& source) -> std::vector<NLMISC::CUV>
+    auto uv(const pxr::UsdGeomPrimvar& source) -> std::vector<NLMISC::CUV>
     {
         std::vector<NLMISC::CUV> target;
         pxr::VtArray<pxr::GfVec2f> temp;
-        source.Get(&temp);
+        source.ComputeFlattened(&temp);
 
         return convert(temp);
     }

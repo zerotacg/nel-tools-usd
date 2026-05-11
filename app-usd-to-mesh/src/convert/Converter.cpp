@@ -136,8 +136,6 @@ namespace nel_tools::usd::usd_to_mesh::convert
         }
         auto primVarSt = UsdGeomPrimvarsAPI(mesh).GetPrimvar(Tokens.st);
         auto uvs = uv(primVarSt);
-        VtArray<int> uvIndices;
-        primVarSt.GetIndices(&uvIndices);
         if (!uvs.empty())
         {
             buildMesh.VertexFlags |= CVertexBuffer::TexCoord0Flag;
@@ -145,8 +143,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
             {
                 for (auto corner = 0; corner < 3; ++corner)
                 {
-                    auto uvIndex = uvIndices[face * 3 + corner];
-                    auto uv = uvs[uvIndex];
+                    auto uv = uvs[face * 3 + corner];
                     buildMesh.Faces[face].Corner[corner].Uvws[0].U = uv.U;
                     buildMesh.Faces[face].Corner[corner].Uvws[0].V = uv.V;
                     buildMesh.Faces[face].Corner[corner].Uvws[0].W = 0;
