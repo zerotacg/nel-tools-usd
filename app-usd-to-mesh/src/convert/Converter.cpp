@@ -12,9 +12,9 @@ module;
 #include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdGeom/mesh.h>
+#include <pxr/usd/usdGeom/primvarsAPI.h>
 
 module nel_tools.usd.usd_to_mesh.convert.Converter;
-import nel_tools.usd.convert;
 import nel_tools.usd.format;
 import nel_tools.usd.usd_to_mesh.convert;
 
@@ -73,12 +73,12 @@ namespace nel_tools::usd::usd_to_mesh::convert
         UsdGeomMesh mesh = findMesh(stage);
         if (!mesh)
         {
-            throw std::invalid_argument( "Failed to find mesh prim");
+            throw std::invalid_argument("Failed to find mesh prim");
         }
 
         if (!isTriangular(mesh))
         {
-            throw std::invalid_argument( "Mesh is not triangular, all face counts need to be 3");
+            throw std::invalid_argument("Mesh is not triangular, all face counts need to be 3");
         }
 
         auto target = make_unique<CMesh>();
@@ -90,22 +90,33 @@ namespace nel_tools::usd::usd_to_mesh::convert
 
         // todo implement mesh build @see CExportNel::buildMeshInterface (*tri, buildMesh, buildBaseMesh, maxBaseBuild, node, time, nodeMap);
         CMesh::CMeshBuild buildMesh;
-        buildMesh.VertexFlags = CVertexBuffer::PositionFlag | CVertexBuffer::NormalFlag;
-        auto points = mesh.GetPointsAttr();
-        buildMesh.Vertices = convertVector(mesh.GetPointsAttr());
+        buildMesh.Vertices = vertices(mesh.GetPointsAttr());
+        if (buildMesh.Vertices.empty())
+        {
+            throw std::invalid_argument("Mesh has no points");
+        }
+        buildMesh.VertexFlags = CVertexBuffer::PositionFlag;
 
-        VtArray<int> faceIndices;
-        mesh.GetFaceVertexIndicesAttr().Get(&faceIndices);
-        auto normals = convertVector(mesh.GetNormalsAttr());
+        VtArray<int> faceIndices = indices(mesh.GetFaceVertexIndicesAttr());
         auto nNumFaces = mesh.GetFaceCount();
         buildMesh.Faces.resize(nNumFaces);
         for (auto face = 0; face < nNumFaces; ++face)
         {
             for (auto corner = 0; corner < 3; ++corner)
             {
-                auto index = face * 3 + corner;
-                buildMesh.Faces[face].Corner[corner].Vertex = faceIndices[index];
-                buildMesh.Faces[face].Corner[corner].Normal = normals[index];
+                buildMesh.Faces[face].Corner[corner].Vertex = faceIndices[(face * 3 + corner)];
+            }
+        }
+        auto normals = vertices(mesh.GetNormalsAttr());
+        if (!normals.empty())
+        {
+            buildMesh.VertexFlags |= CVertexBuffer::NormalFlag;
+            for (auto face = 0; face < nNumFaces; ++face)
+            {
+                for (auto corner = 0; corner < 3; ++corner)
+                {
+                    buildMesh.Faces[face].Corner[corner].Normal = normals[(face * 3 + corner)];
+                }
             }
         }
         if (hasPerFaceVertexNormals(mesh))
@@ -122,6 +133,19 @@ namespace nel_tools::usd::usd_to_mesh::convert
                 }
             }
             buildMesh.Vertices = vertices;
+        }
+        auto uvs = uv(UsdGeomPrimvarsAPI(mesh).GetPrimvar(Tokens.st));
+        auto uvIndices = indices(UsdGeomPrimvarsAPI(mesh).GetPrimvar(Tokens.stIndices));
+        if (!uvs.empty())
+        {
+            //buildMesh.VertexFlags |= CVertexBuffer::TexCoord0Flag;
+            for (auto face = 0; face < nNumFaces; ++face)
+            {
+                for (auto corner = 0; corner < 3; ++corner)
+                {
+                    //buildMesh.Faces[face].Corner[corner].UV = uvs[(face * 3 + corner)];
+                }
+            }
         }
 
         target->build(buildBaseMesh, buildMesh);

@@ -24,5 +24,15 @@ export namespace nel_tools::usd::usd_to_mesh::convert
 
     private:
         const pxr::UsdStageRefPtr& stage;
+
+        struct
+        {
+            const pxr::TfToken root = pxr::TfToken("root");
+            const pxr::TfToken st = pxr::TfToken("st");
+            const pxr::TfToken stIndices = pxr::TfToken("st:indices");
+            const pxr::TfToken result = pxr::TfToken("result");
+            const pxr::TfToken varname = pxr::TfToken("varname");
+            const pxr::TfToken frame_stPrimvarName = pxr::TfToken("frame:stPrimvarName");
+        } Tokens;
     };
 }

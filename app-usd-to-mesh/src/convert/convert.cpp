@@ -3,7 +3,9 @@ module;
 #include <vector>
 
 #include <nel/3d/shape.h>
+#include <nel/misc/uv.h>
 #include <nel/misc/vector.h>
+#include <pxr/base/gf/vec2f.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/vt/array.h>
 #include <pxr/usd/usd/attribute.h>
@@ -17,8 +19,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
 {
     auto convert(const Settings& settings, const pxr::UsdStageRefPtr& source) -> std::unique_ptr<NL3D::IShape>
     {
-        Converter converter(settings.unused, source);
-        return converter.run();
+        return Converter(settings.unused, source).run();
     }
 
     auto convert(const pxr::VtArray<pxr::GfVec3f>& source) -> std::vector<NLMISC::CVector>
@@ -33,7 +34,36 @@ namespace nel_tools::usd::usd_to_mesh::convert
         return target;
     }
 
-    auto convertVector(const pxr::UsdAttribute& source) -> std::vector<NLMISC::CVector>
+    auto convert(const pxr::VtArray<pxr::GfVec2f>& source) -> std::vector<NLMISC::CUV>
+    {
+        std::vector<NLMISC::CUV> target;
+        target.reserve(source.size());
+        for (auto element : source)
+        {
+            target.emplace_back(element[0], element[1]);
+        }
+
+        return target;
+    }
+
+    auto indices(const pxr::UsdAttribute& source) -> pxr::VtArray<int>
+    {
+        pxr::VtArray<int> temp;
+        source.Get(&temp);
+
+        return temp;
+    }
+
+    auto uv(const pxr::UsdAttribute& source) -> std::vector<NLMISC::CUV>
+    {
+        std::vector<NLMISC::CUV> target;
+        pxr::VtArray<pxr::GfVec2f> temp;
+        source.Get(&temp);
+
+        return convert(temp);
+    }
+
+    auto vertices(const pxr::UsdAttribute& source) -> std::vector<NLMISC::CVector>
     {
         std::vector<NLMISC::CVector> target;
         pxr::VtArray<pxr::GfVec3f> temp;
