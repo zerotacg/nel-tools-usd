@@ -103,6 +103,9 @@
       "configurePreset": "ci",
       "configurations": [
         "Debug"
+      ],
+      "generators": [
+        "TGZ"
       ]
     }
   ],
