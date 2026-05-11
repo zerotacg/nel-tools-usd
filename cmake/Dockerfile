@@ -14,4 +14,4 @@ RUN mv /tmp/nel-tools-usd-*-Linux /app
 USER $USERNAME
 WORKDIR $APP_HOME
 
-ENTRYPOINT ["@APPLICATION_NAME@"]
+ENTRYPOINT ["/app/bin/nel-tools-usd-usd-to-mesh"]

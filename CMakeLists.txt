@@ -22,9 +22,6 @@ if(NOT TARGET pxr::usd)
     add_library(pxr::Shade ALIAS usdShade)
 endif ()
 
-# to build docker images
-find_program(DOCKER docker REQUIRED)
-add_custom_target(docker)
 
 add_subdirectory(app-shape-to-usd)
 add_subdirectory(app-usd-to-mesh)
