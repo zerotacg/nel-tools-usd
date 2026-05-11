@@ -1,4 +1,4 @@
-#include <unique_ptr.h>
+#include <memory>
 #include <fmt/color.h>
 #include <nel/3d/register_3d.h>
 #include <nel/3d/scene.h>

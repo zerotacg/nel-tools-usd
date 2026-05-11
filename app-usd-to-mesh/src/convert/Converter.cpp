@@ -63,19 +63,22 @@ namespace nel_tools::usd::usd_to_mesh::convert
         return materials;
     }
 
+    bool hasPerFaceVertexNormals(const UsdGeomMesh& mesh)
+    {
+        return mesh.GetNormalsInterpolation() == UsdGeomTokens->faceVarying;
+    }
+
     auto Converter::run() -> unique_ptr<IShape>
     {
         UsdGeomMesh mesh = findMesh(stage);
         if (!mesh)
         {
-            fmt::print(fg(fmt::terminal_color::red), "Failed to find mesh prim\n");
-            return nullptr;
+            throw std::invalid_argument( "Failed to find mesh prim");
         }
 
         if (!isTriangular(mesh))
         {
-            fmt::print(fg(fmt::terminal_color::red), "Mesh is not triangular, all face counts need to be 3\n");
-            return nullptr;
+            throw std::invalid_argument( "Mesh is not triangular, all face counts need to be 3");
         }
 
         auto target = make_unique<CMesh>();
@@ -88,6 +91,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
         // todo implement mesh build @see CExportNel::buildMeshInterface (*tri, buildMesh, buildBaseMesh, maxBaseBuild, node, time, nodeMap);
         CMesh::CMeshBuild buildMesh;
         buildMesh.VertexFlags = CVertexBuffer::PositionFlag | CVertexBuffer::NormalFlag;
+        auto points = mesh.GetPointsAttr();
         buildMesh.Vertices = convertVector(mesh.GetPointsAttr());
 
         VtArray<int> faceIndices;
@@ -104,8 +108,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
                 buildMesh.Faces[face].Corner[corner].Normal = normals[index];
             }
         }
-        if (auto normalInterpolation = mesh.GetNormalsInterpolation(); normalInterpolation == UsdGeomTokens->
-            faceVarying)
+        if (hasPerFaceVertexNormals(mesh))
         {
             std::vector<CVector> vertices;
             vertices.reserve(nNumFaces * 3);
