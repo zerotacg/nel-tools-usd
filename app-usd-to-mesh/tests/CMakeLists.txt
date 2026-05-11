@@ -8,11 +8,11 @@ add_test(NAME "usd-to-mesh.write_cube"
 )
 
 
-find_program(DIFF_PROGRAM diff REQUIRED)
+find_program(DIFF diff REQUIRED)
 
 
 add_test(NAME "usd-to-mesh.cube_matches_approval"
-        COMMAND ${DIFF_PROGRAM}
+        COMMAND ${DIFF}
         "${CMAKE_CURRENT_SOURCE_DIR}/approvals/cube.received.xml"
         "${CMAKE_CURRENT_SOURCE_DIR}/approvals/cube.approved.xml"
 )

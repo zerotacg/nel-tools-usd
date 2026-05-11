@@ -39,3 +39,17 @@ install(
 
 list(APPEND package_components "usd-to-mesh")
 set(package_components ${package_components} PARENT_SCOPE)
+
+
+set(APPLICATION_NAME "${PROJECT_NAME}-usd-to-mesh")
+configure_file(${CMAKE_SOURCE_DIR}/cmake/Dockerfile ${CMAKE_CURRENT_BINARY_DIR}/Dockerfile @ONLY)
+add_custom_target(docker-usd-to-mesh
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND ${DOCKER} build
+        --file ${CMAKE_CURRENT_BINARY_DIR}/Dockerfile
+        --tag ${PROJECT_NAME}/usd-to-mesh
+        .
+        COMMENT "Building image for usd-to-mesh"
+)
+
+add_dependencies(docker docker-usd-to-mesh)

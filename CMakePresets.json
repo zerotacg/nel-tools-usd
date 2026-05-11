@@ -62,6 +62,13 @@
       ]
     },
     {
+      "name": "ci/docker",
+      "inherits": "ci",
+      "targets": [
+        "docker"
+      ]
+    },
+    {
       "name": "docker",
       "configurePreset": "ci",
       "configuration": "Release",
@@ -121,7 +128,7 @@
         },
         {
           "type": "build",
-          "name": "ci/install"
+          "name": "ci/docker"
         }
       ]
     },
