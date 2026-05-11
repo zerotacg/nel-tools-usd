@@ -1,3 +1,4 @@
+#include <unique_ptr.h>
 #include <fmt/color.h>
 #include <nel/3d/register_3d.h>
 #include <nel/3d/scene.h>
@@ -14,19 +15,30 @@ import nel_tools.usd.usd_to_mesh.Settings;
 
 using namespace nel_tools::usd::usd_to_mesh;
 
+std::unique_ptr<NLMISC::COFile> openFile(const std::string& path)
+{
+    auto file = std::make_unique<NLMISC::COFile>(path);
+    if (!file->isOpen() )
+    {
+        throw std::invalid_argument(fmt::format(fmt::emphasis::bold, "Unable to open file for writing: {}", path));
+    }
+    return file;
+}
+
 void writeFile(const std::string& target, const std::unique_ptr<NL3D::IShape>& source)
 {
+    auto file = openFile(target);
     NL3D::CShapeStream shapeStream(source.get());
-    NLMISC::COFile file(target);
-    shapeStream.serial(file);
+    shapeStream.serial(*file);
 }
 
 void writeXml(const std::string& target, const std::unique_ptr<NL3D::IShape>& source)
 {
+    auto file = openFile(target);
     NL3D::CShapeStream shapeStream(source.get());
-    NLMISC::COFile file(target);
     NLMISC::COXml xml;
-    xml.init(&file);
+
+    xml.init(file.get());
     xml.xmlPush("SHAPE");
     shapeStream.serial(xml);
     xml.xmlPop();
@@ -87,7 +99,7 @@ int main(int argc, char** argv)
     }
     catch (const std::exception& e)
     {
-        fmt::print(fg(fmt::terminal_color::red), "Error converting USD file: {}\n", e.what());
+        fmt::print(fg(fmt::terminal_color::red), "Error: {}\n", e.what());
         return EXIT_FAILURE;
     }
 }
