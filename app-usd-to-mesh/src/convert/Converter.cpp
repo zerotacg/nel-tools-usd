@@ -16,6 +16,7 @@ module;
 module nel_tools.usd.usd_to_mesh.convert.Converter;
 import nel_tools.usd.convert;
 import nel_tools.usd.format;
+import nel_tools.usd.usd_to_mesh.convert;
 
 
 namespace nel_tools::usd::usd_to_mesh::convert
@@ -62,7 +63,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
         return materials;
     }
 
-    auto Converter::convert() -> unique_ptr<IShape>
+    auto Converter::run() -> unique_ptr<IShape>
     {
         UsdGeomMesh mesh = findMesh(stage);
         if (!mesh)
@@ -88,14 +89,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
         CMesh::CMeshBuild buildMesh;
         buildMesh.VertexFlags = CVertexBuffer::PositionFlag | CVertexBuffer::NormalFlag;
         //@see CExportNel::buildMeshInterface (*tri, buildMesh, buildBaseMesh, maxBaseBuild, node, time, nodeMap);
-        VtArray<GfVec3f> vertices;
-        mesh.GetPointsAttr().Get(&vertices);
-        buildMesh.Vertices.resize(vertices.size());
-        for (size_t i = 0; i < vertices.size(); ++i)
-        {
-            auto vertex = vertices[i];
-            buildMesh.Vertices[i] = CVector(vertex[0], vertex[1], vertex[2]);
-        }
+        buildMesh.Vertices = convertVector(mesh.GetPointsAttr());
 
         VtArray<int> faceIndices;
         mesh.GetFaceVertexIndicesAttr().Get(&faceIndices);

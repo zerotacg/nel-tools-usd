@@ -20,7 +20,7 @@ export namespace nel_tools::usd::usd_to_mesh::convert
         {
         }
 
-        auto convert() -> std::unique_ptr<NL3D::IShape>;
+        auto run() -> std::unique_ptr<NL3D::IShape>;
 
     private:
         const pxr::UsdStageRefPtr& stage;

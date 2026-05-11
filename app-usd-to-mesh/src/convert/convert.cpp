@@ -1,7 +1,12 @@
 module;
 #include <memory>
+#include <vector>
 
 #include <nel/3d/shape.h>
+#include <nel/misc/vector.h>
+#include <pxr/base/gf/vec3f.h>
+#include <pxr/base/vt/array.h>
+#include <pxr/usd/usd/attribute.h>
 #include <pxr/usd/usd/stage.h>
 
 module nel_tools.usd.usd_to_mesh.convert;
@@ -13,6 +18,20 @@ namespace nel_tools::usd::usd_to_mesh::convert
     auto convert(const Settings& settings, const pxr::UsdStageRefPtr& source) -> std::unique_ptr<NL3D::IShape>
     {
         Converter converter(settings.unused, source);
-        return converter.convert();
+        return converter.run();
+    }
+
+    auto convertVector(const pxr::UsdAttribute& source) -> std::vector<NLMISC::CVector>
+    {
+        std::vector<NLMISC::CVector> target;
+        pxr::VtArray<pxr::GfVec3f> temp;
+        source.Get(&temp);
+        target.reserve(temp.size());
+        for (auto element : temp)
+        {
+            target.emplace_back(element[0], element[1], element[2]);
+        }
+
+        return target;
     }
 }

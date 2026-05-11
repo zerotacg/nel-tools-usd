@@ -2,6 +2,8 @@ module;
 #include <memory>
 
 #include <nel/3d/shape.h>
+#include <nel/misc/vector.h>
+#include <pxr/usd/usd/attribute.h>
 #include <pxr/usd/usd/stage.h>
 
 export module nel_tools.usd.usd_to_mesh.convert;
@@ -10,4 +12,6 @@ import nel_tools.usd.usd_to_mesh.Settings;
 export namespace nel_tools::usd::usd_to_mesh::convert
 {
     auto convert(const Settings& settings, const pxr::UsdStageRefPtr& source) -> std::unique_ptr<NL3D::IShape>;
+
+    auto convertVector(const pxr::UsdAttribute& source) -> std::vector<NLMISC::CVector>;
 }
