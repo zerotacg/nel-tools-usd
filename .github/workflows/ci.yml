@@ -19,6 +19,7 @@ jobs:
       build-version: ${{ steps.strings.outputs.build-version }}
       docker-group: ${{ steps.strings.outputs.docker-group }}
       docker-image-version: ${{ steps.strings.outputs.docker-image-version }}
+      docker-image-tag: ${{ steps.strings.outputs.docker-image-tag }}
     steps:
       - name: Set reusable strings
         id: strings
@@ -32,11 +33,14 @@ jobs:
           echo "build-version=${VERSION}+sha.${COMMIT_HASH:0:8}" >> "$GITHUB_OUTPUT"
           echo "docker-group=${DOCKER_GROUP}" >> "$GITHUB_OUTPUT"
           echo "docker-image-version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "docker-image-tag=${DOCKER_GROUP}/nel-tools-usd:${VERSION}" >> "$GITHUB_OUTPUT"
           cat "$GITHUB_OUTPUT"
 
   build:
     needs: [ strings ]
     runs-on: ubuntu-latest
+    outputs:
+      artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
     steps:
       - name: Dependencies
         run: |
@@ -91,12 +95,36 @@ jobs:
 
       - name: Build Docker image
         run: |
-          IMAGE_TAG="${{ needs.strings.outputs.docker-group }}/nel-tools-usd:${{ needs.strings.outputs.docker-image-version }}"
-          docker build build/ci --file cmake/Dockerfile --tag "${IMAGE_TAG}"
-          docker save --output=build/ci/nel-tools-usd-Docker-${{ inputs.build-version }}.tar "${IMAGE_TAG}"
+          docker build build/ci --file cmake/Dockerfile --tag "${{ needs.strings.outputs.docker-image-tag }}"
+          docker save --output=build/ci/nel-tools-usd-docker-${{ needs.strings.outputs.docker-image-version }}.tar "${{ needs.strings.outputs.docker-image-tag }}"
 
       - uses: actions/upload-artifact@v7
+        id: upload-artifact
         with:
           name: nel-tools-usd-${{ needs.strings.outputs.build-version }}
           path: build/ci/nel-tools-usd-*
           if-no-files-found: error
+
+  publish:
+    needs: [ strings, build ]
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    if: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch ) }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
+          merge-multiple: true
+          path: build
+
+      - run: find build
+
+      - run: find build -type f -iname *-docker-*.tar -exec docker load --input {} \;
+
+      - name: Push image
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+          docker images
+          docker push "${{ needs.strings.outputs.docker-image-tag }}"
