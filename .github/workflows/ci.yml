@@ -89,6 +89,7 @@ jobs:
           name: test-results
           if-no-files-found: error
           path: build/reports/*.xml
+          retention-days: 1
 
       - name: Package
         run: cpack --preset ci -R "${{ needs.strings.outputs.build-version }}"
@@ -96,7 +97,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build build/ci --file cmake/Dockerfile --tag "${{ needs.strings.outputs.docker-image-tag }}"
-          docker save --output=build/ci/nel-tools-usd-docker-${{ needs.strings.outputs.docker-image-version }}.tar "${{ needs.strings.outputs.docker-image-tag }}"
+          docker save --output=build/ci/nel-tools-usd-${{ needs.strings.outputs.docker-image-version }}-docker.tar "${{ needs.strings.outputs.docker-image-tag }}"
 
       - uses: actions/upload-artifact@v7
         id: upload-artifact
@@ -121,7 +122,7 @@ jobs:
 
       - run: find build
 
-      - run: find build -type f -iname *-docker-*.tar -exec docker load --input {} \;
+      - run: find build -type f -iname *-docker.tar -exec docker load --input {} \;
 
       - name: Push image
         run: |
