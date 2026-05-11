@@ -26,7 +26,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
     using namespace std;
     using namespace pxr;
 
-    UsdGeomMesh findMesh(const auto &stage)
+    UsdGeomMesh findMesh(const auto& stage)
     {
         auto prim = stage->GetDefaultPrim();
         auto isMesh = [](const UsdPrim& p) { return p.IsA<UsdGeomMesh>(); };
@@ -37,7 +37,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
         return UsdGeomMesh(prim);
     }
 
-    bool isTriangular(const auto &mesh)
+    bool isTriangular(const auto& mesh)
     {
         VtArray<int> faceCounts;
 
@@ -55,7 +55,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
         return material;
     }
 
-    vector<CMaterial> buildMaterials(const auto &stage)
+    vector<CMaterial> buildMaterials(const auto& stage)
     {
         vector<CMaterial> materials;
         materials.push_back(defaultMaterial());
@@ -85,10 +85,9 @@ namespace nel_tools::usd::usd_to_mesh::convert
         // @see CExportNel::buildMaterials
         buildBaseMesh.Materials = buildMaterials(stage);
 
-        // todo implement mesh build
+        // todo implement mesh build @see CExportNel::buildMeshInterface (*tri, buildMesh, buildBaseMesh, maxBaseBuild, node, time, nodeMap);
         CMesh::CMeshBuild buildMesh;
         buildMesh.VertexFlags = CVertexBuffer::PositionFlag | CVertexBuffer::NormalFlag;
-        //@see CExportNel::buildMeshInterface (*tri, buildMesh, buildBaseMesh, maxBaseBuild, node, time, nodeMap);
         buildMesh.Vertices = convertVector(mesh.GetPointsAttr());
 
         VtArray<int> faceIndices;
@@ -100,9 +99,26 @@ namespace nel_tools::usd::usd_to_mesh::convert
         {
             for (auto corner = 0; corner < 3; ++corner)
             {
-                buildMesh.Faces[face].Corner[corner].Vertex = faceIndices[face * 3 + corner];
-                //buildMesh.Faces[face].Corner[corner].Normal = normals[face * 3 + corner];
+                auto index = face * 3 + corner;
+                buildMesh.Faces[face].Corner[corner].Vertex = faceIndices[index];
+                buildMesh.Faces[face].Corner[corner].Normal = normals[index];
             }
+        }
+        if (auto normalInterpolation = mesh.GetNormalsInterpolation(); normalInterpolation == UsdGeomTokens->
+            faceVarying)
+        {
+            std::vector<CVector> vertices;
+            vertices.reserve(nNumFaces * 3);
+            for (auto face = 0; face < nNumFaces; ++face)
+            {
+                for (auto corner = 0; corner < 3; ++corner)
+                {
+                    auto index = face * 3 + corner;
+                    buildMesh.Faces[face].Corner[corner].Vertex = index;
+                    vertices.push_back(buildMesh.Vertices[faceIndices[index]]);
+                }
+            }
+            buildMesh.Vertices = vertices;
         }
 
         target->build(buildBaseMesh, buildMesh);
