@@ -7,7 +7,7 @@ ENV LD_LIBRARY_PATH=$APP_HOME/lib
 ENV PATH=$APP_HOME/bin:$PATH
 ENV APP_HOME=$APP_HOME
 
-ADD --unpack=true build/ci/nel-tools-usd-*-Linux.tar.gz /tmp
+ADD --unpack=true nel-tools-usd-*-Linux.tar.gz /tmp
 
 RUN mv /tmp/nel-tools-usd-*-Linux /app
 

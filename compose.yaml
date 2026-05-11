@@ -1,4 +1,10 @@
 services:
-  app:
+  build:
     image: nel-tools-usd/app
     build: .
+
+  ci:
+    image: nel-tools-usd
+    build:
+      context: build/ci
+      dockerfile: ../../cmake/Dockerfile
