@@ -209,7 +209,10 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
             {
                 auto sourceTexture = source.getTexture(textureIndex);
                 auto sampler = convert(root, sourceTexture, textureIndex);
-                sampler.GetInput(Tokens.st).ConnectToSource(uvmapResult);
+                if (auto input = sampler.GetInput(Tokens.st))
+                {
+                    input.ConnectToSource(uvmapResult);
+                }
                 diffuseColor.ConnectToSource(sampler.ConnectableAPI(), UsdUVTextureTokens.outputs.rgb);
                 pbrShader.CreateInput(UsdPreviewSurfaceTokens.inputs.opacity, SdfValueTypeNames->Float).ConnectToSource(
                     sampler.ConnectableAPI(), UsdUVTextureTokens.outputs.a);
