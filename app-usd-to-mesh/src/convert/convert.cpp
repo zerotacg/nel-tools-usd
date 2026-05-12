@@ -35,13 +35,13 @@ namespace nel_tools::usd::usd_to_mesh::convert
         return target;
     }
 
-    auto convert(const pxr::VtArray<pxr::GfVec2f>& source) -> std::vector<NLMISC::CUV>
+    auto uv(const pxr::VtArray<pxr::GfVec2f>& source) -> std::vector<NLMISC::CUV>
     {
         std::vector<NLMISC::CUV> target;
         target.reserve(source.size());
         for (auto element : source)
         {
-            target.emplace_back(element[0], element[1]);
+            target.emplace_back(element[0], 1 - element[1]);
         }
 
         return target;
@@ -61,7 +61,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
         pxr::VtArray<pxr::GfVec2f> temp;
         source.ComputeFlattened(&temp);
 
-        return convert(temp);
+        return uv(temp);
     }
 
     auto vertices(const pxr::UsdAttribute& source) -> std::vector<NLMISC::CVector>

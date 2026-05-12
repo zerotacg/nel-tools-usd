@@ -56,7 +56,7 @@ namespace nel_tools::usd::shape_to_usd::convert
         for (auto i = 0; i < source.getNumVertices(); ++i)
         {
             const auto uv = reader.getTexCoordPointer(i);
-            target.emplace_back(uv->U, uv->V);
+            target.emplace_back(uv->U, 1 - uv->V);
         }
 
         return target;

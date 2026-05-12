@@ -21,7 +21,7 @@ def Xform "root" (
             interpolation = "vertex"
         )
         point3f[] points = [(0, 0, 0), (2, 0, 0), (1, 0, 1)]
-        texCoord2f[] primvars:st = [(0, 0), (1, 0), (0.5, 1)] (
+        texCoord2f[] primvars:st = [(0, 0), (1, 0), (0.5, 0.5)] (
             interpolation = "vertex"
         )
         uniform token subdivisionScheme = "none"
