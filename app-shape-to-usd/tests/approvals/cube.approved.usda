@@ -23,16 +23,6 @@ def Xform "root" (
         point3f[] points = [(-1, 1, 1), (1, -1, 1), (1, 1, 1), (1, -1, 1), (-1, -1, -1), (1, -1, -1), (-1, -1, 1), (-1, 1, -1), (-1, -1, -1), (1, 1, -1), (-1, -1, -1), (-1, 1, -1), (1, 1, 1), (1, -1, -1), (1, 1, -1), (-1, 1, 1), (1, 1, -1), (-1, 1, -1), (-1, 1, 1), (-1, -1, 1), (1, -1, 1), (1, -1, 1), (-1, -1, 1), (-1, -1, -1), (-1, -1, 1), (-1, 1, 1), (-1, 1, -1), (1, 1, -1), (1, -1, -1), (-1, -1, -1), (1, 1, 1), (1, -1, 1), (1, -1, -1), (-1, 1, 1), (1, 1, 1), (1, 1, -1)]
         uniform token subdivisionScheme = "none"
         uniform token subsetFamily:materialBind:familyType = "nonOverlapping"
-
-        def GeomSubset "subset_0" (
-            prepend apiSchemas = ["MaterialBindingAPI"]
-        )
-        {
-            uniform token elementType = "face"
-            uniform token familyName = "materialBind"
-            int[] indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-            rel material:binding = </root/_materials/material_0_MAT>
-        }
     }
 
     def Scope "_materials"

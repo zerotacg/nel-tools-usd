@@ -121,6 +121,11 @@ namespace nel_tools::usd::convert::mesh
 
     void ConverterCMesh::subsets(const SdfPath& root)
     {
+        if (mesh->getNbMaterial() <= 1)
+        {
+            return;
+        }
+
         int faceCount = 0;
         for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
         {
