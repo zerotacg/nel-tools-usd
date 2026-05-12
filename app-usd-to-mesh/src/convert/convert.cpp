@@ -38,6 +38,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
 
     auto rgb(const pxr::GfVec3f& source) -> NLMISC::CRGBA
     {
+        // TODO validate against CExportNel::convertColor
         return {
             static_cast<uint8>(source[0] * 255.0f),
             static_cast<uint8>(source[1] * 255.0f),

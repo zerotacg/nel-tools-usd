@@ -7,7 +7,9 @@ module;
 #include <nel/3d/material.h>
 #include <nel/3d/mesh_base.h>
 #include <nel/3d/mesh.h>
+#include <nel/3d/texture_file.h>
 #include <nel/3d/vertex_buffer.h>
+#include <nel/misc/path.h>
 #include <nel/misc/vector.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/usd/usd/stage.h>
@@ -61,7 +63,8 @@ namespace nel_tools::usd::usd_to_mesh::convert
     vector<CMaterial> buildMaterials(const UsdGeomMesh& mesh)
     {
         auto materialBindingAPI = UsdShadeMaterialBindingAPI(mesh);
-        auto surface = materialBindingAPI.GetDirectBinding().GetMaterial().ComputeSurfaceSource();
+        auto sourceMaterial = materialBindingAPI.GetDirectBinding().GetMaterial();
+        auto surface = sourceMaterial.ComputeSurfaceSource();
         if (!surface)
         {
             return {defaultMaterial()};
@@ -75,6 +78,21 @@ namespace nel_tools::usd::usd_to_mesh::convert
             if (diffuseColor.Get(&value))
             {
                 material.setDiffuse(rgb(value));
+            }
+            if (diffuseColor.HasConnectedSource())
+            {
+                auto sampler = UsdShadeShader(diffuseColor.GetConnectedSources().front().source);
+                TfToken id;
+                sampler.GetIdAttr().Get(&id);
+                if (id == TfToken("UsdUVTexture"))
+                {
+                    SdfAssetPath value;
+                    sampler.GetInput(TfToken("file")).Get(&value);
+                    fmt::print(fg(fmt::terminal_color::blue), "material {} has texture file: {}\n",
+                               sourceMaterial.GetPath().GetString(), value.GetAssetPath());
+                    auto* texture = new CTextureFile(CFile::getFilename(value.GetAssetPath()));
+                    material.setTexture(0, texture);
+                }
             }
         }
 
