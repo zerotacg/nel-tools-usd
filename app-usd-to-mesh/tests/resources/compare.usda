@@ -6,25 +6,58 @@
 )
 
 
-over "input" (
-    prepend references = @./triangle.usda@
-)
+def Xform "triangle"
 {
-    double3 xformOp:translate = (-3, 0, 0)
-    uniform token[] xformOpOrder = ["xformOp:translate"]
+    over "input" (
+        prepend references = @./triangle.usda@
+    )
+    {
+        double3 xformOp:translate = (-3, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    over "received" (
+        prepend references = @../approvals/triangle.received.usda@
+    )
+    {
+        uniform token[] xformOpOrder = []
+    }
+
+    over "approved" (
+        prepend references = @../approvals/triangle.approved.usda@
+    )
+    {
+        double3 xformOp:translate = (3, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
 }
 
-over "received" (
-    prepend references = @../approvals/triangle.received.usda@
-)
-{
-    uniform token[] xformOpOrder = []
-}
 
-over "approved" (
-    prepend references = @../approvals/triangle.approved.usda@
-)
+def Xform "cube"
 {
-    double3 xformOp:translate = (3, 0, 0)
+    double3 xformOp:translate = (0, 0, -3)
     uniform token[] xformOpOrder = ["xformOp:translate"]
+
+    over "input" (
+        prepend references = @./cube.usda@
+    )
+    {
+        double3 xformOp:translate = (-3, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    over "received" (
+        prepend references = @../approvals/cube.received.usda@
+    )
+    {
+        uniform token[] xformOpOrder = []
+    }
+
+    over "approved" (
+        prepend references = @../approvals/cube.approved.usda@
+    )
+    {
+        double3 xformOp:translate = (3, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
 }
