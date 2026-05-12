@@ -8,10 +8,10 @@ module;
 #include <pxr/base/gf/vec4f.h>
 #include <pxr/base/vt/array.h>
 
-export module nel_tools.usd.convert;
+export module nel_tools.usd.shape_to_usd.convert;
 
 
-export namespace nel_tools::usd::convert
+export namespace nel_tools::usd::shape_to_usd::convert
 {
     pxr::VtArray<pxr::GfVec3f> vertices(const NL3D::CVertexBuffer& source);
 
@@ -32,7 +32,7 @@ export namespace nel_tools::usd::convert
     const pxr::TfToken& value(const NL3D::ITexture::TMinFilter& source);
 }
 
-namespace nel_tools::usd::convert
+namespace nel_tools::usd::shape_to_usd::convert
 {
     int getIndexAt(const NL3D::CIndexBufferRead& reader, int index);
 }

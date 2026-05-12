@@ -9,9 +9,9 @@ module;
 #include <pxr/base/vt/array.h>
 #include <pxr/usd/usdHydra/tokens.h>
 
-module nel_tools.usd.convert;
+module nel_tools.usd.shape_to_usd.convert;
 
-namespace nel_tools::usd::convert
+namespace nel_tools::usd::shape_to_usd::convert
 {
     using namespace NL3D;
     using namespace NLMISC;

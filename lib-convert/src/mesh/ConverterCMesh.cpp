@@ -29,12 +29,12 @@ module;
 #include <pxr/usd/usdShade/shader.h>
 #include <pxr/usd/usdShade/tokens.h>
 
-module nel_tools.usd.convert.mesh.ConverterCMesh;
-import nel_tools.usd.convert;
+module nel_tools.usd.shape_to_usd.convert.mesh.ConverterCMesh;
 import nel_tools.usd.format;
+import nel_tools.usd.shape_to_usd.convert;
 
 
-namespace nel_tools::usd::convert::mesh
+namespace nel_tools::usd::shape_to_usd::convert::mesh
 {
     using namespace NL3D;
     using namespace NLMISC;

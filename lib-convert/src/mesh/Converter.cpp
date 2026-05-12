@@ -6,10 +6,10 @@ module;
 #include <nel/3d/water_shape.h>
 #include <pxr/usd/usd/stage.h>
 
-module nel_tools.usd.convert.mesh.Converter;
-import nel_tools.usd.convert.mesh.ConverterCMesh;
+module nel_tools.usd.shape_to_usd.convert.mesh.Converter;
+import nel_tools.usd.shape_to_usd.convert.mesh.ConverterCMesh;
 
-namespace nel_tools::usd::convert::mesh
+namespace nel_tools::usd::shape_to_usd::convert::mesh
 {
     using namespace NL3D;
     using namespace std;

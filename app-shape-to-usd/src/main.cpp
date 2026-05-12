@@ -11,7 +11,7 @@
 #include <pxr/usd/usd/stage.h>
 
 
-import nel_tools.usd.convert.mesh.Converter;
+import nel_tools.usd.shape_to_usd.convert.mesh.Converter;
 import nel_tools.usd.shape_to_usd.Settings;
 
 using namespace nel_tools::usd::shape_to_usd;

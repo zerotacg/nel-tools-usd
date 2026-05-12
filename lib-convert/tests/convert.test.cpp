@@ -5,12 +5,12 @@
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/vt/array.h>
 
-import nel_tools.usd.convert;
+import nel_tools.usd.shape_to_usd.convert;
 
 using testing::Eq;
 using namespace NL3D;
 using namespace pxr;
-using namespace nel_tools::usd;
+using namespace nel_tools::usd::shape_to_usd;
 
 class convert_test : public testing::Test
 {
