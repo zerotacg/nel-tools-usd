@@ -58,7 +58,7 @@ namespace nel_tools::usd::convert::mesh
         if (mesh->getVertexBuffer().getVertexFormat() & CVertexBuffer::TexCoord0Flag)
         {
             UsdGeomPrimvarsAPI(outMesh)
-                .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->varying)
+                .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->vertex)
                 .Set(uvs(mesh->getVertexBuffer()));
         }
 
