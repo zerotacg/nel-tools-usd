@@ -15,7 +15,7 @@ target_sources(${PROJECT_NAME}-shape-to-usd
 target_link_libraries(${PROJECT_NAME}-shape-to-usd
         PRIVATE
         ${PROJECT_NAME}::arguments
-        ${PROJECT_NAME}::convert
+        ${PROJECT_NAME}::lib::shape-to-usd
 )
 target_compile_features(${PROJECT_NAME}-shape-to-usd PRIVATE cxx_std_20)
 

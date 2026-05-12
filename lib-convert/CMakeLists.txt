@@ -1,12 +1,12 @@
 add_subdirectory(tests)
 
 
-add_library(${PROJECT_NAME}-convert STATIC)
-add_library(${PROJECT_NAME}::convert ALIAS ${PROJECT_NAME}-convert)
+add_library(lib${PROJECT_NAME}-shape-to-usd)
+add_library(${PROJECT_NAME}::lib::shape-to-usd ALIAS lib${PROJECT_NAME}-shape-to-usd)
 
-target_compile_features(${PROJECT_NAME}-convert PUBLIC cxx_std_20)
+target_compile_features(lib${PROJECT_NAME}-shape-to-usd PUBLIC cxx_std_20)
 
-target_sources(${PROJECT_NAME}-convert
+target_sources(lib${PROJECT_NAME}-shape-to-usd
         PUBLIC
         FILE_SET CXX_MODULES
         FILES
@@ -23,7 +23,7 @@ target_sources(${PROJECT_NAME}-convert
         src/mesh/ConverterCMesh.cpp
 )
 
-target_link_libraries(${PROJECT_NAME}-convert
+target_link_libraries(lib${PROJECT_NAME}-shape-to-usd
         PUBLIC
         fmt::fmt
         NeL::3d
@@ -37,13 +37,13 @@ target_link_libraries(${PROJECT_NAME}-convert
 )
 
 
-set_target_properties(${PROJECT_NAME}-convert
+set_target_properties(lib${PROJECT_NAME}-shape-to-usd
         PROPERTIES
-            EXPORT_NAME convert
-            OUTPUT_NAME "lib${PROJECT_NAME}-convert"
+            EXPORT_NAME lib-shape-to-usd
+            OUTPUT_NAME "lib${PROJECT_NAME}-shape-to-usd"
 )
 
 install(
-        TARGETS ${PROJECT_NAME}-convert
+        TARGETS lib${PROJECT_NAME}-shape-to-usd
         COMPONENT "${PROJECT_NAME}"
 )

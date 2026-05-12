@@ -9,7 +9,7 @@ target_link_libraries(convert_test
         PRIVATE
         GTest::gtest_main
         GTest::gmock
-        ${PROJECT_NAME}::convert
+        ${PROJECT_NAME}::lib::shape-to-usd
 )
 
 add_test(NAME "convert.test" COMMAND "convert_test")
