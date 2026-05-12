@@ -1,5 +1,6 @@
 module;
 #include <string>
+#include <ranges>
 #include <fmt/color.h>
 #include <fmt/format.h>
 #include <nel/3d/material.h>
@@ -40,6 +41,14 @@ namespace nel_tools::usd::convert::mesh
     using namespace std;
     using namespace pxr;
 
+    bool hasDoubleSidedMaterials(const CMesh* mesh)
+    {
+        return ranges::any_of(
+            views::iota(0u, mesh->getNbMaterial()),
+            [mesh](auto index) -> bool { return mesh->getMaterial(index).getDoubleSided(); }
+        );
+    }
+
     void ConverterCMesh::run()
     {
         UsdGeomSetStageUpAxis(stage, UsdGeomTokens->z);
@@ -49,7 +58,8 @@ namespace nel_tools::usd::convert::mesh
         UsdModelAPI(modelRoot).SetKind(KindTokens->component);
 
         auto outMesh = UsdGeomMesh::Define(stage, Paths.model);
-        outMesh.CreateDoubleSidedAttr().Set(true);
+
+        outMesh.CreateDoubleSidedAttr().Set(hasDoubleSidedMaterials(mesh));
         outMesh.CreateSubdivisionSchemeAttr().Set(UsdGeomTokens->none);
         outMesh.CreatePointsAttr().Set(vertices(mesh->getVertexBuffer()));
         outMesh.CreateNormalsAttr().Set(normals(mesh->getVertexBuffer()));

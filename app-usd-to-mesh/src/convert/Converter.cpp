@@ -97,8 +97,8 @@ namespace nel_tools::usd::usd_to_mesh::convert
         }
         buildMesh.VertexFlags = CVertexBuffer::PositionFlag;
 
-        VtArray<int> faceIndices = indices(mesh.GetFaceVertexIndicesAttr());
-        auto nNumFaces = mesh.GetFaceCount();
+        const VtArray<int> faceIndices = indices(mesh.GetFaceVertexIndicesAttr());
+        const auto nNumFaces = mesh.GetFaceCount();
         buildMesh.Faces.resize(nNumFaces);
         for (auto face = 0; face < nNumFaces; ++face)
         {
@@ -107,7 +107,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
                 buildMesh.Faces[face].Corner[corner].Vertex = faceIndices[(face * 3 + corner)];
             }
         }
-        auto normals = vertices(mesh.GetNormalsAttr());
+        const auto normals = vertices(mesh.GetNormalsAttr());
         if (!normals.empty())
         {
             buildMesh.VertexFlags |= CVertexBuffer::NormalFlag;
