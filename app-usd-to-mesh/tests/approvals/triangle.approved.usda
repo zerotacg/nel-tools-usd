@@ -37,7 +37,7 @@ def Xform "root" (
             def Shader "PBRShader"
             {
                 uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (1, 1, 1)
+                color3f inputs:diffuseColor = (1, 0, 1)
                 float inputs:roughness = 0.9
                 color3f inputs:specularColor = (0, 0, 0)
                 int inputs:useSpecularWorkflow = 1

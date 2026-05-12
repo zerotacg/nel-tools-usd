@@ -35,7 +35,7 @@ def Xform "root" (
             def Shader "Principled_BSDF"
             {
                 uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (1, 1, 1)
+                color3f inputs:diffuseColor = (1, 0, 1)
                 color3f inputs:diffuseColor.connect = </root/_materials/material_0_MAT/Image_Texture.outputs:rgb>
                 float inputs:roughness = 0.9
                 color3f inputs:specularColor = (0, 0, 0)
