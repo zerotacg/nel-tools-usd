@@ -91,7 +91,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
     VtArray<int> ConverterCMesh::convertIndices() const
     {
         VtArray<int> all;
-        for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
+        for (auto renderPass = 0; mesh->getNbMatrixBlock() > lodId && renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
         {
             auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
 
