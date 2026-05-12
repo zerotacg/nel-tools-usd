@@ -2,6 +2,7 @@ module;
 #include <memory>
 
 #include <nel/3d/shape.h>
+#include <nel/misc/rgba.h>
 #include <nel/misc/vector.h>
 #include <pxr/usd/usd/attribute.h>
 #include <pxr/usd/usd/stage.h>
@@ -13,6 +14,8 @@ import nel_tools.usd.usd_to_mesh.Settings;
 export namespace nel_tools::usd::usd_to_mesh::convert
 {
     auto convert(const Settings& settings, const pxr::UsdStageRefPtr& source) -> std::unique_ptr<NL3D::IShape>;
+
+    auto rgb(const pxr::GfVec3f& source) -> NLMISC::CRGBA;
 
     auto uv(const pxr::VtArray<pxr::GfVec2f>& source) -> std::vector<NLMISC::CUV>;
     auto convert(const pxr::VtArray<pxr::GfVec3f>& source) -> std::vector<NLMISC::CVector>;

@@ -3,6 +3,7 @@ module;
 #include <vector>
 
 #include <nel/3d/shape.h>
+#include <nel/misc/rgba.h>
 #include <nel/misc/uv.h>
 #include <nel/misc/vector.h>
 #include <pxr/base/gf/vec2f.h>
@@ -33,6 +34,16 @@ namespace nel_tools::usd::usd_to_mesh::convert
         }
 
         return target;
+    }
+
+    auto rgb(const pxr::GfVec3f& source) -> NLMISC::CRGBA
+    {
+        return {
+            static_cast<uint8>(source[0] * 255.0f),
+            static_cast<uint8>(source[1] * 255.0f),
+            static_cast<uint8>(source[2] * 255.0f),
+            255
+        };
     }
 
     auto uv(const pxr::VtArray<pxr::GfVec2f>& source) -> std::vector<NLMISC::CUV>

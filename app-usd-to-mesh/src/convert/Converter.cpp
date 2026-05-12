@@ -1,4 +1,5 @@
 module;
+
 #include <fmt/color.h>
 #include <memory>
 #include <ranges>
@@ -8,11 +9,13 @@ module;
 #include <nel/3d/mesh.h>
 #include <nel/3d/vertex_buffer.h>
 #include <nel/misc/vector.h>
+#include <pxr/base/gf/vec3f.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usdGeom/mesh.h>
 #include <pxr/usd/usdGeom/primvarsAPI.h>
+#include <pxr/usd/usdShade/materialBindingAPI.h>
 
 module nel_tools.usd.usd_to_mesh.convert.Converter;
 import nel_tools.usd.format;
@@ -55,10 +58,25 @@ namespace nel_tools::usd::usd_to_mesh::convert
         return material;
     }
 
-    vector<CMaterial> buildMaterials(const auto& stage)
+    vector<CMaterial> buildMaterials(const UsdGeomMesh& mesh)
     {
+        auto materialBindingAPI = UsdShadeMaterialBindingAPI(mesh);
+        auto surface = materialBindingAPI.GetDirectBinding().GetMaterial().ComputeSurfaceSource();
+        if (!surface)
+        {
+            return {defaultMaterial()};
+        }
+
         vector<CMaterial> materials;
-        materials.push_back(defaultMaterial());
+        CMaterial& material = materials.emplace_back(defaultMaterial());
+        if (auto diffuseColor = surface.GetInput(TfToken("diffuseColor")))
+        {
+            GfVec3f value;
+            if (diffuseColor.Get(&value))
+            {
+                material.setDiffuse(rgb(value));
+            }
+        }
 
         return materials;
     }
@@ -86,7 +104,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
         // todo implement mesh base build
         // @see CExportNel::buildBaseMeshInterface (buildBaseMesh, maxBaseBuild, node, time, nodeMatrix);
         // @see CExportNel::buildMaterials
-        buildBaseMesh.Materials = buildMaterials(stage);
+        buildBaseMesh.Materials = buildMaterials(mesh);
 
         // todo implement mesh build @see CExportNel::buildMeshInterface (*tri, buildMesh, buildBaseMesh, maxBaseBuild, node, time, nodeMap);
         CMesh::CMeshBuild buildMesh;
