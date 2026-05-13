@@ -23,6 +23,7 @@ module;
 #include <pxr/usd/usdGeom/subset.h>
 #include <pxr/usd/usdGeom/tokens.h>
 #include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usdGeom/xformCommonAPI.h>
 #include <pxr/usd/usdHydra/tokens.h>
 #include <pxr/usd/usdShade/material.h>
 #include <pxr/usd/usdShade/materialBindingAPI.h>
@@ -56,6 +57,19 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         stage->GetRootLayer()->SetDefaultPrim(Tokens.root);
         auto modelRoot = UsdGeomXform::Define(stage, Paths.root);
         UsdModelAPI(modelRoot).SetKind(KindTokens->component);
+        auto modelRootXform = UsdGeomXformCommonAPI(modelRoot);
+        if (auto defaultValue = mesh->getDefaultPos(); defaultValue != nullptr)
+        {
+            modelRootXform.SetTranslate(value(defaultValue->getDefaultValue()));
+        }
+        if (auto defaultValue = mesh->getDefaultRotEuler(); defaultValue != nullptr)
+        {
+            modelRootXform.SetRotate(value(defaultValue->getDefaultValue()));
+        }
+        if (auto defaultValue = mesh->getDefaultScale(); defaultValue != nullptr)
+        {
+            modelRootXform.SetScale(value(defaultValue->getDefaultValue()));
+        }
 
         auto outMesh = UsdGeomMesh::Define(stage, Paths.model);
 

@@ -21,6 +21,8 @@ export namespace nel_tools::usd::shape_to_usd::convert
 
     pxr::VtArray<int> value(const NL3D::CIndexBuffer& source);
 
+    pxr::GfVec3f value(const NLMISC::CVector& source);
+
     pxr::GfVec4f value(const NLMISC::CRGBAF& source);
 
     pxr::GfVec3f rgb(const NLMISC::CRGBAF& source);

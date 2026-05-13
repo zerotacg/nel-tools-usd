@@ -91,6 +91,11 @@ namespace nel_tools::usd::shape_to_usd::convert
         }
     }
 
+    GfVec3f value(const CVector& source)
+    {
+        return {source.x, source.y, source.z};
+    }
+
     GfVec4f value(const CRGBAF& source)
     {
         return {source.R, source.G, source.B, source.A};
