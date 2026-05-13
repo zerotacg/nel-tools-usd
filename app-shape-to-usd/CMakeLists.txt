@@ -30,6 +30,7 @@ target_link_libraries(lib${PROJECT_NAME}-shape-to-usd
         pxr::Geom
         pxr::Hydra
         pxr::Shade
+        ${PROJECT_NAME}::common
         ${PROJECT_NAME}::format
 )
 
