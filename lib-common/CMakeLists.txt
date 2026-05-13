@@ -19,7 +19,7 @@ target_link_libraries(${PROJECT_NAME}-common
 set_target_properties(${PROJECT_NAME}-common
         PROPERTIES
             EXPORT_NAME common
-            OUTPUT_NAME "lib${PROJECT_NAME}-common"
+            OUTPUT_NAME "${PROJECT_NAME}-common"
 )
 
 install(

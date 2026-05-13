@@ -19,7 +19,7 @@ target_link_libraries(${PROJECT_NAME}-arguments
 set_target_properties(${PROJECT_NAME}-arguments
         PROPERTIES
             EXPORT_NAME arguments
-            OUTPUT_NAME "lib${PROJECT_NAME}-arguments"
+            OUTPUT_NAME "${PROJECT_NAME}-arguments"
 )
 
 install(

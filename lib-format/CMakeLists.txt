@@ -20,7 +20,7 @@ target_link_libraries(${PROJECT_NAME}-format
 set_target_properties(${PROJECT_NAME}-format
         PROPERTIES
             EXPORT_NAME format
-            OUTPUT_NAME "lib${PROJECT_NAME}-format"
+            OUTPUT_NAME "${PROJECT_NAME}-format"
 )
 
 install(
