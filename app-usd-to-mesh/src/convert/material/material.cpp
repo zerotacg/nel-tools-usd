@@ -1,9 +1,13 @@
 module;
 
+#include <memory>
+#include <ranges>
+#include <fmt/format.h>
 #include <nel/3d/material.h>
 #include <nel/3d/texture_file.h>
 #include <nel/misc/path.h>
 #include <pxr/usd/usdShade/material.h>
+#include <pxr/usd/usdShade/shader.h>
 
 module nel_tools.usd.usd_to_mesh.convert.material;
 import nel_tools.usd.common;
@@ -26,15 +30,38 @@ namespace nel_tools::usd::usd_to_mesh::convert::material
         return material;
     }
 
+    auto isTexture(const UsdPrim& prim)
+    {
+        TfToken id;
+        if (auto shader = UsdShadeShader(prim))
+        {
+            shader.GetIdAttr().Get(&id);
+        }
+
+        return id == common::UsdUVTextureTokens.id;
+    };
+
+    vector<UsdShadeShader> findTextures(const UsdShadeMaterial& material)
+    {
+        vector<UsdShadeShader> target;
+
+        for (auto child : material.GetPrim().GetChildren() | std::views::filter(isTexture))
+        {
+            target.emplace_back(child);
+        }
+
+        return target;
+    }
+
     CMaterial convert(const TextureSettings& settings, const UsdShadeMaterial& source)
     {
+        CMaterial target = defaultMaterial();
         auto surface = source.ComputeSurfaceSource();
         if (!surface)
         {
-            return defaultMaterial();
+            return target;
         }
 
-        CMaterial target = defaultMaterial();
         if (auto diffuseColor = surface.GetInput(TfToken("diffuseColor")))
         {
             GfVec3f value;
@@ -42,26 +69,34 @@ namespace nel_tools::usd::usd_to_mesh::convert::material
             {
                 target.setDiffuse(rgb(value));
             }
-            if (diffuseColor.HasConnectedSource())
-            {
-                auto sampler = UsdShadeShader(diffuseColor.GetConnectedSources().front().source);
-                TfToken id;
-                sampler.GetIdAttr().Get(&id);
-                if (id == common::UsdUVTextureTokens.id)
-                {
-                    SdfAssetPath value;
-                    sampler.GetInput(TfToken("file")).Get(&value);
-                    auto filename = value.GetAssetPath();
-                    if (settings.removeTextureFilePath)
-                    {
-                        filename = CFile::getFilename(filename);
-                    }
-                    auto* texture = new CTextureFile(filename);
-                    target.setTexture(0, texture);
-                }
-            }
+        }
+
+        auto textures = findTextures(source);
+
+        for (auto i = 0; i < std::min<uint32>(textures.size(), IDRV_MAT_MAXTEXTURES); ++i)
+        {
+            unique_ptr<ITexture> texture = convert(settings, textures[i]);
+            target.setTexture(i, texture.release());
         }
 
         return target;
+    }
+
+    unique_ptr<ITexture> convert(const TextureSettings& settings, const UsdShadeShader& source)
+    {
+        TfToken id;
+        source.GetIdAttr().Get(&id);
+        if (id != common::UsdUVTextureTokens.id)
+        {
+            throw std::invalid_argument(fmt::format("Shader is not a texture id: {}", id.GetString()));
+        }
+        SdfAssetPath value;
+        source.GetInput(TfToken("file")).Get(&value);
+        auto filename = value.GetAssetPath();
+        if (settings.removeTextureFilePath)
+        {
+            filename = CFile::getFilename(filename);
+        }
+        return make_unique<CTextureFile>(filename);
     }
 }

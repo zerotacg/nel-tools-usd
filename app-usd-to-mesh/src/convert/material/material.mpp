@@ -1,6 +1,9 @@
 module;
+#include <memory>
 #include <nel/3d/material.h>
+#include <nel/3d/texture.h>
 #include <pxr/usd/usdShade/material.h>
+#include <pxr/usd/usdShade/shader.h>
 
 export module nel_tools.usd.usd_to_mesh.convert.material;
 import nel_tools.usd.usd_to_mesh.convert.material.TextureSettings;
@@ -9,5 +12,7 @@ export namespace nel_tools::usd::usd_to_mesh::convert::material
 {
     NL3D::CMaterial defaultMaterial();
 
-    NL3D::CMaterial convert(const TextureSettings& settings, const pxr::UsdShadeMaterial& mesh);
+    NL3D::CMaterial convert(const TextureSettings& settings, const pxr::UsdShadeMaterial& source);
+
+    std::unique_ptr<NL3D::ITexture> convert(const TextureSettings& settings, const pxr::UsdShadeShader& source);
 }
