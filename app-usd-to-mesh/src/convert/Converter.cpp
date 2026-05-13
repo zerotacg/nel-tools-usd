@@ -23,6 +23,8 @@ module nel_tools.usd.usd_to_mesh.convert.Converter;
 import nel_tools.usd.common;
 import nel_tools.usd.format;
 import nel_tools.usd.usd_to_mesh.convert;
+import nel_tools.usd.usd_to_mesh.convert.material;
+import nel_tools.usd.usd_to_mesh.convert.material.TextureSettings;
 
 
 namespace nel_tools::usd::usd_to_mesh::convert
@@ -52,57 +54,12 @@ namespace nel_tools::usd::usd_to_mesh::convert
         return ranges::all_of(faceCounts, [](int count) { return count == 3; });
     }
 
-    CMaterial defaultMaterial()
-    {
-        CMaterial material;
-        material.initLighted();
-        material.setLighting(true, CRGBA::Black, CRGBA::White, CRGBA::White, CRGBA::Black);
-
-        return material;
-    }
-
-    vector<CMaterial> buildMaterials(const Converter::Settings settings, const UsdGeomMesh& mesh)
+    vector<CMaterial> buildMaterials(const material::TextureSettings& settings, const UsdGeomMesh& mesh)
     {
         auto materialBindingAPI = UsdShadeMaterialBindingAPI(mesh);
-        auto sourceMaterial = materialBindingAPI.GetDirectBinding().GetMaterial();
-        auto surface = sourceMaterial.ComputeSurfaceSource();
-        if (!surface)
-        {
-            return {defaultMaterial()};
-        }
+        auto source = materialBindingAPI.GetDirectBinding().GetMaterial();
 
-        vector<CMaterial> materials;
-        CMaterial& material = materials.emplace_back(defaultMaterial());
-        if (auto diffuseColor = surface.GetInput(TfToken("diffuseColor")))
-        {
-            GfVec3f value;
-            if (diffuseColor.Get(&value))
-            {
-                material.setDiffuse(rgb(value));
-            }
-            if (diffuseColor.HasConnectedSource())
-            {
-                auto sampler = UsdShadeShader(diffuseColor.GetConnectedSources().front().source);
-                TfToken id;
-                sampler.GetIdAttr().Get(&id);
-                if (id == common::UsdUVTextureTokens.id)
-                {
-                    SdfAssetPath value;
-                    sampler.GetInput(TfToken("file")).Get(&value);
-                    fmt::print(fg(fmt::terminal_color::blue), "material {} has texture file: {}\n",
-                               sourceMaterial.GetPath().GetString(), value.GetAssetPath());
-                    auto filename = value.GetAssetPath();
-                    if (settings.removeTextureFilePath)
-                    {
-                        filename = CFile::getFilename(filename);
-                    }
-                    auto* texture = new CTextureFile(filename);
-                    material.setTexture(0, texture);
-                }
-            }
-        }
-
-        return materials;
+        return {material::convert(settings, source)};
     }
 
     bool hasPerFaceVertexNormals(const UsdGeomMesh& mesh)

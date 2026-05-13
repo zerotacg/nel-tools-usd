@@ -7,6 +7,7 @@ module;
 export module nel_tools.usd.usd_to_mesh.Settings;
 import nel_tools.usd.arguments;
 import nel_tools.usd.usd_to_mesh.convert.Converter;
+import nel_tools.usd.usd_to_mesh.convert.material.TextureSettings;
 
 export namespace nel_tools::usd::usd_to_mesh
 {
@@ -18,7 +19,7 @@ export namespace nel_tools::usd::usd_to_mesh
         const std::string output;
         const std::optional<std::string> outputXml;
 
-        const Converter::Settings texture;
+        const material::TextureSettings texture;
 
         static Settings from(const NLMISC::CCmdArgs& args)
         {

@@ -7,10 +7,13 @@ target_sources(${PROJECT_NAME}-usd-to-mesh
         PRIVATE
         FILE_SET CXX_MODULES
         FILES
+        src/convert/material/material.mpp
+        src/convert/material/TextureSettings.mpp
         src/convert/convert.mpp
         src/convert/Converter.mpp
         src/Settings.mpp
         PRIVATE
+        src/convert/material/material.cpp
         src/convert/convert.cpp
         src/convert/Converter.cpp
         src/main.cpp
