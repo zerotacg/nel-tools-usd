@@ -13,6 +13,7 @@ export namespace nel_tools::usd::usd_to_mesh::convert
     public:
         const struct Settings
         {
+            const bool removeTextureFilePath;
         }& settings;
 
         explicit Converter(const Settings& settings, const pxr::UsdStageRefPtr& source)

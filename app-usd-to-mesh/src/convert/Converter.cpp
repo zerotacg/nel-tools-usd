@@ -20,6 +20,7 @@ module;
 #include <pxr/usd/usdShade/materialBindingAPI.h>
 
 module nel_tools.usd.usd_to_mesh.convert.Converter;
+import nel_tools.usd.common;
 import nel_tools.usd.format;
 import nel_tools.usd.usd_to_mesh.convert;
 
@@ -60,7 +61,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
         return material;
     }
 
-    vector<CMaterial> buildMaterials(const UsdGeomMesh& mesh)
+    vector<CMaterial> buildMaterials(const Converter::Settings settings, const UsdGeomMesh& mesh)
     {
         auto materialBindingAPI = UsdShadeMaterialBindingAPI(mesh);
         auto sourceMaterial = materialBindingAPI.GetDirectBinding().GetMaterial();
@@ -84,13 +85,18 @@ namespace nel_tools::usd::usd_to_mesh::convert
                 auto sampler = UsdShadeShader(diffuseColor.GetConnectedSources().front().source);
                 TfToken id;
                 sampler.GetIdAttr().Get(&id);
-                if (id == TfToken("UsdUVTexture"))
+                if (id == common::UsdUVTextureTokens.id)
                 {
                     SdfAssetPath value;
                     sampler.GetInput(TfToken("file")).Get(&value);
                     fmt::print(fg(fmt::terminal_color::blue), "material {} has texture file: {}\n",
                                sourceMaterial.GetPath().GetString(), value.GetAssetPath());
-                    auto* texture = new CTextureFile(CFile::getFilename(value.GetAssetPath()));
+                    auto filename = value.GetAssetPath();
+                    if (settings.removeTextureFilePath)
+                    {
+                        filename = CFile::getFilename(filename);
+                    }
+                    auto* texture = new CTextureFile(filename);
                     material.setTexture(0, texture);
                 }
             }
@@ -122,7 +128,7 @@ namespace nel_tools::usd::usd_to_mesh::convert
         // todo implement mesh base build
         // @see CExportNel::buildBaseMeshInterface (buildBaseMesh, maxBaseBuild, node, time, nodeMatrix);
         // @see CExportNel::buildMaterials
-        buildBaseMesh.Materials = buildMaterials(mesh);
+        buildBaseMesh.Materials = buildMaterials(settings, mesh);
 
         // todo implement mesh build @see CExportNel::buildMeshInterface (*tri, buildMesh, buildBaseMesh, maxBaseBuild, node, time, nodeMap);
         CMesh::CMeshBuild buildMesh;

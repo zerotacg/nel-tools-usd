@@ -19,6 +19,7 @@ target_sources(${PROJECT_NAME}-usd-to-mesh
 target_link_libraries(${PROJECT_NAME}-usd-to-mesh
         PRIVATE
         ${PROJECT_NAME}::arguments
+        ${PROJECT_NAME}::common
         ${PROJECT_NAME}::lib::shape-to-usd
 )
 target_compile_features(${PROJECT_NAME}-usd-to-mesh PRIVATE cxx_std_20)

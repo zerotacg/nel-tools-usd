@@ -18,15 +18,17 @@ export namespace nel_tools::usd::usd_to_mesh
         const std::string output;
         const std::optional<std::string> outputXml;
 
-        const Converter::Settings unused;
+        const Converter::Settings texture;
 
         static Settings from(const NLMISC::CCmdArgs& args)
         {
             return {
                 .input = arguments::getFirstAdditionalArg(args, "input"),
-                .output = arguments::getFirstAdditionalArg(args,"output"),
+                .output = arguments::getFirstAdditionalArg(args, "output"),
                 .outputXml = arguments::optional(args, "output-xml"),
-                .unused = {}
+                .texture = {
+                    .removeTextureFilePath = args.haveLongArg("texture-file-remove-path")
+                }
             };
         }
     };

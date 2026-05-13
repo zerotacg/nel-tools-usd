@@ -57,6 +57,7 @@ int main(int argc, char** argv)
         args.addAdditionalArg("input", "Input usd file");
         args.addAdditionalArg("output", "Output shape file");
         args.addArg("", "output-xml", "path", "Output shape file in xml format to <path>");
+        args.addArg("", "texture-file-remove-path", "", "remove the path from texture files leaving only the filename");
 
         if (!args.parse(argc, argv))
         {
