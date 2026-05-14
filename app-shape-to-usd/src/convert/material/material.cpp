@@ -92,7 +92,8 @@ namespace nel_tools::usd::shape_to_usd::convert::material
         auto stage = target.GetPrim().GetStage();
         auto modelRoot = stage->GetDefaultPrim();
         nldebug("CTextureMultiFile count %i", source.getNumFileName());
-        auto variantSet = modelRoot.GetVariantSet("textureSet");
+        auto modelVariants = modelRoot.GetVariantSet("textureSet");
+        auto textureVariants = target.GetPrim().GetVariantSets().AddVariantSet("textureSet");
         target.CreateIdAttr().Set(common::UsdUVTextureTokens.id);
         auto inputFile = target.CreateInput(common::UsdUVTextureTokens.inputs.file, SdfValueTypeNames->Asset);
         target.CreateInput(common::UsdUVTextureTokens.inputs.st, SdfValueTypeNames->Float2);
@@ -111,10 +112,17 @@ namespace nel_tools::usd::shape_to_usd::convert::material
             nldebug("CTextureMultiFile %i %s ", i, sourceFileName.c_str());
             auto fileName = transformFilename(settings, sourceFileName);
             auto variant = fmt::format("texture_{}", i);
-            variantSet.AddVariant(variant);
-            variantSet.SetVariantSelection(variant);
-            auto ctxt = UsdEditContext(variantSet.GetVariantEditContext());
-            inputFile.Set( SdfAssetPath(fileName) );
+            modelVariants.AddVariant(variant);
+            modelVariants.SetVariantSelection(variant);
+            textureVariants.AddVariant(variant);
+            {
+                auto ctxt = UsdEditContext(modelVariants.GetVariantEditContext());
+                textureVariants.SetVariantSelection(variant);
+            }
+            {
+                auto ctxt = UsdEditContext(textureVariants.GetVariantEditContext());
+                inputFile.Set(SdfAssetPath(fileName));
+            }
         }
     }
 
