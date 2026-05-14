@@ -76,9 +76,15 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
         outMesh.CreateDoubleSidedAttr().Set(hasDoubleSidedMaterials(mesh));
         outMesh.CreateSubdivisionSchemeAttr().Set(UsdGeomTokens->none);
-        outMesh.CreatePointsAttr().Set(vertices(mesh->getVertexBuffer()));
-        outMesh.CreateNormalsAttr().Set(normals(mesh->getVertexBuffer()));
-        outMesh.SetNormalsInterpolation(UsdGeomTokens->vertex);
+        if (mesh->getVertexBuffer().getVertexFormat() & CVertexBuffer::PositionFlag)
+        {
+            outMesh.CreatePointsAttr().Set(vertices(mesh->getVertexBuffer()));
+        }
+        if (mesh->getVertexBuffer().getVertexFormat() & CVertexBuffer::NormalFlag)
+        {
+            outMesh.CreateNormalsAttr().Set(normals(mesh->getVertexBuffer()));
+            outMesh.SetNormalsInterpolation(UsdGeomTokens->vertex);
+        }
 
         if (mesh->getVertexBuffer().getVertexFormat() & CVertexBuffer::TexCoord0Flag)
         {
@@ -106,7 +112,8 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
     VtArray<int> ConverterCMesh::convertIndices() const
     {
         VtArray<int> all;
-        for (auto renderPass = 0; mesh->getNbMatrixBlock() > lodId && renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
+        for (auto renderPass = 0; mesh->getNbMatrixBlock() > lodId && renderPass < mesh->getNbRdrPass(lodId); ++
+             renderPass)
         {
             auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
 
@@ -194,13 +201,15 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         auto diffuseColor = pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.diffuseColor,
                                                   SdfValueTypeNames->Color3f);
         diffuseColor.Set(rgb(source.getDiffuse()));
-        pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.useSpecularWorkflow, SdfValueTypeNames->Int).Set(1);
+        pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.useSpecularWorkflow, SdfValueTypeNames->Int).
+                  Set(1);
         pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.specularColor, SdfValueTypeNames->Color3f).Set(
             rgb(source.getSpecular()));
         pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.roughness, SdfValueTypeNames->Float).Set(0.9f);
         if (source.getAlphaTest())
         {
-            pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.opacityThreshold, SdfValueTypeNames->Float).Set(
+            pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.opacityThreshold,
+                                  SdfValueTypeNames->Float).Set(
                 source.getAlphaTestThreshold());
         }
         target.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
@@ -229,8 +238,9 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
                     input.ConnectToSource(uvmapResult);
                 }
                 diffuseColor.ConnectToSource(sampler.ConnectableAPI(), common::UsdUVTextureTokens.outputs.rgb);
-                pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.opacity, SdfValueTypeNames->Float).ConnectToSource(
-                    sampler.ConnectableAPI(), common::UsdUVTextureTokens.outputs.a);
+                pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.opacity, SdfValueTypeNames->Float).
+                          ConnectToSource(
+                              sampler.ConnectableAPI(), common::UsdUVTextureTokens.outputs.a);
             }
         }
     }
@@ -271,7 +281,8 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         auto fileName = transformFilename(source.getFileName());
         auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
         sampler.CreateIdAttr().Set(common::UsdUVTextureTokens.id);
-        sampler.CreateInput(common::UsdUVTextureTokens.inputs.file, SdfValueTypeNames->Asset).Set(SdfAssetPath(fileName));
+        sampler.CreateInput(common::UsdUVTextureTokens.inputs.file, SdfValueTypeNames->Asset).Set(
+            SdfAssetPath(fileName));
         sampler.CreateInput(common::UsdUVTextureTokens.inputs.st, SdfValueTypeNames->Float2);
         sampler.CreateInput(common::UsdUVTextureTokens.inputs.wrapS, SdfValueTypeNames->Token).Set(
             value(source.getWrapS()));
