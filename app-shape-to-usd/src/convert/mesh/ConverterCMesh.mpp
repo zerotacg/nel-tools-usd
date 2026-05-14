@@ -44,8 +44,6 @@ export namespace nel_tools::usd::shape_to_usd::convert::mesh
 
         pxr::UsdShadeMaterial defineMaterial(uint32 index);
 
-        std::string transformFilename(const std::string& fileName) const;
-
     private:
         NL3D::CMesh* mesh;
 

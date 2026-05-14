@@ -278,22 +278,9 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
     UsdShadeShader ConverterCMesh::convert(const SdfPath& root, const CTextureFile& source, uint32 index) const
     {
-        nldebug("CTextureFile %s", source.getFileName().c_str());
-        auto fileName = transformFilename(source.getFileName());
         auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
-        sampler.CreateIdAttr().Set(common::UsdUVTextureTokens.id);
-        sampler.CreateInput(common::UsdUVTextureTokens.inputs.file, SdfValueTypeNames->Asset).Set(
-            SdfAssetPath(fileName));
-        sampler.CreateInput(common::UsdUVTextureTokens.inputs.st, SdfValueTypeNames->Float2);
-        sampler.CreateInput(common::UsdUVTextureTokens.inputs.wrapS, SdfValueTypeNames->Token).Set(
-            material::value(source.getWrapS()));
-        sampler.CreateInput(common::UsdUVTextureTokens.inputs.wrapT, SdfValueTypeNames->Token).Set(
-            material::value(source.getWrapT()));
-        sampler.CreateInput(UsdHydraTokens->magFilter, SdfValueTypeNames->Token).Set(
-            material::value(source.getMagFilter()));
-        sampler.CreateInput(UsdHydraTokens->minFilter, SdfValueTypeNames->Token).Set(
-            material::value(source.getMinFilter()));
-        sampler.CreateOutput(common::UsdUVTextureTokens.outputs.rgb, SdfValueTypeNames->Float3);
+
+        material::convert(settings, sampler, source);
 
         return sampler;
     }
@@ -302,24 +289,5 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
     {
         return UsdShadeMaterial::Define(
             stage, Paths.materials.AppendPath(SdfPath(fmt::format("material_{}_MAT", materialIndex))));
-    }
-
-    string ConverterCMesh::transformFilename(const string& input) const
-    {
-        auto transformed = input;
-
-        if (settings.convertToLowerCase)
-        {
-            transformed = toLower(transformed);
-        }
-
-        if (settings.replaceExtension)
-        {
-            transformed = CFile::getFilenameWithoutExtension(transformed);
-            transformed += ".";
-            transformed += "png";
-        }
-
-        return settings.prefix + transformed;
     }
 }
