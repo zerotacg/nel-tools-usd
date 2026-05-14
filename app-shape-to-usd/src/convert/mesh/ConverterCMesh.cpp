@@ -58,6 +58,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         UsdGeomSetStageMetersPerUnit(stage, 1.0);
         stage->GetRootLayer()->SetDefaultPrim(Tokens.root);
         auto modelRoot = UsdGeomXform::Define(stage, Paths.root);
+        modelRoot.GetPrim().GetVariantSets().AddVariantSet("textureSet");
         UsdModelAPI(modelRoot).SetKind(KindTokens->component);
         auto modelRootXform = UsdGeomXformCommonAPI(modelRoot);
         if (auto defaultValue = mesh->getDefaultPos(); defaultValue != nullptr)
@@ -248,21 +249,13 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
     UsdShadeShader ConverterCMesh::convert(SdfPath& root, ITexture* source, uint32 index)
     {
-        fmt::print(fg(fmt::terminal_color::blue), "Texture at index {} is {} upload format {}\n", index,
-                   source->getClassName(), source->getUploadFormat());
-
         if (const auto specific = dynamic_cast<CTextureFile*>(source))
         {
             return convert(root, *specific, index);
         }
         else if (const auto specific = dynamic_cast<CTextureMultiFile*>(source))
         {
-            nldebug("CTextureMultiFile count %i", specific->getNumFileName());
-            for (auto i = 0; i < specific->getNumFileName(); ++i)
-            {
-                const auto& fileName = specific->getFileName(i);
-                nldebug("CTextureMultiFile %i %s ", i, fileName.c_str());
-            }
+            return convert(root, *specific, index);
         }
         else if (const auto specific = dynamic_cast<CTextureCube*>(source))
         {
@@ -273,10 +266,25 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
             nlwarning("Texture type not supported", source->getClassName().c_str());
         }
 
-        return UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
+        fmt::print(fg(fmt::terminal_color::blue), "Texture at index {} is {} upload format {}\n", index,
+                   source->getClassName(), source->getUploadFormat());
+
+        auto shader = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
+
+        shader.GetPrim().SetCustomDataByKey(TfToken("nel:texture_class_name"), VtValue(source->getClassName()));
+        return shader;
     }
 
     UsdShadeShader ConverterCMesh::convert(const SdfPath& root, const CTextureFile& source, uint32 index) const
+    {
+        auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
+
+        material::convert(settings, sampler, source);
+
+        return sampler;
+    }
+
+    UsdShadeShader ConverterCMesh::convert(const SdfPath& root, const CTextureMultiFile& source, uint32 index) const
     {
         auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
 

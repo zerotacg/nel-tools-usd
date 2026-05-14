@@ -7,6 +7,7 @@
 
 def Xform "root" (
     kind = "component"
+    prepend variantSets = "textureSet"
 )
 {
     float3 xformOp:rotateXYZ = (0, 0, 0)

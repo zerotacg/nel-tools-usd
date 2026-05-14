@@ -1,10 +1,16 @@
 module;
 
+#include <fmt/format.h>
 #include <nel/3d/texture.h>
 #include <nel/3d/texture_file.h>
+#include <nel/3d/texture_multi_file.h>
 #include <nel/misc/path.h>
 #include <pxr/usd/sdf/path.h>
+#include <pxr/usd/usd/editContext.h>
+#include <pxr/usd/usd/variantSets.h>
 #include <pxr/usd/usdHydra/tokens.h>
+#include <pxr/usd/usdGeom/scope.h>
+#include <pxr/usd/usdGeom/scope.h>
 #include <pxr/usd/usdShade/shader.h>
 
 module nel_tools.usd.shape_to_usd.convert.material;
@@ -81,6 +87,37 @@ namespace nel_tools::usd::shape_to_usd::convert::material
         target.CreateOutput(common::UsdUVTextureTokens.outputs.rgb, SdfValueTypeNames->Float3);
     }
 
+    void convert(const TextureSettings& settings, UsdShadeShader& target, const CTextureMultiFile& source)
+    {
+        auto stage = target.GetPrim().GetStage();
+        auto modelRoot = stage->GetDefaultPrim();
+        nldebug("CTextureMultiFile count %i", source.getNumFileName());
+        auto variantSet = modelRoot.GetVariantSet("textureSet");
+        target.CreateIdAttr().Set(common::UsdUVTextureTokens.id);
+        auto inputFile = target.CreateInput(common::UsdUVTextureTokens.inputs.file, SdfValueTypeNames->Asset);
+        target.CreateInput(common::UsdUVTextureTokens.inputs.st, SdfValueTypeNames->Float2);
+        target.CreateInput(common::UsdUVTextureTokens.inputs.wrapS, SdfValueTypeNames->Token).Set(
+            value(source.getWrapS()));
+        target.CreateInput(common::UsdUVTextureTokens.inputs.wrapT, SdfValueTypeNames->Token).Set(
+            value(source.getWrapT()));
+        target.CreateInput(UsdHydraTokens->magFilter, SdfValueTypeNames->Token).Set(
+            value(source.getMagFilter()));
+        target.CreateInput(UsdHydraTokens->minFilter, SdfValueTypeNames->Token).Set(
+            value(source.getMinFilter()));
+        target.CreateOutput(common::UsdUVTextureTokens.outputs.rgb, SdfValueTypeNames->Float3);
+        for (auto i = 0; i < source.getNumFileName(); ++i)
+        {
+            const auto& sourceFileName = source.getFileName(i);
+            nldebug("CTextureMultiFile %i %s ", i, sourceFileName.c_str());
+            auto fileName = transformFilename(settings, sourceFileName);
+            auto variant = fmt::format("texture_{}", i);
+            variantSet.AddVariant(variant);
+            variantSet.SetVariantSelection(variant);
+            auto ctxt = UsdEditContext(variantSet.GetVariantEditContext());
+            inputFile.Set( SdfAssetPath(fileName) );
+        }
+    }
+
     string transformFilename(const TextureSettings& settings, const string& input)
     {
         auto transformed = input;
@@ -99,5 +136,4 @@ namespace nel_tools::usd::shape_to_usd::convert::material
 
         return settings.prefix + transformed;
     }
-
 }
