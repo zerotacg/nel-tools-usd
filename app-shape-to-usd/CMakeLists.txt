@@ -8,6 +8,8 @@ target_sources(lib${PROJECT_NAME}-shape-to-usd
         PUBLIC
         FILE_SET CXX_MODULES
         FILES
+        src/convert/material/material.mpp
+        src/convert/material/TextureSettings.mpp
         src/convert/convert.mpp
         src/convert/mesh/Converter.mpp
         PRIVATE
@@ -16,6 +18,7 @@ target_sources(lib${PROJECT_NAME}-shape-to-usd
         FILES
         src/convert/mesh/ConverterCMesh.mpp
         PRIVATE
+        src/convert/material/material.cpp
         src/convert/convert.cpp
         src/convert/mesh/Converter.cpp
         src/convert/mesh/ConverterCMesh.cpp

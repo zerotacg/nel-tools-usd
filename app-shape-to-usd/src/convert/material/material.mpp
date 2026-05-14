@@ -1,0 +1,17 @@
+module;
+#include <memory>
+#include <nel/3d/material.h>
+#include <nel/3d/texture.h>
+#include <pxr/usd/usdShade/material.h>
+#include <pxr/usd/usdShade/shader.h>
+
+export module nel_tools.usd.shape_to_usd.convert.material;
+
+export namespace nel_tools::usd::shape_to_usd::convert::material
+{
+    const pxr::TfToken& value(const NL3D::ITexture::TWrapMode& source);
+
+    const pxr::TfToken& value(const NL3D::ITexture::TMagFilter& source);
+
+    const pxr::TfToken& value(const NL3D::ITexture::TMinFilter& source);
+}

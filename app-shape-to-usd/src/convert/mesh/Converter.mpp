@@ -3,6 +3,7 @@ module;
 #include <nel/3d/mesh.h>
 
 export module nel_tools.usd.shape_to_usd.convert.mesh.Converter;
+import nel_tools.usd.shape_to_usd.convert.material.TextureSettings;
 
 export namespace nel_tools::usd::shape_to_usd::convert::mesh
 {
@@ -11,24 +12,17 @@ export namespace nel_tools::usd::shape_to_usd::convert::mesh
     public:
         virtual ~Converter() = default;
 
-        const struct Settings
-        {
-            const bool convertToLowerCase;
-            const bool replaceExtension;
-            const std::string extension;
-            const std::string prefix;
-        }& settings;
-
         virtual void run() = 0;
 
-        static void convert(const Settings& settings, pxr::UsdStageRefPtr& target, NL3D::IShape* shape);
+        static void convert(const material::TextureSettings& settings, pxr::UsdStageRefPtr& target, NL3D::IShape* shape);
 
     protected:
-        explicit Converter(const Settings& settings, pxr::UsdStageRefPtr& target)
+        explicit Converter(const material::TextureSettings& settings, pxr::UsdStageRefPtr& target)
             : settings(settings), stage(target)
         {
         }
 
+        const material::TextureSettings& settings;
         pxr::UsdStageRefPtr& stage;
     };
 }

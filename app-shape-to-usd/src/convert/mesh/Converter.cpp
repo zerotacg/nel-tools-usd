@@ -7,6 +7,7 @@ module;
 #include <pxr/usd/usd/stage.h>
 
 module nel_tools.usd.shape_to_usd.convert.mesh.Converter;
+import nel_tools.usd.shape_to_usd.convert.material.TextureSettings;
 import nel_tools.usd.shape_to_usd.convert.mesh.ConverterCMesh;
 
 namespace nel_tools::usd::shape_to_usd::convert::mesh
@@ -15,7 +16,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
     using namespace std;
     using namespace pxr;
 
-    void Converter::convert(const Settings& settings, UsdStageRefPtr& target, IShape* shape)
+    void Converter::convert(const material::TextureSettings& settings, UsdStageRefPtr& target, IShape* shape)
     {
         if (dynamic_cast<CMesh*>(shape))
         {

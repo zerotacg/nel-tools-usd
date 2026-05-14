@@ -34,6 +34,7 @@ module nel_tools.usd.shape_to_usd.convert.mesh.ConverterCMesh;
 import nel_tools.usd.common;
 import nel_tools.usd.format;
 import nel_tools.usd.shape_to_usd.convert;
+import nel_tools.usd.shape_to_usd.convert.material;
 
 
 namespace nel_tools::usd::shape_to_usd::convert::mesh
@@ -285,13 +286,13 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
             SdfAssetPath(fileName));
         sampler.CreateInput(common::UsdUVTextureTokens.inputs.st, SdfValueTypeNames->Float2);
         sampler.CreateInput(common::UsdUVTextureTokens.inputs.wrapS, SdfValueTypeNames->Token).Set(
-            value(source.getWrapS()));
+            material::value(source.getWrapS()));
         sampler.CreateInput(common::UsdUVTextureTokens.inputs.wrapT, SdfValueTypeNames->Token).Set(
-            value(source.getWrapT()));
+            material::value(source.getWrapT()));
         sampler.CreateInput(UsdHydraTokens->magFilter, SdfValueTypeNames->Token).Set(
-            value(source.getMagFilter()));
+            material::value(source.getMagFilter()));
         sampler.CreateInput(UsdHydraTokens->minFilter, SdfValueTypeNames->Token).Set(
-            value(source.getMinFilter()));
+            material::value(source.getMinFilter()));
         sampler.CreateOutput(common::UsdUVTextureTokens.outputs.rgb, SdfValueTypeNames->Float3);
 
         return sampler;

@@ -1,0 +1,16 @@
+module;
+#include <optional>
+#include <string>
+
+export module nel_tools.usd.shape_to_usd.convert.material.TextureSettings;
+
+export namespace nel_tools::usd::shape_to_usd::convert::material
+{
+    struct TextureSettings
+    {
+        const bool convertToLowerCase;
+        const bool replaceExtension;
+        const std::string extension;
+        const std::string prefix;
+    };
+}

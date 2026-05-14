@@ -26,12 +26,6 @@ export namespace nel_tools::usd::shape_to_usd::convert
     pxr::GfVec4f value(const NLMISC::CRGBAF& source);
 
     pxr::GfVec3f rgb(const NLMISC::CRGBAF& source);
-
-    const pxr::TfToken& value(const NL3D::ITexture::TWrapMode& source);
-
-    const pxr::TfToken& value(const NL3D::ITexture::TMagFilter& source);
-
-    const pxr::TfToken& value(const NL3D::ITexture::TMinFilter& source);
 }
 
 namespace nel_tools::usd::shape_to_usd::convert

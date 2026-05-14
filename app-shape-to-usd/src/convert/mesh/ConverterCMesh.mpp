@@ -13,15 +13,16 @@ module;
 #include <pxr/usd/usdShade/material.h>
 
 export module nel_tools.usd.shape_to_usd.convert.mesh.ConverterCMesh;
-
 import nel_tools.usd.shape_to_usd.convert.mesh.Converter;
+import nel_tools.usd.shape_to_usd.convert.material.TextureSettings;
 
 export namespace nel_tools::usd::shape_to_usd::convert::mesh
 {
     class ConverterCMesh : public Converter
     {
     public:
-        explicit ConverterCMesh(const Settings& settings, pxr::UsdStageRefPtr& target, NL3D::CMesh* source)
+        explicit ConverterCMesh(const material::TextureSettings& settings, pxr::UsdStageRefPtr& target,
+                                NL3D::CMesh* source)
             : Converter(settings, target), mesh(source)
         {
         }
@@ -40,9 +41,6 @@ export namespace nel_tools::usd::shape_to_usd::convert::mesh
         pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureCube& source, uint32 index);
         pxr::UsdShadeShader convert(const pxr::SdfPath& root, const NL3D::CTextureFile& source, uint32 index) const;
         pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureMultiFile& source, uint32 index);
-        const pxr::TfToken& convert(const NL3D::ITexture::TWrapMode& source) const;
-        const pxr::TfToken& convert(const NL3D::ITexture::TMagFilter& source) const;
-        const pxr::TfToken& convert(const NL3D::ITexture::TMinFilter& source) const;
 
         pxr::UsdShadeMaterial defineMaterial(uint32 index);
 

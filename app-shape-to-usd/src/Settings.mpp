@@ -6,18 +6,18 @@ module;
 
 export module nel_tools.usd.shape_to_usd.Settings;
 import nel_tools.usd.arguments;
-import nel_tools.usd.shape_to_usd.convert.mesh.Converter;
+import nel_tools.usd.shape_to_usd.convert.material.TextureSettings;
 
 export namespace nel_tools::usd::shape_to_usd
 {
-    using namespace convert::mesh;
+    using namespace convert;
 
     struct Settings
     {
         const std::string input;
         const std::string output;
 
-        const Converter::Settings texture;
+        const material::TextureSettings texture;
 
         static Settings from(const NLMISC::CCmdArgs& args)
         {

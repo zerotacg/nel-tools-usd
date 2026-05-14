@@ -64,7 +64,7 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
 
-        Converter::convert(settings.texture, stage, shape);
+        mesh::Converter::convert(settings.texture, stage, shape);
 
         // Save the stage
         if (!stage->GetRootLayer()->Save())
