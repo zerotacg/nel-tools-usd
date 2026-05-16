@@ -192,9 +192,9 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         auto diffuseColor = pbrShader.GetInput(common::UsdPreviewSurfaceTokens.inputs.diffuseColor);
 
         auto uvmap = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("uvmap")));
-        uvmap.CreateIdAttr().Set(TfToken("UsdPrimvarReader_float2"));
-        uvmap.CreateInput(Tokens.varname, SdfValueTypeNames->String).Set(stPrimvarName);
-        auto uvmapResult = uvmap.CreateOutput(Tokens.result, SdfValueTypeNames->Float2);
+        uvmap.CreateIdAttr().Set(common::UsdPrimvarReader_float2Tokens.id);
+        uvmap.CreateInput(common::UsdPrimvarReader_float2Tokens.inputs.varname, SdfValueTypeNames->String).Set(stPrimvarName);
+        auto uvmapResult = uvmap.CreateOutput(common::UsdPrimvarReader_float2Tokens.outputs.result, SdfValueTypeNames->Float2);
 
         if (source.getDoubleSided())
         {

@@ -31,6 +31,22 @@ export namespace nel_tools::usd::common
         } outputs;
     } UsdUVTextureTokens;
 
+    inline const struct
+    {
+        const pxr::TfToken id = pxr::TfToken("UsdPrimvarReader_float2");
+
+        const struct
+        {
+            const pxr::TfToken varname = pxr::TfToken("varname");
+            const pxr::TfToken fallback = pxr::TfToken("fallback");
+        } inputs;
+
+        const struct
+        {
+            const pxr::TfToken result = pxr::TfToken("result");
+        } outputs;
+    } UsdPrimvarReader_float2Tokens;
+
     inline const struct // @see https://openusd.org/release/spec_usdpreviewsurface.html#preview-surface
     {
         const pxr::TfToken id = pxr::TfToken("UsdPreviewSurface");

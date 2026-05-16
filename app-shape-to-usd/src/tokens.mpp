@@ -16,7 +16,6 @@ export namespace nel_tools::usd::shape_to_usd::tokens
         const pxr::TfToken TextureCoordinates_5 = pxr::TfToken("st_5");
         const pxr::TfToken TextureCoordinates_6 = pxr::TfToken("st_6");
         const pxr::TfToken TextureCoordinates_7 = pxr::TfToken("st_7");
-        const pxr::TfToken result = pxr::TfToken("result");
         const pxr::TfToken varname = pxr::TfToken("varname");
         const pxr::TfToken frame_stPrimvarName = pxr::TfToken("frame:stPrimvarName");
     } Tokens;
