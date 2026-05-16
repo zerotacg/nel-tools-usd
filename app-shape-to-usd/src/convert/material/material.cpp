@@ -70,26 +70,21 @@ namespace nel_tools::usd::shape_to_usd::convert::material
         }
     }
 
-    void convert(const TextureSettings& settings, UsdShadeMaterial& target, const CMaterial& source)
+    void shader(UsdShadeShader& target, const CMaterial& source)
     {
-        auto root = target.GetPath();
-        auto stage = target.GetPrim().GetStage();
-        auto pbrShader = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("PBRShader")));
-        pbrShader.CreateIdAttr().Set(common::UsdPreviewSurfaceTokens.id);
-        pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.diffuseColor, SdfValueTypeNames->Color3f).Set(
+        target.CreateIdAttr().Set(common::UsdPreviewSurfaceTokens.id);
+        target.CreateInput(common::UsdPreviewSurfaceTokens.inputs.diffuseColor, SdfValueTypeNames->Color3f).Set(
             rgb(source.getDiffuse()));
-        pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.useSpecularWorkflow, SdfValueTypeNames->Int).
-                  Set(1);
-        pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.specularColor, SdfValueTypeNames->Color3f).Set(
+        target.CreateInput(common::UsdPreviewSurfaceTokens.inputs.useSpecularWorkflow, SdfValueTypeNames->Int).
+               Set(1);
+        target.CreateInput(common::UsdPreviewSurfaceTokens.inputs.specularColor, SdfValueTypeNames->Color3f).Set(
             rgb(source.getSpecular()));
-        pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.roughness, SdfValueTypeNames->Float).Set(0.9f);
+        target.CreateInput(common::UsdPreviewSurfaceTokens.inputs.roughness, SdfValueTypeNames->Float).Set(0.9f);
         if (source.getAlphaTest())
         {
-            pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.opacityThreshold,
-                                  SdfValueTypeNames->Float).Set(
+            target.CreateInput(common::UsdPreviewSurfaceTokens.inputs.opacityThreshold, SdfValueTypeNames->Float).Set(
                 source.getAlphaTestThreshold());
         }
-        target.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
     }
 
     void convert(const TextureSettings& settings, UsdShadeShader& target, const CTextureFile& source)

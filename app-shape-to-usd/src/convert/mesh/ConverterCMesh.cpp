@@ -184,8 +184,9 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
     {
         auto root = target.GetPath();
         auto pbrShader = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("PBRShader")));
-        material::convert(settings, target, source);
+        material::shader(pbrShader, source);
         auto diffuseColor = pbrShader.GetInput(common::UsdPreviewSurfaceTokens.inputs.diffuseColor);
+        target.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
 
         auto uvmap = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("uvmap")));
         uvmap.CreateIdAttr().Set(common::UsdPrimvarReader_float2Tokens.id);

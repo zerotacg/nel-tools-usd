@@ -19,7 +19,7 @@ export namespace nel_tools::usd::shape_to_usd::convert::material
 
     const pxr::TfToken& value(const NL3D::ITexture::TMinFilter& source);
 
-    void convert(const TextureSettings& settings, pxr::UsdShadeMaterial& target, const NL3D::CMaterial& source);
+    void shader(pxr::UsdShadeShader& target, const NL3D::CMaterial& source);
 
     void convert(const TextureSettings& settings, pxr::UsdShadeShader& target, const NL3D::CTextureFile& source);
 
