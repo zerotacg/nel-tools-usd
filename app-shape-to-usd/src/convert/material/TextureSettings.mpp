@@ -11,5 +11,6 @@ export namespace nel_tools::usd::shape_to_usd::convert::material
         const bool convertToLowerCase;
         const std::optional<std::string> extension;
         const std::optional<std::string> prefix;
+        const std::optional<std::string> searchPath;
     };
 }

@@ -27,7 +27,8 @@ export namespace nel_tools::usd::shape_to_usd
                 .texture = {
                     .convertToLowerCase = args.haveLongArg("texture-file-to-lower-case"),
                     .extension = arguments::optional(args, "texture-file-replace-extension"),
-                    .prefix = arguments::optional(args, "texture-file-prefix")
+                    .prefix = arguments::optional(args, "texture-file-prefix"),
+                    .searchPath = arguments::optional(args, "texture-file-search-path")
                 }
             };
         }

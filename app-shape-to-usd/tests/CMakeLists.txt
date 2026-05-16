@@ -2,9 +2,7 @@ add_test(NAME "shape-to-usd.help" COMMAND ${PROJECT_NAME}::shape-to-usd --help)
 
 add_test(NAME "shape-to-usd.write_cube_usda"
         COMMAND ${PROJECT_NAME}::shape-to-usd
-        --texture-file-to-lower-case
-        --texture-file-replace-extension texture.png
-        --texture-file-prefix "textures/"
+        --texture-file-search-path "${CMAKE_SOURCE_DIR}/app-usd-to-mesh/tests/resources"
         "${CMAKE_CURRENT_SOURCE_DIR}/resources/cube.shape"
         "${CMAKE_CURRENT_SOURCE_DIR}/approvals/cube.received.usda"
 )

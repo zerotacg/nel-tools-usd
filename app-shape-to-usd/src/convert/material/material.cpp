@@ -142,6 +142,17 @@ namespace nel_tools::usd::shape_to_usd::convert::material
             transformed += *extension;
         }
 
+        if (auto searchPath = settings.searchPath)
+        {
+            CPath::addSearchPath(*searchPath, true, false);
+            auto found = CPath::lookup(transformed, false);
+            if (!found.empty())
+            {
+                CPath::makePathRelative(*searchPath, found);
+                transformed = found;
+            }
+        }
+
         if (auto prefix = settings.prefix)
         {
             transformed = *prefix + transformed;

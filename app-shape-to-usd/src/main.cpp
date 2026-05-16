@@ -36,6 +36,7 @@ int main(int argc, char** argv)
         args.addArg("", "texture-file-to-lower-case", "", "convert texture filename to lower case");
         args.addArg("", "texture-file-replace-extension", "ext", "replace texture file extension with <ext>");
         args.addArg("", "texture-file-prefix", "path", "prefix texture filename with <path>");
+        args.addArg("", "texture-file-search-path", "path", "try to find path for texture files by looking them up at <path>");
 
         if (!args.parse(argc, argv))
         {
