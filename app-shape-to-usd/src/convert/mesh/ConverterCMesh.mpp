@@ -9,7 +9,7 @@ module;
 #include <nel/3d/texture_multi_file.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/gf/vec2f.h>
-#include <pxr/usd/usdGeom/mesh.h>
+#include <pxr/usd/usdGeom/xform.h>
 #include <pxr/usd/usdShade/material.h>
 
 export module nel_tools.usd.shape_to_usd.convert.mesh.ConverterCMesh;
@@ -21,9 +21,10 @@ export namespace nel_tools::usd::shape_to_usd::convert::mesh
     class ConverterCMesh : public Converter
     {
     public:
-        explicit ConverterCMesh(const material::TextureSettings& settings, pxr::UsdStageRefPtr& target,
+        explicit ConverterCMesh(const material::TextureSettings& settings, pxr::UsdStageRefPtr& stage,
+                                pxr::UsdGeomXform& target,
                                 NL3D::CMesh* source)
-            : Converter(settings, target), mesh(source)
+            : Converter(settings, stage, target), mesh(source)
         {
         }
 
@@ -40,31 +41,15 @@ export namespace nel_tools::usd::shape_to_usd::convert::mesh
         pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::ITexture* source, uint32 index);
         pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureCube& source, uint32 index);
         pxr::UsdShadeShader convert(const pxr::SdfPath& root, const NL3D::CTextureFile& source, uint32 index) const;
-        pxr::UsdShadeShader convert(const pxr::SdfPath& root, const NL3D::CTextureMultiFile& source, uint32 index) const;
+        pxr::UsdShadeShader convert(const pxr::SdfPath& root, const NL3D::CTextureMultiFile& source,
+                                    uint32 index) const;
 
         pxr::UsdShadeMaterial defineMaterial(uint32 index);
 
     private:
-        NL3D::CMesh* mesh;
-
+        NL3D::CMesh* const mesh;
 
         const uint lodId = 0;
         const std::string stPrimvarName = "st";
-
-        struct
-        {
-            const pxr::SdfPath root = pxr::SdfPath("/root");
-            const pxr::SdfPath model = root.AppendPath(pxr::SdfPath("model"));
-            const pxr::SdfPath materials = root.AppendPath(pxr::SdfPath("_materials"));
-        } Paths;
-
-        struct
-        {
-            const pxr::TfToken root = pxr::TfToken("root");
-            const pxr::TfToken st = pxr::TfToken("st");
-            const pxr::TfToken result = pxr::TfToken("result");
-            const pxr::TfToken varname = pxr::TfToken("varname");
-            const pxr::TfToken frame_stPrimvarName = pxr::TfToken("frame:stPrimvarName");
-        } Tokens;
     };
 }

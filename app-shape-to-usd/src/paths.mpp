@@ -1,0 +1,15 @@
+module;
+#include <pxr/usd/sdf/path.h>
+
+export module nel_tools.usd.shape_to_usd.paths;
+
+export namespace nel_tools::usd::shape_to_usd::paths
+{
+    inline const struct
+    {
+        const pxr::SdfPath root = pxr::SdfPath("/root");
+        const pxr::SdfPath model = root.AppendPath(pxr::SdfPath("model"));
+        const pxr::SdfPath materials = root.AppendPath(pxr::SdfPath("_materials"));
+    } Paths;
+
+}

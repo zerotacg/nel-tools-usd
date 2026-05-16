@@ -35,6 +35,8 @@ import nel_tools.usd.common;
 import nel_tools.usd.format;
 import nel_tools.usd.shape_to_usd.convert;
 import nel_tools.usd.shape_to_usd.convert.material;
+import nel_tools.usd.shape_to_usd.paths;
+import nel_tools.usd.shape_to_usd.tokens;
 
 
 namespace nel_tools::usd::shape_to_usd::convert::mesh
@@ -43,6 +45,8 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
     using namespace NLMISC;
     using namespace std;
     using namespace pxr;
+    using namespace paths;
+    using namespace tokens;
 
     bool hasDoubleSidedMaterials(const CMesh* mesh)
     {
@@ -54,10 +58,6 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
     void ConverterCMesh::run()
     {
-        UsdGeomSetStageUpAxis(stage, UsdGeomTokens->z);
-        UsdGeomSetStageMetersPerUnit(stage, 1.0);
-        stage->GetRootLayer()->SetDefaultPrim(Tokens.root);
-        auto modelRoot = UsdGeomXform::Define(stage, Paths.root);
         modelRoot.GetPrim().GetVariantSets().AddVariantSet("textureSet");
         UsdModelAPI(modelRoot).SetKind(KindTokens->component);
         auto modelRootXform = UsdGeomXformCommonAPI(modelRoot);

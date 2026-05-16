@@ -6,6 +6,11 @@
 )
 
 def Xform "root" (
+    customData = {
+        dictionary nel = {
+            string class_name = "CMesh"
+        }
+    }
     kind = "component"
     prepend variantSets = "textureSet"
 )

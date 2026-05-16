@@ -12,6 +12,8 @@ target_sources(lib${PROJECT_NAME}-shape-to-usd
         src/convert/material/TextureSettings.mpp
         src/convert/convert.mpp
         src/convert/mesh/Converter.mpp
+        src/paths.mpp
+        src/tokens.mpp
         PRIVATE
         FILE_SET private_modules
         TYPE CXX_MODULES

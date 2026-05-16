@@ -1,0 +1,16 @@
+module;
+#include <pxr/base/tf/token.h>
+
+export module nel_tools.usd.shape_to_usd.tokens;
+
+export namespace nel_tools::usd::shape_to_usd::tokens
+{
+    inline const struct
+    {
+        const pxr::TfToken root = pxr::TfToken("root");
+        const pxr::TfToken st = pxr::TfToken("st");
+        const pxr::TfToken result = pxr::TfToken("result");
+        const pxr::TfToken varname = pxr::TfToken("varname");
+        const pxr::TfToken frame_stPrimvarName = pxr::TfToken("frame:stPrimvarName");
+    } Tokens;
+}

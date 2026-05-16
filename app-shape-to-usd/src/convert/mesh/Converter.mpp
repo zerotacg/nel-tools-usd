@@ -1,6 +1,7 @@
 module;
-#include <pxr/usd/usd/stage.h>
 #include <nel/3d/mesh.h>
+#include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/xform.h>
 
 export module nel_tools.usd.shape_to_usd.convert.mesh.Converter;
 import nel_tools.usd.shape_to_usd.convert.material.TextureSettings;
@@ -14,15 +15,18 @@ export namespace nel_tools::usd::shape_to_usd::convert::mesh
 
         virtual void run() = 0;
 
-        static void convert(const material::TextureSettings& settings, pxr::UsdStageRefPtr& target, NL3D::IShape* shape);
+        static void convert(const material::TextureSettings& settings, pxr::UsdStageRefPtr& target,
+                            NL3D::IShape* shape);
 
     protected:
-        explicit Converter(const material::TextureSettings& settings, pxr::UsdStageRefPtr& target)
-            : settings(settings), stage(target)
+        explicit Converter(const material::TextureSettings& settings, pxr::UsdStageRefPtr& stage,
+                           pxr::UsdGeomXform& target)
+            : settings(settings), stage(stage), modelRoot(target)
         {
         }
 
         const material::TextureSettings& settings;
         pxr::UsdStageRefPtr& stage;
+        pxr::UsdGeomXform& modelRoot;
     };
 }
