@@ -184,22 +184,8 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
     {
         auto root = target.GetPath();
         auto pbrShader = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("PBRShader")));
-        pbrShader.CreateIdAttr().Set(common::UsdPreviewSurfaceTokens.id);
-        auto diffuseColor = pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.diffuseColor,
-                                                  SdfValueTypeNames->Color3f);
-        diffuseColor.Set(rgb(source.getDiffuse()));
-        pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.useSpecularWorkflow, SdfValueTypeNames->Int).
-                  Set(1);
-        pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.specularColor, SdfValueTypeNames->Color3f).Set(
-            rgb(source.getSpecular()));
-        pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.roughness, SdfValueTypeNames->Float).Set(0.9f);
-        if (source.getAlphaTest())
-        {
-            pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.opacityThreshold,
-                                  SdfValueTypeNames->Float).Set(
-                source.getAlphaTestThreshold());
-        }
-        target.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
+        material::convert(settings, target, source);
+        auto diffuseColor = pbrShader.GetInput(common::UsdPreviewSurfaceTokens.inputs.diffuseColor);
 
         auto uvmap = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("uvmap")));
         uvmap.CreateIdAttr().Set(TfToken("UsdPrimvarReader_float2"));
@@ -220,7 +206,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
             {
                 auto sourceTexture = source.getTexture(textureIndex);
                 auto sampler = convert(root, sourceTexture, textureIndex);
-                if (auto input = sampler.GetInput(Tokens.TextureCoordinates_0))
+                if (auto input = sampler.GetInput(common::UsdUVTextureTokens.inputs.st))
                 {
                     input.ConnectToSource(uvmapResult);
                 }
