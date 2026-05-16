@@ -78,22 +78,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
         outMesh.CreateDoubleSidedAttr().Set(hasDoubleSidedMaterials(mesh));
         outMesh.CreateSubdivisionSchemeAttr().Set(UsdGeomTokens->none);
-        if (mesh->getVertexBuffer().getVertexFormat() & CVertexBuffer::PositionFlag)
-        {
-            outMesh.CreatePointsAttr().Set(vertices(mesh->getVertexBuffer()));
-        }
-        if (mesh->getVertexBuffer().getVertexFormat() & CVertexBuffer::NormalFlag)
-        {
-            outMesh.CreateNormalsAttr().Set(normals(mesh->getVertexBuffer()));
-            outMesh.SetNormalsInterpolation(UsdGeomTokens->vertex);
-        }
-
-        if (mesh->getVertexBuffer().getVertexFormat() & CVertexBuffer::TexCoord0Flag)
-        {
-            UsdGeomPrimvarsAPI(outMesh)
-                .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->vertex)
-                .Set(uvs(mesh->getVertexBuffer()));
-        }
+        value(outMesh, mesh->getVertexBuffer());
 
 
         outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();

@@ -7,12 +7,15 @@ module;
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/gf/vec4f.h>
 #include <pxr/base/vt/array.h>
+#include <pxr/usd/usdGeom/mesh.h>
 
 export module nel_tools.usd.shape_to_usd.convert;
 
 
 export namespace nel_tools::usd::shape_to_usd::convert
 {
+    void value(pxr::UsdGeomMesh& target, const NL3D::CVertexBuffer& source);
+
     pxr::VtArray<pxr::GfVec3f> vertices(const NL3D::CVertexBuffer& source);
 
     pxr::VtArray<pxr::GfVec3f> normals(const NL3D::CVertexBuffer& source);

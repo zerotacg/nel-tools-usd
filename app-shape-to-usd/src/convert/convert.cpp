@@ -7,14 +7,38 @@ module;
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/gf/vec4f.h>
 #include <pxr/base/vt/array.h>
+#include <pxr/usd/usdGeom/mesh.h>
+#include <pxr/usd/usdGeom/primvarsAPI.h>
 
 module nel_tools.usd.shape_to_usd.convert;
+import nel_tools.usd.shape_to_usd.tokens;
 
 namespace nel_tools::usd::shape_to_usd::convert
 {
     using namespace NL3D;
     using namespace NLMISC;
     using namespace pxr;
+    using namespace tokens;
+
+    void value(UsdGeomMesh& target, const CVertexBuffer& source)
+    {
+        if (source.getVertexFormat() & CVertexBuffer::PositionFlag)
+        {
+            target.CreatePointsAttr().Set(vertices(source));
+        }
+        if (source.getVertexFormat() & CVertexBuffer::NormalFlag)
+        {
+            target.CreateNormalsAttr().Set(normals(source));
+            target.SetNormalsInterpolation(UsdGeomTokens->vertex);
+        }
+
+        if (source.getVertexFormat() & CVertexBuffer::TexCoord0Flag)
+        {
+            UsdGeomPrimvarsAPI(target)
+                .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->vertex)
+                .Set(uvs(source));
+        }
+    }
 
     VtArray<GfVec3f> vertices(const CVertexBuffer& source)
     {

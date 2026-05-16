@@ -80,22 +80,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         outMesh.CreateSubdivisionSchemeAttr().Set(UsdGeomTokens->none);
         CVertexBuffer vertexBuffer;
         mesh->getVertexBuffer(vertexBuffer);
-        if (vertexBuffer.getVertexFormat() & CVertexBuffer::PositionFlag)
-        {
-            outMesh.CreatePointsAttr().Set(vertices(vertexBuffer));
-        }
-        if (vertexBuffer.getVertexFormat() & CVertexBuffer::NormalFlag)
-        {
-            outMesh.CreateNormalsAttr().Set(normals(vertexBuffer));
-            outMesh.SetNormalsInterpolation(UsdGeomTokens->vertex);
-        }
-
-        if (vertexBuffer.getVertexFormat() & CVertexBuffer::TexCoord0Flag)
-        {
-            UsdGeomPrimvarsAPI(outMesh)
-                .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->vertex)
-                .Set(uvs(vertexBuffer));
-        }
+        value(outMesh, vertexBuffer);
 
 
         outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
