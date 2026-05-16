@@ -124,6 +124,7 @@ namespace nel_tools::usd::shape_to_usd::convert::material
                 inputFile.Set(SdfAssetPath(fileName));
             }
         }
+        modelVariants.SetVariantSelection("texture_0");
     }
 
     string transformFilename(const TextureSettings& settings, const string& input)
