@@ -224,7 +224,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
             {
                 auto sourceTexture = source.getTexture(textureIndex);
                 auto sampler = convert(root, sourceTexture, textureIndex);
-                if (auto input = sampler.GetInput(Tokens.st))
+                if (auto input = sampler.GetInput(Tokens.TextureCoordinates_0))
                 {
                     input.ConnectToSource(uvmapResult);
                 }

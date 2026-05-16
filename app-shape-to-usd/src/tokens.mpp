@@ -8,7 +8,14 @@ export namespace nel_tools::usd::shape_to_usd::tokens
     inline const struct
     {
         const pxr::TfToken root = pxr::TfToken("root");
-        const pxr::TfToken st = pxr::TfToken("st");
+        const pxr::TfToken TextureCoordinates_0 = pxr::TfToken("st");
+        const pxr::TfToken TextureCoordinates_1 = pxr::TfToken("st_1");
+        const pxr::TfToken TextureCoordinates_2 = pxr::TfToken("st_2");
+        const pxr::TfToken TextureCoordinates_3 = pxr::TfToken("st_3");
+        const pxr::TfToken TextureCoordinates_4 = pxr::TfToken("st_4");
+        const pxr::TfToken TextureCoordinates_5 = pxr::TfToken("st_5");
+        const pxr::TfToken TextureCoordinates_6 = pxr::TfToken("st_6");
+        const pxr::TfToken TextureCoordinates_7 = pxr::TfToken("st_7");
         const pxr::TfToken result = pxr::TfToken("result");
         const pxr::TfToken varname = pxr::TfToken("varname");
         const pxr::TfToken frame_stPrimvarName = pxr::TfToken("frame:stPrimvarName");

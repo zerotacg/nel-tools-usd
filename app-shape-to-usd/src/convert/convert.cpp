@@ -20,6 +20,22 @@ namespace nel_tools::usd::shape_to_usd::convert
     using namespace pxr;
     using namespace tokens;
 
+    TfToken textureCoordinatesToken(const uint8 stage)
+    {
+        switch (stage)
+        {
+        default:
+        case 0: return Tokens.TextureCoordinates_0;
+        case 1: return Tokens.TextureCoordinates_1;
+        case 2: return Tokens.TextureCoordinates_2;
+        case 3: return Tokens.TextureCoordinates_3;
+        case 4: return Tokens.TextureCoordinates_4;
+        case 5: return Tokens.TextureCoordinates_5;
+        case 6: return Tokens.TextureCoordinates_6;
+        case 7: return Tokens.TextureCoordinates_7;
+        }
+    }
+
     void value(UsdGeomMesh& target, const CVertexBuffer& source)
     {
         if (source.getVertexFormat() & CVertexBuffer::PositionFlag)
@@ -32,11 +48,18 @@ namespace nel_tools::usd::shape_to_usd::convert
             target.SetNormalsInterpolation(UsdGeomTokens->vertex);
         }
 
-        if (source.getVertexFormat() & CVertexBuffer::TexCoord0Flag)
+        auto primVarsApi = UsdGeomPrimvarsAPI(target);
+        for (auto stage = 0; stage < 8; ++stage)
         {
-            UsdGeomPrimvarsAPI(target)
-                .CreatePrimvar(Tokens.st, SdfValueTypeNames->TexCoord2fArray, UsdGeomTokens->vertex)
-                .Set(uvs(source));
+            if (source.getVertexFormat() & (CVertexBuffer::TexCoord0Flag<<stage))
+            {
+                primVarsApi
+                    .CreatePrimvar(
+                        textureCoordinatesToken(stage),
+                        SdfValueTypeNames->TexCoord2fArray,
+                        UsdGeomTokens->vertex)
+                    .Set(uvs(source, stage));
+            }
         }
     }
 
@@ -70,7 +93,7 @@ namespace nel_tools::usd::shape_to_usd::convert
         return target;
     }
 
-    VtArray<GfVec2f> uvs(const CVertexBuffer& source)
+    VtArray<GfVec2f> uvs(const CVertexBuffer& source, const uint8 stage)
     {
         VtArray<GfVec2f> target;
         CVertexBufferRead reader;
@@ -78,7 +101,7 @@ namespace nel_tools::usd::shape_to_usd::convert
 
         for (auto i = 0; i < source.getNumVertices(); ++i)
         {
-            const auto uv = reader.getTexCoordPointer(i);
+            const auto uv = reader.getTexCoordPointer(i, stage);
             target.emplace_back(uv->U, 1 - uv->V);
         }
 
