@@ -135,13 +135,18 @@ namespace nel_tools::usd::shape_to_usd::convert::material
             transformed = toLower(transformed);
         }
 
-        if (settings.replaceExtension)
+        if (auto extension = settings.extension)
         {
             transformed = CFile::getFilenameWithoutExtension(transformed);
             transformed += ".";
-            transformed += "png";
+            transformed += *extension;
         }
 
-        return settings.prefix + transformed;
+        if (auto prefix = settings.prefix)
+        {
+            transformed = *prefix + transformed;
+        }
+
+        return transformed;
     }
 }
