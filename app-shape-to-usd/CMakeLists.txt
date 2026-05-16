@@ -19,11 +19,13 @@ target_sources(lib${PROJECT_NAME}-shape-to-usd
         TYPE CXX_MODULES
         FILES
         src/convert/mesh/ConverterCMesh.mpp
+        src/convert/mesh/ConverterCMeshMRMSkinned.mpp
         PRIVATE
         src/convert/material/material.cpp
         src/convert/convert.cpp
         src/convert/mesh/Converter.cpp
         src/convert/mesh/ConverterCMesh.cpp
+        src/convert/mesh/ConverterCMeshMRMSkinned.cpp
 )
 target_link_libraries(lib${PROJECT_NAME}-shape-to-usd
         PUBLIC

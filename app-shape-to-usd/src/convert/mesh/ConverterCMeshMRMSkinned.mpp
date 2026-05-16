@@ -1,0 +1,55 @@
+module;
+#include <string>
+
+#include <nel/3d/material.h>
+#include <nel/3d/mesh_mrm_skinned.h>
+#include <nel/3d/texture.h>
+#include <nel/3d/texture_cube.h>
+#include <nel/3d/texture_file.h>
+#include <nel/3d/texture_multi_file.h>
+#include <pxr/base/gf/vec3f.h>
+#include <pxr/base/gf/vec2f.h>
+#include <pxr/usd/usdGeom/xform.h>
+#include <pxr/usd/usdShade/material.h>
+
+export module nel_tools.usd.shape_to_usd.convert.mesh.ConverterCMeshMRMSkinned;
+import nel_tools.usd.shape_to_usd.convert.mesh.Converter;
+import nel_tools.usd.shape_to_usd.convert.material.TextureSettings;
+
+export namespace nel_tools::usd::shape_to_usd::convert::mesh
+{
+    class ConverterCMeshMRMSkinned : public Converter
+    {
+    public:
+        explicit ConverterCMeshMRMSkinned(const material::TextureSettings& settings, pxr::UsdStageRefPtr& stage,
+                                pxr::UsdGeomXform& target,
+                                NL3D::CMeshMRMSkinned* source)
+            : Converter(settings, stage, target), mesh(source), lodId(mesh->getNbLod() - 1)
+        {
+        }
+
+        void run() override;
+
+    protected:
+        pxr::VtArray<int> convertIndices() const;
+        pxr::VtArray<int> convertFaceCount(pxr::VtArray<int>& source) const;
+        pxr::VtArray<int> convertFaceIndices(const NL3D::CIndexBuffer& source, int offset = 0) const;
+        void subsets(const pxr::SdfPath& root);
+        size_t subset(const pxr::SdfPath& root, uint renderPass, int faceOffset);
+        void materials();
+        void convert(pxr::UsdShadeMaterial& target, const NL3D::CMaterial& source);
+        pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::ITexture* source, uint32 index);
+        pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::CTextureCube& source, uint32 index);
+        pxr::UsdShadeShader convert(const pxr::SdfPath& root, const NL3D::CTextureFile& source, uint32 index) const;
+        pxr::UsdShadeShader convert(const pxr::SdfPath& root, const NL3D::CTextureMultiFile& source,
+                                    uint32 index) const;
+
+        pxr::UsdShadeMaterial defineMaterial(uint32 index);
+
+    private:
+        NL3D::CMeshMRMSkinned* const mesh;
+
+        const uint lodId;
+        const std::string stPrimvarName = "st";
+    };
+}
