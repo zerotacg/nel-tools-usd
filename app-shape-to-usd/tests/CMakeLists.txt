@@ -34,3 +34,18 @@ target_link_libraries(shape-to-usd.convert.test
 )
 target_compile_features("shape-to-usd.convert.test" PRIVATE cxx_std_20)
 add_test(NAME "shape-to-usd.convert" COMMAND "shape-to-usd.convert.test")
+
+
+add_executable(shape-to-usd.transformFilename.test)
+target_sources(shape-to-usd.transformFilename.test
+        PRIVATE
+        transformFilename.test.cpp
+)
+target_link_libraries(shape-to-usd.transformFilename.test
+        PRIVATE
+        GTest::gtest_main
+        GTest::gmock
+        ${PROJECT_NAME}::lib::shape-to-usd
+)
+target_compile_features("shape-to-usd.convert.test" PRIVATE cxx_std_20)
+add_test(NAME "shape-to-usd.transformFilename" COMMAND "shape-to-usd.transformFilename.test")
