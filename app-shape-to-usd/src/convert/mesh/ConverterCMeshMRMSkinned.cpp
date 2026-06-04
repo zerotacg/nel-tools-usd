@@ -100,14 +100,15 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
     VtArray<int> ConverterCMeshMRMSkinned::convertIndices() const
     {
+    	const auto &meshIn = mesh->getMeshGeom();
+    	const auto &geomorphs = meshIn.getGeomorphs(lodId);
         VtArray<int> all;
-        for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++
-             renderPass)
+        for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
         {
             CIndexBuffer indexBuffer;
             mesh->getRdrPassPrimitiveBlock(lodId, renderPass, indexBuffer);
 
-            auto pass = value(indexBuffer);
+            auto pass = value(indexBuffer, geomorphs);
             all.insert(all.end(), pass.begin(), pass.end());
         }
 

@@ -1,5 +1,7 @@
 module;
+#include <vector>
 #include <nel/3d/index_buffer.h>
+#include <nel/3d/mrm_mesh.h>
 #include <nel/3d/texture.h>
 #include <nel/3d/vertex_buffer.h>
 #include <nel/misc/rgba.h>
@@ -23,6 +25,8 @@ export namespace nel_tools::usd::shape_to_usd::convert
     pxr::VtArray<pxr::GfVec2f> uvs(const NL3D::CVertexBuffer& source, uint8 stage);
 
     pxr::VtArray<int> value(const NL3D::CIndexBuffer& source);
+
+    pxr::VtArray<int> value(const NL3D::CIndexBuffer& source, const  std::vector<NL3D::CMRMWedgeGeom>& geomorphs);
 
     pxr::GfVec3f value(const NLMISC::CVector& source);
 

@@ -1,5 +1,7 @@
 module;
+#include <vector>
 #include <nel/3d/index_buffer.h>
+#include <nel/3d/mrm_mesh.h>
 #include <nel/3d/texture.h>
 #include <nel/3d/vertex_buffer.h>
 #include <nel/misc/rgba.h>
@@ -18,6 +20,7 @@ namespace nel_tools::usd::shape_to_usd::convert
     using namespace NL3D;
     using namespace NLMISC;
     using namespace pxr;
+    using namespace std;
     using namespace tokens;
 
     TfToken textureCoordinatesToken(const uint8 stage)
@@ -135,6 +138,29 @@ namespace nel_tools::usd::shape_to_usd::convert
         default:
             return *(static_cast<const uint16*>(reader.getPtr()) + index);
         }
+    }
+
+    VtArray<int> value(const CIndexBuffer& source, const  vector<CMRMWedgeGeom>& geomorphs)
+    {
+        VtArray<int> target;
+        CIndexBufferRead reader;
+        source.lock(reader);
+
+        for (auto i = 0; i < source.getNumIndexes(); ++i)
+        {
+            if (auto index = getIndexAt(reader, i); index != -1)
+            {
+                if (index < geomorphs.size())
+                {
+                    target.emplace_back(geomorphs[index].End);
+                } else
+                {
+                    target.emplace_back(index);
+                }
+            }
+        }
+
+        return target;
     }
 
     GfVec3f value(const CVector& source)
