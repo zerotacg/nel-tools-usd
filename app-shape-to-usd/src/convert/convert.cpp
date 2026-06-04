@@ -11,6 +11,7 @@ module;
 #include <pxr/base/vt/array.h>
 #include <pxr/usd/usdGeom/mesh.h>
 #include <pxr/usd/usdGeom/primvarsAPI.h>
+#include <pxr/usd/usdGeom/xformCommonAPI.h>
 
 module nel_tools.usd.shape_to_usd.convert;
 import nel_tools.usd.shape_to_usd.tokens;
@@ -63,6 +64,22 @@ namespace nel_tools::usd::shape_to_usd::convert
                         UsdGeomTokens->vertex)
                     .Set(uvs(source, stage));
             }
+        }
+    }
+
+    void value(UsdGeomXformCommonAPI& target, CMeshBase& source)
+    {
+        if (auto defaultValue = source.getDefaultPos(); defaultValue != nullptr)
+        {
+            target.SetTranslate(value(defaultValue->getDefaultValue()));
+        }
+        if (auto defaultValue = source.getDefaultRotEuler(); defaultValue != nullptr)
+        {
+            target.SetRotate(value(defaultValue->getDefaultValue()));
+        }
+        if (auto defaultValue = source.getDefaultScale(); defaultValue != nullptr)
+        {
+            target.SetScale(value(defaultValue->getDefaultValue()));
         }
     }
 
