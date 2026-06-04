@@ -28,4 +28,8 @@ export namespace nel_tools::usd::shape_to_usd::convert::material
     void convert(const TextureSettings& settings, pxr::UsdShadeShader& target, const NL3D::CTextureMultiFile& source);
 
     std::string transformFilename(const TextureSettings& settings, const std::string& input);
+
+    void convert(const TextureSettings& settings, pxr::UsdShadeMaterial& target, const NL3D::CMaterial& source);
+
+    pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::ITexture* source, uint32 index);
 }

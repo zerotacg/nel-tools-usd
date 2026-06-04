@@ -204,4 +204,45 @@ namespace nel_tools::usd::shape_to_usd::convert::material
 
         return transformed;
     }
+
+    void convert(const TextureSettings& settings, UsdShadeMaterial& target, const CMaterial& source)
+    {
+        auto root = target.GetPath();
+        auto stage = target.GetPrim().GetStage();
+        auto pbrShader = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("PBRShader")));
+        shader(pbrShader, source);
+        auto diffuseColor = pbrShader.GetInput(common::UsdPreviewSurfaceTokens.inputs.diffuseColor);
+        target.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
+
+        auto uvmap = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("uvmap")));
+        uvmap.CreateIdAttr().Set(common::UsdPrimvarReader_float2Tokens.id);
+        uvmap.CreateInput(common::UsdPrimvarReader_float2Tokens.inputs.varname, SdfValueTypeNames->String).Set(common::stPrimvarName);
+        auto uvmapResult = uvmap.CreateOutput(common::UsdPrimvarReader_float2Tokens.outputs.result, SdfValueTypeNames->Float2);
+
+        if (source.getDoubleSided())
+        {
+            nldebug("Material DoubleSided");
+        }
+        if (source.getBlend())
+        {
+            nldebug("Material Blend");
+        }
+        for (auto textureIndex = 0; textureIndex < IDRV_MAT_MAXTEXTURES; ++textureIndex)
+        {
+            if (source.texturePresent(textureIndex))
+            {
+                auto sourceTexture = source.getTexture(textureIndex);
+                auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", textureIndex))));
+                convert(settings, sampler, sourceTexture);
+                if (auto input = sampler.GetInput(common::UsdUVTextureTokens.inputs.st))
+                {
+                    input.ConnectToSource(uvmapResult);
+                }
+                diffuseColor.ConnectToSource(sampler.ConnectableAPI(), common::UsdUVTextureTokens.outputs.rgb);
+                pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.opacity, SdfValueTypeNames->Float).
+                          ConnectToSource(
+                              sampler.ConnectableAPI(), common::UsdUVTextureTokens.outputs.a);
+            }
+        }
+    }
 }

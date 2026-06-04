@@ -167,56 +167,8 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         for (auto i = 0; i < mesh->getNbMaterial(); ++i)
         {
             auto target = defineMaterial(i);
-            convert(target, mesh->getMaterial(i));
+            material::convert(settings, target, mesh->getMaterial(i));
         }
-    }
-
-    void ConverterCMeshMRMSkinned::convert(UsdShadeMaterial& target, const CMaterial& source)
-    {
-        auto root = target.GetPath();
-        auto pbrShader = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("PBRShader")));
-        material::shader(pbrShader, source);
-        auto diffuseColor = pbrShader.GetInput(common::UsdPreviewSurfaceTokens.inputs.diffuseColor);
-        target.CreateSurfaceOutput().ConnectToSource(pbrShader.ConnectableAPI(), UsdShadeTokens->surface);
-
-        auto uvmap = UsdShadeShader::Define(stage, root.AppendPath(SdfPath("uvmap")));
-        uvmap.CreateIdAttr().Set(common::UsdPrimvarReader_float2Tokens.id);
-        uvmap.CreateInput(common::UsdPrimvarReader_float2Tokens.inputs.varname, SdfValueTypeNames->String).Set(
-            stPrimvarName);
-        auto uvmapResult = uvmap.CreateOutput(common::UsdPrimvarReader_float2Tokens.outputs.result,
-                                              SdfValueTypeNames->Float2);
-
-        if (source.getDoubleSided())
-        {
-            nldebug("Material DoubleSided");
-        }
-        if (source.getBlend())
-        {
-            nldebug("Material Blend");
-        }
-        for (auto textureIndex = 0; textureIndex < IDRV_MAT_MAXTEXTURES; ++textureIndex)
-        {
-            if (source.texturePresent(textureIndex))
-            {
-                auto sourceTexture = source.getTexture(textureIndex);
-                auto sampler = convert(root, sourceTexture, textureIndex);
-                if (auto input = sampler.GetInput(Tokens.TextureCoordinates_0))
-                {
-                    input.ConnectToSource(uvmapResult);
-                }
-                diffuseColor.ConnectToSource(sampler.ConnectableAPI(), common::UsdUVTextureTokens.outputs.rgb);
-                pbrShader.CreateInput(common::UsdPreviewSurfaceTokens.inputs.opacity, SdfValueTypeNames->Float).
-                          ConnectToSource(
-                              sampler.ConnectableAPI(), common::UsdUVTextureTokens.outputs.a);
-            }
-        }
-    }
-
-    UsdShadeShader ConverterCMeshMRMSkinned::convert(SdfPath& root, ITexture* source, uint32 index)
-    {
-        auto shader = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
-        material::convert(settings, shader, source);
-        return shader;
     }
 
     UsdShadeMaterial ConverterCMeshMRMSkinned::defineMaterial(uint materialIndex)

@@ -15,8 +15,6 @@ export namespace nel_tools::usd::shape_to_usd::paths
         pxr::SdfPath material(uint index) const
         {
             return materials.AppendPath(pxr::SdfPath(fmt::format("material_{}_MAT", index)));
-
         }
     } Paths;
-
 }

@@ -5,6 +5,8 @@ export module nel_tools.usd.common;
 
 export namespace nel_tools::usd::common
 {
+    const std::string stPrimvarName = "st";
+
     inline const struct // @see https://openusd.org/release/spec_usdpreviewsurface.html#texture-reader
     {
         const pxr::TfToken id = pxr::TfToken("UsdUVTexture");
