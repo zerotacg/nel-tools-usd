@@ -3,6 +3,7 @@ module;
 #include <fmt/format.h>
 #include <nel/3d/material.h>
 #include <nel/3d/texture.h>
+#include <nel/3d/texture_cube.h>
 #include <nel/3d/texture_file.h>
 #include <nel/3d/texture_multi_file.h>
 #include <nel/misc/path.h>
@@ -85,6 +86,29 @@ namespace nel_tools::usd::shape_to_usd::convert::material
             target.CreateInput(common::UsdPreviewSurfaceTokens.inputs.opacityThreshold, SdfValueTypeNames->Float).Set(
                 source.getAlphaTestThreshold());
         }
+    }
+
+    void convert(const TextureSettings& settings, UsdShadeShader& target, ITexture* source )
+    {
+        if (const auto specific = dynamic_cast<const CTextureFile*>(source))
+        {
+            return convert(settings, target, *specific);
+        }
+        else if (const auto specific = dynamic_cast<const CTextureMultiFile*>(source))
+        {
+            return convert(settings, target, *specific);
+        }
+        else if (const auto specific = dynamic_cast<const CTextureCube*>(source))
+        {
+            nldebug("CTextureCube");
+        }
+        else
+        {
+            nlwarning("Texture type not supported", source->getClassName().c_str());
+        }
+
+        target.GetPrim().SetCustomDataByKey(TfToken("nel:class_name"), VtValue(source->getClassName()));
+
     }
 
     void convert(const TextureSettings& settings, UsdShadeShader& target, const CTextureFile& source)

@@ -21,6 +21,8 @@ export namespace nel_tools::usd::shape_to_usd::convert::material
 
     void shader(pxr::UsdShadeShader& target, const NL3D::CMaterial& source);
 
+    void convert(const TextureSettings& settings, pxr::UsdShadeShader& target, NL3D::ITexture* source );
+
     void convert(const TextureSettings& settings, pxr::UsdShadeShader& target, const NL3D::CTextureFile& source);
 
     void convert(const TextureSettings& settings, pxr::UsdShadeShader& target, const NL3D::CTextureMultiFile& source);

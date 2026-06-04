@@ -89,8 +89,8 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
     VtArray<int> ConverterCMeshMRMSkinned::convertIndices() const
     {
-    	const auto &meshIn = mesh->getMeshGeom();
-    	const auto &geomorphs = meshIn.getGeomorphs(lodId);
+        const auto& meshIn = mesh->getMeshGeom();
+        const auto& geomorphs = meshIn.getGeomorphs(lodId);
         VtArray<int> all;
         for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
         {
@@ -217,50 +217,9 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
     UsdShadeShader ConverterCMeshMRMSkinned::convert(SdfPath& root, ITexture* source, uint32 index)
     {
-        if (const auto specific = dynamic_cast<CTextureFile*>(source))
-        {
-            return convert(root, *specific, index);
-        }
-        else if (const auto specific = dynamic_cast<CTextureMultiFile*>(source))
-        {
-            return convert(root, *specific, index);
-        }
-        else if (const auto specific = dynamic_cast<CTextureCube*>(source))
-        {
-            nldebug("CTextureCube");
-        }
-        else
-        {
-            nlwarning("Texture type not supported", source->getClassName().c_str());
-        }
-
-        fmt::print(fg(fmt::terminal_color::blue), "Texture at index {} is {} upload format {}\n", index,
-                   source->getClassName(), source->getUploadFormat());
-
         auto shader = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
-
-        shader.GetPrim().SetCustomDataByKey(TfToken("nel:texture_class_name"), VtValue(source->getClassName()));
+        material::convert(settings, shader, source);
         return shader;
-    }
-
-    UsdShadeShader ConverterCMeshMRMSkinned::convert(const SdfPath& root, const CTextureFile& source,
-                                                     uint32 index) const
-    {
-        auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
-
-        material::convert(settings, sampler, source);
-
-        return sampler;
-    }
-
-    UsdShadeShader ConverterCMeshMRMSkinned::convert(const SdfPath& root, const CTextureMultiFile& source,
-                                                     uint32 index) const
-    {
-        auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", index))));
-
-        material::convert(settings, sampler, source);
-
-        return sampler;
     }
 
     UsdShadeMaterial ConverterCMeshMRMSkinned::defineMaterial(uint materialIndex)
