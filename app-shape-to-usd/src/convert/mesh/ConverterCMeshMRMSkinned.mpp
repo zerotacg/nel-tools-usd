@@ -1,16 +1,8 @@
 module;
-#include <string>
-
-#include <nel/3d/material.h>
 #include <nel/3d/mesh_mrm_skinned.h>
-#include <nel/3d/texture.h>
-#include <nel/3d/texture_cube.h>
-#include <nel/3d/texture_file.h>
-#include <nel/3d/texture_multi_file.h>
-#include <pxr/base/gf/vec3f.h>
-#include <pxr/base/gf/vec2f.h>
+#include <pxr/base/vt/array.h>
+#include <pxr/usd/usd/common.h>
 #include <pxr/usd/usdGeom/xform.h>
-#include <pxr/usd/usdShade/material.h>
 
 export module nel_tools.usd.shape_to_usd.convert.mesh.ConverterCMeshMRMSkinned;
 import nel_tools.usd.shape_to_usd.convert.mesh.Converter;
@@ -37,13 +29,10 @@ export namespace nel_tools::usd::shape_to_usd::convert::mesh
         void subsets(const pxr::SdfPath& root);
         size_t subset(const pxr::SdfPath& root, uint renderPass, int faceOffset);
         void materials();
-        void convert(pxr::UsdShadeMaterial& target, const NL3D::CMaterial& source);
-        pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::ITexture* source, uint32 index);
 
     private:
         NL3D::CMeshMRMSkinned* const mesh;
 
         const uint lodId;
-        const std::string stPrimvarName = "st";
     };
 }
