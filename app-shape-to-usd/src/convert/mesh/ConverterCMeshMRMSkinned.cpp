@@ -6,9 +6,6 @@ module;
 #include <nel/3d/material.h>
 #include <nel/3d/mesh_mrm_skinned.h>
 #include <nel/3d/texture.h>
-#include <nel/3d/texture_cube.h>
-#include <nel/3d/texture_file.h>
-#include <nel/3d/texture_multi_file.h>
 #include <nel/misc/common.h>
 #include <nel/misc/path.h>
 #include <pxr/base/gf/vec2f.h>
