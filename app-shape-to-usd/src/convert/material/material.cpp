@@ -19,6 +19,7 @@ module nel_tools.usd.shape_to_usd.convert.material;
 import nel_tools.usd.common;
 import nel_tools.usd.shape_to_usd.convert;
 import nel_tools.usd.shape_to_usd.convert.material.TextureSettings;
+import nel_tools.usd.shape_to_usd.paths;
 
 namespace nel_tools::usd::shape_to_usd::convert::material
 {
@@ -232,7 +233,7 @@ namespace nel_tools::usd::shape_to_usd::convert::material
             if (source.texturePresent(textureIndex))
             {
                 auto sourceTexture = source.getTexture(textureIndex);
-                auto sampler = UsdShadeShader::Define(stage, root.AppendPath(SdfPath(fmt::format("texture_{}", textureIndex))));
+                auto sampler = UsdShadeShader::Define(stage, paths::texture(root, textureIndex));
                 convert(settings, sampler, sourceTexture);
                 if (auto input = sampler.GetInput(common::UsdUVTextureTokens.inputs.st))
                 {
