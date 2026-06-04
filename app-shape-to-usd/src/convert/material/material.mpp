@@ -4,6 +4,7 @@ module;
 #include <nel/3d/texture.h>
 #include <nel/3d/texture_file.h>
 #include <nel/3d/texture_multi_file.h>
+#include <pxr/usd/usd/common.h>
 #include <pxr/usd/usdGeom/scope.h>
 #include <pxr/usd/usdShade/material.h>
 #include <pxr/usd/usdShade/shader.h>
@@ -30,4 +31,6 @@ export namespace nel_tools::usd::shape_to_usd::convert::material
     std::string transformFilename(const TextureSettings& settings, const std::string& input);
 
     void convert(const TextureSettings& settings, pxr::UsdShadeMaterial& target, const NL3D::CMaterial& source);
+
+    pxr::UsdShadeMaterial define(pxr::UsdStageRefPtr& stage, uint index);
 }

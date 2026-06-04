@@ -39,7 +39,6 @@ export namespace nel_tools::usd::shape_to_usd::convert::mesh
         void materials();
         void convert(pxr::UsdShadeMaterial& target, const NL3D::CMaterial& source);
         pxr::UsdShadeShader convert(pxr::SdfPath& root, NL3D::ITexture* source, uint32 index);
-        pxr::UsdShadeMaterial defineMaterial(uint32 index);
 
     private:
         NL3D::CMeshMRMSkinned* const mesh;

@@ -68,7 +68,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
 
         outMesh.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
-        auto material = defineMaterial(0);
+        auto material = material::define(stage, 0);
         auto materialBindingAPI = UsdShadeMaterialBindingAPI(outMesh);
         materialBindingAPI.Bind(material);
         materialBindingAPI.SetMaterialBindSubsetsFamilyType(UsdGeomTokens->nonOverlapping);
@@ -142,7 +142,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
     {
         auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
         auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
-        auto material = defineMaterial(materialIndex);
+        auto material = material::define(stage, materialIndex);
 
         auto subset = UsdGeomSubset::Define(stage, root.AppendPath(SdfPath(fmt::format("subset_{}", renderPass))));
 
@@ -161,13 +161,8 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         UsdGeomScope::Define(stage, Paths.materials);
         for (auto i = 0; i < mesh->getNbMaterial(); ++i)
         {
-            auto target = defineMaterial(i);
+            auto target = material::define(stage, i);
             material::convert(settings, target, mesh->getMaterial(i));
         }
-    }
-
-    UsdShadeMaterial ConverterCMesh::defineMaterial(uint materialIndex)
-    {
-        return UsdShadeMaterial::Define(stage, Paths.material(materialIndex));
     }
 }

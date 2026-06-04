@@ -19,6 +19,11 @@ export namespace nel_tools::usd::shape_to_usd::paths
 
     } Paths;
 
+    inline pxr::SdfPath material(uint index)
+    {
+        return Paths.materials.AppendPath(pxr::SdfPath(fmt::format("material_{}_MAT", index)));
+    }
+
     inline pxr::SdfPath texture(const pxr::SdfPath& root, uint index)
     {
         return root.AppendPath(pxr::SdfPath(fmt::format("texture_{}", index)));

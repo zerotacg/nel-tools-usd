@@ -246,4 +246,9 @@ namespace nel_tools::usd::shape_to_usd::convert::material
             }
         }
     }
+
+    UsdShadeMaterial define(UsdStageRefPtr& stage, uint index)
+    {
+        return UsdShadeMaterial::Define(stage, paths::material(index));
+    }
 }
