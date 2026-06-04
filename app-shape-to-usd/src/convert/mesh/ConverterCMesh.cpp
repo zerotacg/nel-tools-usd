@@ -214,7 +214,6 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
     UsdShadeMaterial ConverterCMesh::defineMaterial(uint materialIndex)
     {
-        return UsdShadeMaterial::Define(
-            stage, Paths.materials.AppendPath(SdfPath(fmt::format("material_{}_MAT", materialIndex))));
+        return UsdShadeMaterial::Define(stage, Paths.material(materialIndex));
     }
 }
