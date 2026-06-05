@@ -128,7 +128,7 @@ namespace nel_tools::usd::shape_to_usd::convert
         return target;
     }
 
-    VtArray<int> value(const CIndexBuffer& source)
+    VtArray<int> indices(const CIndexBuffer& source)
     {
         VtArray<int> target;
         CIndexBufferRead reader;

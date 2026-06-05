@@ -28,7 +28,7 @@ export namespace nel_tools::usd::shape_to_usd::convert
 
     pxr::VtArray<pxr::GfVec2f> uvs(const NL3D::CVertexBuffer& source, uint8 stage);
 
-    pxr::VtArray<int> value(const NL3D::CIndexBuffer& source);
+    pxr::VtArray<int> indices(const NL3D::CIndexBuffer& source);
 
     pxr::VtArray<int> value(const NL3D::CIndexBuffer& source, const  std::vector<NL3D::CMRMWedgeGeom>& geomorphs);
 
