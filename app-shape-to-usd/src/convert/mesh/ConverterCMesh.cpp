@@ -70,7 +70,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
         auto indices = convertIndices();
         outMesh.CreateFaceVertexIndicesAttr().Set(indices);
-        outMesh.CreateFaceVertexCountsAttr().Set(convertFaceCount(indices));
+        outMesh.CreateFaceVertexCountsAttr().Set(faceVertexCounts(indices.size()));
     }
 
     VtArray<int> ConverterCMesh::convertIndices() const
@@ -86,11 +86,6 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         }
 
         return all;
-    }
-
-    VtArray<int> ConverterCMesh::convertFaceCount(const VtArray<int>& source) const
-    {
-        return VtArray(source.size() / 3, 3);
     }
 
     void ConverterCMesh::subsets()

@@ -164,6 +164,11 @@ namespace nel_tools::usd::shape_to_usd::convert
         return target;
     }
 
+    VtArray<int> faceVertexCounts(const size_t indicesCount)
+    {
+        return VtArray(indicesCount / 3, 3);
+    }
+
     int getIndexAt(const CIndexBufferRead& reader, const int index)
     {
         switch (reader.getFormat())

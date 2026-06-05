@@ -3,7 +3,6 @@ module;
 #include <nel/3d/index_buffer.h>
 #include <nel/3d/mesh_base.h>
 #include <nel/3d/mrm_mesh.h>
-#include <nel/3d/texture.h>
 #include <nel/3d/vertex_buffer.h>
 #include <nel/misc/rgba.h>
 #include <pxr/base/gf/vec2f.h>
@@ -31,6 +30,8 @@ export namespace nel_tools::usd::shape_to_usd::convert
     pxr::VtArray<int> indices(const NL3D::CIndexBuffer& source);
 
     pxr::VtArray<int> faceIndices(const NL3D::CIndexBuffer& source, int offset);
+
+    pxr::VtArray<int> faceVertexCounts(size_t indicesCount);
 
     pxr::VtArray<int> value(const NL3D::CIndexBuffer& source, const  std::vector<NL3D::CMRMWedgeGeom>& geomorphs);
 

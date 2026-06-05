@@ -24,7 +24,6 @@ export namespace nel_tools::usd::shape_to_usd::convert::mesh
 
     protected:
         pxr::VtArray<int> convertIndices() const;
-        pxr::VtArray<int> convertFaceCount(const pxr::VtArray<int>& source) const;
         void subsets();
         size_t subset(uint renderPass, int faceOffset);
         void materials();
