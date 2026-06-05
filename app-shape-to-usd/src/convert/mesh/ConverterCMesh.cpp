@@ -88,16 +88,9 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         return all;
     }
 
-    VtArray<int> ConverterCMesh::convertFaceCount(VtArray<int>& source) const
+    VtArray<int> ConverterCMesh::convertFaceCount(const VtArray<int>& source) const
     {
-        VtArray<int> target;
-
-        for (auto i = 0; i < source.size(); i += 3)
-        {
-            target.emplace_back(3);
-        }
-
-        return target;
+        return VtArray(source.size() / 3, 3);
     }
 
     void ConverterCMesh::subsets()
