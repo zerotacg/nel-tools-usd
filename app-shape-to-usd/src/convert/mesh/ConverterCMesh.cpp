@@ -82,7 +82,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
             auto indexBuffer = mesh->getRdrPassPrimitiveBlock(lodId, renderPass);
 
             auto pass = indices(indexBuffer);
-            all.insert(all.end(), pass.begin(), pass.end());
+            ranges::copy(pass, back_inserter(all));
         }
 
         return all;

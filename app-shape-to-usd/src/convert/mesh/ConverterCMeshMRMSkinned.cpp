@@ -86,7 +86,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
             mesh->getRdrPassPrimitiveBlock(lodId, renderPass, indexBuffer);
 
             auto pass = value(indexBuffer, geomorphs);
-            all.insert(all.end(), pass.begin(), pass.end());
+            ranges::copy(pass, back_inserter(all));
         }
 
         return all;
