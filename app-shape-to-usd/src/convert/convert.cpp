@@ -145,6 +145,25 @@ namespace nel_tools::usd::shape_to_usd::convert
         return target;
     }
 
+    VtArray<int> faceIndices(const CIndexBuffer& source, int offset)
+    {
+        // since faces always take 3 indices sequentially, face indices are just incremental in the range
+        // [offset, offset + index count / 3]
+        VtArray<int> target;
+        CIndexBufferRead reader;
+        source.lock(reader);
+
+        for (auto i = 0; i < source.getNumIndexes() / 3; ++i)
+        {
+            if (auto index = getIndexAt(reader, i); index != -1)
+            {
+                target.emplace_back(offset + i);
+            }
+        }
+
+        return target;
+    }
+
     int getIndexAt(const CIndexBufferRead& reader, const int index)
     {
         switch (reader.getFormat())

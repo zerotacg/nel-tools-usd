@@ -30,6 +30,8 @@ export namespace nel_tools::usd::shape_to_usd::convert
 
     pxr::VtArray<int> indices(const NL3D::CIndexBuffer& source);
 
+    pxr::VtArray<int> faceIndices(const NL3D::CIndexBuffer& source, int offset);
+
     pxr::VtArray<int> value(const NL3D::CIndexBuffer& source, const  std::vector<NL3D::CMRMWedgeGeom>& geomorphs);
 
     pxr::GfVec3f value(const NLMISC::CVector& source);

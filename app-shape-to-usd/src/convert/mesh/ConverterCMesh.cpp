@@ -100,21 +100,6 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         return target;
     }
 
-    VtArray<int> ConverterCMesh::convertFaceIndices(const CIndexBuffer& source, int offset) const
-    {
-        VtArray<int> target;
-        CIndexBufferRead indexBufferRead;
-        source.lock(indexBufferRead);
-
-        for (auto i = 0; i < source.getNumIndexes() / 3; ++i)
-        {
-            // TODO handle -1 indices
-            target.emplace_back(offset + i);
-        }
-
-        return target;
-    }
-
     void ConverterCMesh::subsets()
     {
         if (mesh->getNbMaterial() <= 1)
@@ -139,12 +124,12 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
         subset.CreateElementTypeAttr().Set(UsdGeomTokens->face);
         subset.CreateFamilyNameAttr().Set(UsdShadeTokens->materialBind);
-        auto faceIndices = convertFaceIndices(indexBuffer, faceOffset);
-        subset.CreateIndicesAttr().Set(faceIndices);
+        auto subsetFaceIndices = faceIndices(indexBuffer, faceOffset);
+        subset.CreateIndicesAttr().Set(subsetFaceIndices);
         subset.GetPrim().ApplyAPI<UsdShadeMaterialBindingAPI>();
         UsdShadeMaterialBindingAPI(subset).Bind(material);
 
-        return faceIndices.size();
+        return subsetFaceIndices.size();
     }
 
     void ConverterCMesh::materials()
