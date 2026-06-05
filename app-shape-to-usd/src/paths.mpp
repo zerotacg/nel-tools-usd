@@ -13,6 +13,11 @@ export namespace nel_tools::usd::shape_to_usd::paths
         const pxr::SdfPath materials = root.AppendPath(pxr::SdfPath("_materials"));
     } Paths;
 
+    inline pxr::SdfPath subset(uint index)
+    {
+        return Paths.model.AppendPath(pxr::SdfPath(fmt::format("subset_{}", index)));
+    }
+
     inline pxr::SdfPath material(uint index)
     {
         return Paths.materials.AppendPath(pxr::SdfPath(fmt::format("material_{}_MAT", index)));

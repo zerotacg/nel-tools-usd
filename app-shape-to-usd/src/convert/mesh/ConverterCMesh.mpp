@@ -26,8 +26,8 @@ export namespace nel_tools::usd::shape_to_usd::convert::mesh
         pxr::VtArray<int> convertIndices() const;
         pxr::VtArray<int> convertFaceCount(pxr::VtArray<int>& source) const;
         pxr::VtArray<int> convertFaceIndices(const NL3D::CIndexBuffer& source, int offset = 0) const;
-        void subsets(const pxr::SdfPath& root);
-        size_t subset(const pxr::SdfPath& root, uint renderPass, int faceOffset);
+        void subsets();
+        size_t subset(uint renderPass, int faceOffset);
         void materials();
 
     private:

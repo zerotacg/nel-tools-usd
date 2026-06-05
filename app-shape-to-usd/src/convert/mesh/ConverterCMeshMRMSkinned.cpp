@@ -68,7 +68,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
 
         materials();
-        subsets(Paths.model);
+        subsets();
 
         auto indices = convertIndices();
         outMesh.CreateFaceVertexIndicesAttr().Set(indices);
@@ -119,7 +119,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         return target;
     }
 
-    void ConverterCMeshMRMSkinned::subsets(const SdfPath& root)
+    void ConverterCMeshMRMSkinned::subsets()
     {
         if (mesh->getNbMaterial() <= 1)
         {
@@ -129,18 +129,18 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
         int faceCount = 0;
         for (auto renderPass = 0; renderPass < mesh->getNbRdrPass(lodId); ++renderPass)
         {
-            faceCount += subset(root, renderPass, faceCount);
+            faceCount += subset(renderPass, faceCount);
         }
     }
 
-    size_t ConverterCMeshMRMSkinned::subset(const SdfPath& root, uint renderPass, int faceOffset)
+    size_t ConverterCMeshMRMSkinned::subset(uint renderPass, int faceOffset)
     {
         auto materialIndex = mesh->getRdrPassMaterial(lodId, renderPass);
         CIndexBuffer indexBuffer;
         mesh->getRdrPassPrimitiveBlock(lodId, renderPass, indexBuffer);
         auto material = material::define(stage, materialIndex);
 
-        auto subset = UsdGeomSubset::Define(stage, root.AppendPath(SdfPath(fmt::format("subset_{}", renderPass))));
+        auto subset = UsdGeomSubset::Define(stage, paths::subset(renderPass));
 
         subset.CreateElementTypeAttr().Set(UsdGeomTokens->face);
         subset.CreateFamilyNameAttr().Set(UsdShadeTokens->materialBind);
