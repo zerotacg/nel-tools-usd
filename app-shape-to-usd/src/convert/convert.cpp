@@ -2,15 +2,18 @@ module;
 #include <vector>
 #include <nel/3d/index_buffer.h>
 #include <nel/3d/mrm_mesh.h>
-#include <nel/3d/texture.h>
 #include <nel/3d/vertex_buffer.h>
 #include <nel/misc/rgba.h>
 #include <pxr/base/gf/vec2f.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/gf/vec4f.h>
 #include <pxr/base/vt/array.h>
+#include <pxr/usd/kind/registry.h>
+#include <pxr/usd/usd/modelAPI.h>
+#include <pxr/usd/usd/variantSets.h>
 #include <pxr/usd/usdGeom/mesh.h>
 #include <pxr/usd/usdGeom/primvarsAPI.h>
+#include <pxr/usd/usdGeom/xform.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 
 module nel_tools.usd.shape_to_usd.convert;
@@ -81,6 +84,14 @@ namespace nel_tools::usd::shape_to_usd::convert
         {
             target.SetScale(value(defaultValue->getDefaultValue()));
         }
+    }
+
+    void value(UsdGeomXform& target, CMeshBase& source)
+    {
+        target.GetPrim().GetVariantSets().AddVariantSet("textureSet");
+        UsdModelAPI(target).SetKind(KindTokens->component);
+        auto modelRootXform = UsdGeomXformCommonAPI(target);
+        value(modelRootXform, source);
     }
 
     VtArray<GfVec3f> vertices(const CVertexBuffer& source)

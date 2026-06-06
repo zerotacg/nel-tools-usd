@@ -46,10 +46,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
     void ConverterCMeshMRMSkinned::run()
     {
-        modelRoot.GetPrim().GetVariantSets().AddVariantSet("textureSet");
-        UsdModelAPI(modelRoot).SetKind(KindTokens->component);
-        auto modelRootXform = UsdGeomXformCommonAPI(modelRoot);
-        value(modelRootXform, *mesh);
+        value(modelRoot, *mesh);
 
         auto outMesh = UsdGeomMesh::Define(stage, Paths.model);
 

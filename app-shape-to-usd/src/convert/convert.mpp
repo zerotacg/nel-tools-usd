@@ -10,6 +10,7 @@ module;
 #include <pxr/base/gf/vec4f.h>
 #include <pxr/base/vt/array.h>
 #include <pxr/usd/usdGeom/mesh.h>
+#include <pxr/usd/usdGeom/xform.h>
 #include <pxr/usd/usdGeom/xformCommonAPI.h>
 
 export module nel_tools.usd.shape_to_usd.convert;
@@ -18,6 +19,8 @@ export module nel_tools.usd.shape_to_usd.convert;
 export namespace nel_tools::usd::shape_to_usd::convert
 {
     void value(pxr::UsdGeomMesh& target, const NL3D::CVertexBuffer& source);
+
+    void value(pxr::UsdGeomXform& target, NL3D::CMeshBase& source);
 
     void value(pxr::UsdGeomXformCommonAPI& target, NL3D::CMeshBase& source);
 

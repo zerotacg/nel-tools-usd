@@ -12,7 +12,6 @@ module;
 #include <pxr/usd/usdGeom/scope.h>
 #include <pxr/usd/usdGeom/subset.h>
 #include <pxr/usd/usdGeom/tokens.h>
-#include <pxr/usd/usdGeom/xformCommonAPI.h>
 #include <pxr/usd/usdHydra/tokens.h>
 #include <pxr/usd/usdShade/material.h>
 #include <pxr/usd/usdShade/materialBindingAPI.h>
@@ -46,10 +45,7 @@ namespace nel_tools::usd::shape_to_usd::convert::mesh
 
     void ConverterCMesh::run()
     {
-        modelRoot.GetPrim().GetVariantSets().AddVariantSet("textureSet");
-        UsdModelAPI(modelRoot).SetKind(KindTokens->component);
-        auto modelRootXform = UsdGeomXformCommonAPI(modelRoot);
-        value(modelRootXform, *mesh);
+        value(modelRoot, *mesh);
 
         auto outMesh = UsdGeomMesh::Define(stage, Paths.model);
 
