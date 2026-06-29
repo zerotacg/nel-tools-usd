@@ -60,7 +60,7 @@ jobs:
 
       - uses: lukka/run-vcpkg@v11.6
 
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         id: vcpkg-cache
         with:
           path: ${{ github.workspace }}/.vcpkg
@@ -71,7 +71,7 @@ jobs:
       - name: Configure CMake
         run: cmake --preset ci
 
-      - uses: actions/cache/save@v5
+      - uses: actions/cache/save@v6
         if: ( ! cancelled() && steps.vcpkg-cache.outputs.cache-hit != 'true')
         with:
           path: ${{ github.workspace }}/.vcpkg
