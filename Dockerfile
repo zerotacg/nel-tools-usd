@@ -1,4 +1,4 @@
-FROM ubuntu:26.04@sha256:53958ec7b67c2c9355df922dd08dbf0360611f8c3cdb656875e81873db9ffdba AS build
+FROM ubuntu:26.04@sha256:b7f48194d4d8b763a478a621cdc81c27be222ba2206ca3ca6bc42b49685f3d9e AS build
 
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive \
@@ -46,7 +46,7 @@ COPY ./ /build
 RUN cmake --workflow docker
 
 
-FROM ubuntu:26.04@sha256:53958ec7b67c2c9355df922dd08dbf0360611f8c3cdb656875e81873db9ffdba
+FROM ubuntu:26.04@sha256:b7f48194d4d8b763a478a621cdc81c27be222ba2206ca3ca6bc42b49685f3d9e
 
 ARG APP_HOME=/app
 ARG USERNAME=ubuntu
