@@ -1,0 +1,30 @@
+module;
+#include <fmt/format.h>
+#include <pxr/usd/sdf/path.h>
+
+export module nel_tools.usd.shape_to_usd.paths;
+
+export namespace nel_tools::usd::shape_to_usd::paths
+{
+    inline const struct
+    {
+        const pxr::SdfPath root = pxr::SdfPath("/root");
+        const pxr::SdfPath model = root.AppendPath(pxr::SdfPath("model"));
+        const pxr::SdfPath materials = root.AppendPath(pxr::SdfPath("_materials"));
+    } Paths;
+
+    inline pxr::SdfPath subset(uint index)
+    {
+        return Paths.model.AppendPath(pxr::SdfPath(fmt::format("subset_{}", index)));
+    }
+
+    inline pxr::SdfPath material(uint index)
+    {
+        return Paths.materials.AppendPath(pxr::SdfPath(fmt::format("material_{}_MAT", index)));
+    }
+
+    inline pxr::SdfPath texture(const pxr::SdfPath& root, uint index)
+    {
+        return root.AppendPath(pxr::SdfPath(fmt::format("texture_{}", index)));
+    }
+}

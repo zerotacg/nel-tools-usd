@@ -1,0 +1,12 @@
+module;
+#include <pxr/base/tf/token.h>
+
+export module nel_tools.usd.zone_to_usd.tokens;
+
+export namespace nel_tools::usd::zone_to_usd::tokens
+{
+    inline const struct
+    {
+        const pxr::TfToken root = pxr::TfToken("root");
+    } Tokens;
+}

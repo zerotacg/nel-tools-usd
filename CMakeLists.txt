@@ -25,6 +25,7 @@ endif ()
 
 add_subdirectory(app-shape-to-usd)
 add_subdirectory(app-usd-to-mesh)
+add_subdirectory(app-zone-to-usd)
 add_subdirectory(lib-arguments)
 add_subdirectory(lib-common)
 add_subdirectory(lib-format)
