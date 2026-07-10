@@ -1,0 +1,24 @@
+module;
+#include <string>
+
+#include <nel/misc/cmd_args.h>
+
+export module nel_tools.usd.usd_to_zone.Settings;
+import nel_tools.usd.arguments;
+
+export namespace nel_tools::usd::usd_to_zone
+{
+    struct Settings
+    {
+        const std::string input;
+        const std::string output;
+
+        static Settings from(const NLMISC::CCmdArgs& args)
+        {
+            return {
+                .input = arguments::getFirstAdditionalArg(args, "input"),
+                .output = arguments::getFirstAdditionalArg(args, "output")
+            };
+        }
+    };
+}

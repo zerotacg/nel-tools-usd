@@ -1,0 +1,62 @@
+#usda 1.0
+(
+    defaultPrim = "root"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "root"
+{
+    def Xform "zone"
+    {
+      def NurbsPatch "BezierPatch"
+      {
+          # --- Bezier <=> NURBS encoding ---------------------------------
+          # Bicubic Bezier => order 4 in each direction (order = degree + 1).
+          int uOrder = 4
+          int vOrder = 4
+
+          # 4x4 = 16 control points.
+          int uVertexCount = 4
+          int vVertexCount = 4
+
+          # Clamped/Bezier knot vectors: no interior knots, ends repeated
+          # `order` times. Length must equal vertexCount + order = 4 + 4 = 8.
+          double[] uKnots = [0, 0, 0, 0, 1, 1, 1, 1]
+          double[] vKnots = [0, 0, 0, 0, 1, 1, 1, 1]
+
+          # Parametric evaluation range (matches the knot span).
+          double2 uRange = (0, 1)
+          double2 vRange = (0, 1)
+
+          # A single Bezier span in each direction => an "open" (non-periodic)
+          # surface with no wrap.
+          uniform token uForm = "open"
+          uniform token vForm = "open"
+
+          # --- Control points --------------------------------------------
+          # Ordered with U varying fastest: 4 points per row (constant V),
+          # 4 rows of increasing V. X is the U axis, Z is the V axis,
+          # Y is height. Interior points are lifted to make a dome.
+          point3f[] points = [
+              # v = 0 (flat edge)
+              (0, 0, 0), (1, 0, 0), (2, 0, 0), (3, 0, 0),
+              # v = 1
+              (0, 0, 1), (1, 2, 1), (2, 2, 1), (3, 0, 1),
+              # v = 2
+              (0, 0, 2), (1, 2, 2), (2, 2, 2), (3, 0, 2),
+              # v = 3 (flat edge)
+              (0, 0, 3), (1, 0, 3), (2, 0, 3), (3, 0, 3),
+          ]
+
+          # NOTE: weights ("pointWeights") are intentionally NOT authored.
+          # Unauthored weights => all 1.0 => a non-rational (polynomial)
+          # surface, which is exactly what a Bezier patch is.
+          # Authoring `double[] pointWeights` would make it a rational NURBS.
+
+          # Optional: helps viewers frame the prim.
+          float3[] extent = [(0, 0, 0), (3, 2, 3)]
+      }
+    }
+}
+
