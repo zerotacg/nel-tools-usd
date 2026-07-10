@@ -4,7 +4,7 @@ vcpkg_from_github(
         OUT_SOURCE_PATH SOURCE_PATH
         REPO ryzom/ryzomcore
         REF "core4"
-        SHA512 e8b4baee06a80e43a86787bb11bc13e3f8b33ff6e413cee00c235e25f0803f2e2541787880a0651e4a19284f610c08698f1173e508f86e117ba513e26291f270
+        SHA512 9d3e9dad28b6b069b5e4f50117a633954671e97e2cba88ec8de15bc0ee89ea38c9563918a8cdcce33ac716df9bfe3e677065aac3b4d731248fbe7ed754f9340b
         HEAD_REF core4
         PATCHES
             0001-cmake-component-dependencies.patch
@@ -23,10 +23,16 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
             web         WITH_WEB
 )
 
+vcpkg_check_linkage(
+        ONLY_DYNAMIC_LIBRARY
+        ONLY_DYNAMIC_CRT
+)
+
 vcpkg_cmake_configure(
         SOURCE_PATH "${SOURCE_PATH}"
         OPTIONS
             ${FEATURE_OPTIONS}
+            -DWITH_STATIC=OFF
             -DWITH_NEL=ON
             -DWITH_NEL_TESTS=OFF
             -DWITH_NEL_SAMPLES=OFF
