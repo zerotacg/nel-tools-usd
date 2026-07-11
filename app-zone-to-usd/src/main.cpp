@@ -11,6 +11,8 @@ import nel_tools.usd.zone_to_usd.Settings;
 
 using namespace nel_tools::usd::zone_to_usd;
 
+void loadInto(NL3D::CZone& target, const std::string& path);
+
 int main(int argc, char** argv)
 {
     fmt::print(fmt::emphasis::bold, "zone-to-usd:\n");
@@ -34,20 +36,10 @@ int main(int argc, char** argv)
 
         auto settings = Settings::from(args);
 
-        NLMISC::CIFile inputFile;
-        if (!inputFile.open(settings.input))
-        {
-            fmt::print(fg(fmt::terminal_color::red), "Can't open the file for reading: {}\n", settings.input);
-            return EXIT_FAILURE;
-        }
-        NL3D::CLandscape landscape;
         NL3D::CZone loadingZone;
-        loadingZone.serial(inputFile);
-        inputFile.close();
+        loadInto(loadingZone, settings.input);
         const auto zoneId(loadingZone.getZoneId());
-        landscape.setNoiseMode(false);
 
-        // Create a new USD stage
         pxr::UsdStageRefPtr stage = pxr::UsdStage::CreateNew(settings.output);
         if (!stage)
         {
@@ -55,7 +47,6 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
 
-        // Save the stage
         if (!stage->GetRootLayer()->Save())
         {
             fmt::print(fg(fmt::terminal_color::red), "Failed to save file at {}\n", settings.output);
@@ -71,4 +62,10 @@ int main(int argc, char** argv)
         fmt::print(fg(fmt::terminal_color::red), "Error: {}\n", e.what());
         return EXIT_FAILURE;
     }
+}
+
+void loadInto(NL3D::CZone& target, const std::string& path)
+{
+    NLMISC::CIFile file(path);
+    target.serial(file);
 }

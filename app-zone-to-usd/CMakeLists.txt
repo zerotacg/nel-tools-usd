@@ -9,6 +9,7 @@ target_sources(lib${PROJECT_NAME}-zone-to-usd
         FILE_SET CXX_MODULES
         FILES
         src/paths.mpp
+        src/Settings.mpp
         src/tokens.mpp
 )
 target_link_libraries(lib${PROJECT_NAME}-zone-to-usd
@@ -21,6 +22,7 @@ target_link_libraries(lib${PROJECT_NAME}-zone-to-usd
         pxr::Geom
         pxr::Hydra
         pxr::Shade
+        ${PROJECT_NAME}::arguments
         ${PROJECT_NAME}::common
         ${PROJECT_NAME}::format
 )
@@ -31,16 +33,11 @@ add_executable(${PROJECT_NAME}::zone-to-usd ALIAS ${PROJECT_NAME}-zone-to-usd)
 
 target_sources(${PROJECT_NAME}-zone-to-usd
         PRIVATE
-        FILE_SET CXX_MODULES
-        FILES
-        src/Settings.mpp
-        PRIVATE
         src/main.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}-zone-to-usd
         PRIVATE
-        ${PROJECT_NAME}::arguments
         ${PROJECT_NAME}::lib::zone-to-usd
 )
 target_compile_features(${PROJECT_NAME}-zone-to-usd PRIVATE cxx_std_20)
