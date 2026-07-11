@@ -37,7 +37,7 @@ diff --git a/nel/CMakeLists.txt b/nel/CMakeLists.txt
  set(package_required_dependencies CURL Freetype)
  set(package_georges_dependencies LibXml2)
  set(package_gui_dependencies Lua Luabind)
-+set(package_misc_dependencies LibXml2 ZLIB)
++set(package_misc_dependencies LibXml2 ZLIB JPEG GIF)
  set(package_sound_dependencies Vorbis)
 
 

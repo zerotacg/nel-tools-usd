@@ -54,7 +54,7 @@ int main(int argc, char** argv)
     }
     catch (const std::exception& e)
     {
-        fmt::print(fg(fmt::terminal_color::red), "Error converting zone file: {}\n", e.what());
+        fmt::print(fg(fmt::terminal_color::red), "Error: {}\n", e.what());
         return EXIT_FAILURE;
     }
 }

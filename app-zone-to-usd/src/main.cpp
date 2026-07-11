@@ -34,16 +34,16 @@ int main(int argc, char** argv)
 
         auto settings = Settings::from(args);
 
-        NLMISC::CIFile zoneFile;
-        if (!zoneFile.open(settings.input))
+        NLMISC::CIFile inputFile;
+        if (!inputFile.open(settings.input))
         {
             fmt::print(fg(fmt::terminal_color::red), "Can't open the file for reading: {}\n", settings.input);
             return EXIT_FAILURE;
         }
         NL3D::CLandscape landscape;
         NL3D::CZone loadingZone;
-        loadingZone.serial(zoneFile);
-        zoneFile.close();
+        loadingZone.serial(inputFile);
+        inputFile.close();
         const auto zoneId(loadingZone.getZoneId());
         landscape.setNoiseMode(false);
 
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
     }
     catch (const std::exception& e)
     {
-        fmt::print(fg(fmt::terminal_color::red), "Error converting shape file: {}\n", e.what());
+        fmt::print(fg(fmt::terminal_color::red), "Error: {}\n", e.what());
         return EXIT_FAILURE;
     }
 }

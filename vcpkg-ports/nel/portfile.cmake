@@ -23,16 +23,14 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
             web         WITH_WEB
 )
 
-vcpkg_check_linkage(
-        ONLY_DYNAMIC_LIBRARY
-        ONLY_DYNAMIC_CRT
-)
+string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" BUILD_STATIC)
+string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "dynamic" BUILD_SHARED)
 
 vcpkg_cmake_configure(
         SOURCE_PATH "${SOURCE_PATH}"
         OPTIONS
             ${FEATURE_OPTIONS}
-            -DWITH_STATIC=OFF
+            -DWITH_STATIC=${BUILD_STATIC}
             -DWITH_NEL=ON
             -DWITH_NEL_TESTS=OFF
             -DWITH_NEL_SAMPLES=OFF
@@ -57,6 +55,8 @@ vcpkg_cmake_config_fixup(
         PACKAGE_NAME "NeL"
         CONFIG_PATH lib/cmake/NeL
 )
+vcpkg_fixup_pkgconfig()
+vcpkg_copy_pdbs()
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
 
