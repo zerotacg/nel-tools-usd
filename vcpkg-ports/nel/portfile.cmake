@@ -4,7 +4,7 @@ vcpkg_from_github(
         OUT_SOURCE_PATH SOURCE_PATH
         REPO ryzom/ryzomcore
         REF "core4"
-        SHA512 800bb513a1db81dd433a523289ec225f55d7121cd1912ee0a4226469d17b232d5b6dcb35fd9e45116351e73dfadcf9ccbce12943dc52debc6b894f42cc162e7c
+        SHA512 7a9df021e6a55cd9d821a5c873e93de99b98d4c15d16a2c81135d0c35715410eb012613afe600d0bad8c4907a5655531e3b2461c9035e712afce83937093f4c4
         HEAD_REF core4
         PATCHES
             0001-cmake-component-dependencies.patch
