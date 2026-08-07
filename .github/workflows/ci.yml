@@ -9,6 +9,9 @@ on:
 
   workflow_dispatch:
 
+  schedule:
+    - cron: '0 6 * * 0'
+
 env:
   VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/.vcpkg,readwrite"
 
