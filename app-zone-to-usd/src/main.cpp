@@ -39,7 +39,7 @@ int main(int argc, char** argv)
         NL3D::CZone loadingZone;
         loadInto(loadingZone, settings.input);
         const auto zoneId(loadingZone.getZoneId());
-        NL3D::CLandscape foo; // TODO: causes segfautl, investigate
+        NL3D::CLandscape foo; // TODO: causes segfautl or memory corruption, works on release build, investigate
 
         pxr::UsdStageRefPtr stage = pxr::UsdStage::CreateNew(settings.output);
         if (!stage)
