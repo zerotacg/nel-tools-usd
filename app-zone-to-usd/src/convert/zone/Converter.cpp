@@ -30,6 +30,12 @@ namespace nel_tools::usd::zone_to_usd::convert::zone
     void Converter::run()
     {
         auto outZone = UsdGeomNurbsPatch::Define(stage, Paths.zone);
-
+        for (sint patchIndex = 0; patchIndex < zone->getNumPatchs(); patchIndex++)
+        {
+        }
+        outZone.CreateUOrderAttr().Set(4);
+        outZone.CreateVOrderAttr().Set(4);
+        outZone.CreateUVertexCountAttr().Set(4);
+        outZone.CreateVVertexCountAttr().Set(4);
     }
 }
