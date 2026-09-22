@@ -8,9 +8,14 @@ target_sources(lib${PROJECT_NAME}-zone-to-usd
         PUBLIC
         FILE_SET CXX_MODULES
         FILES
+        src/convert/convert.mpp
+        src/convert/zone/Converter.mpp
         src/paths.mpp
         src/Settings.mpp
         src/tokens.mpp
+        PRIVATE
+        src/convert/convert.cpp
+        src/convert/zone/Converter.cpp
 )
 target_link_libraries(lib${PROJECT_NAME}-zone-to-usd
         PUBLIC

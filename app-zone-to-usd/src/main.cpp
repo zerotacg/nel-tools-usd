@@ -7,6 +7,7 @@
 #include <pxr/usd/usd/stage.h>
 
 
+import nel_tools.usd.zone_to_usd.convert.zone.Converter;
 import nel_tools.usd.zone_to_usd.Settings;
 
 using namespace nel_tools::usd::zone_to_usd;
@@ -39,7 +40,9 @@ int main(int argc, char** argv)
         NL3D::CZone loadingZone;
         loadInto(loadingZone, settings.input);
         const auto zoneId(loadingZone.getZoneId());
-        NL3D::CLandscape foo; // TODO: causes segfautl or memory corruption, works on release build, investigate
+        NL3D::CLandscape landscape; // TODO: causes segfautl or memory corruption, works on release build, investigate
+        landscape.setNoiseMode(false);
+        const auto* zonea = landscape.getZone(zoneId);
 
         pxr::UsdStageRefPtr stage = pxr::UsdStage::CreateNew(settings.output);
         if (!stage)
@@ -47,6 +50,8 @@ int main(int argc, char** argv)
             fmt::print(fg(fmt::terminal_color::red), "Failed to create stage at {}\n", settings.output);
             return EXIT_FAILURE;
         }
+
+        convert::zone::Converter::convert(stage, zonea);
 
         if (!stage->GetRootLayer()->Save())
         {

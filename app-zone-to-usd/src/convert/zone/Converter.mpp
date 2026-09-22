@@ -1,0 +1,29 @@
+module;
+#include <nel/3d/zone.h>
+#include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/xform.h>
+
+export module nel_tools.usd.zone_to_usd.convert.zone.Converter;
+
+export namespace nel_tools::usd::zone_to_usd::convert::zone
+{
+    class Converter
+    {
+    public:
+        explicit Converter(pxr::UsdStageRefPtr& stage, pxr::UsdGeomXform& target, const NL3D::CZone* zone)
+            : stage(stage), zoneRoot(target), zone(zone)
+        {
+        }
+
+        virtual ~Converter() = default;
+
+        virtual void run();
+
+        static void convert(pxr::UsdStageRefPtr& target, const NL3D::CZone* shape);
+
+    protected:
+        pxr::UsdStageRefPtr& stage;
+        pxr::UsdGeomXform& zoneRoot;
+        const NL3D::CZone* zone;
+    };
+}
