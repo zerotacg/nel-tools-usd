@@ -9,9 +9,15 @@ def Xform "root"
 {
     def NurbsPatch "zone"
     {
+        uniform token uForm = "open"
+        double[] uKnots = [0, 0, 0, 0, 1, 1, 1, 1]
         int uOrder = 4
+        double2 uRange = (0, 1)
         int uVertexCount = 4
+        uniform token vForm = "open"
+        double[] vKnots = [0, 0, 0, 0, 1, 1, 1, 1]
         int vOrder = 4
+        double2 vRange = (0, 1)
         int vVertexCount = 4
     }
 }

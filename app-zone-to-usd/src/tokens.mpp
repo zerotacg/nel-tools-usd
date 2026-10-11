@@ -8,5 +8,6 @@ export namespace nel_tools::usd::zone_to_usd::tokens
     inline const struct
     {
         const pxr::TfToken root = pxr::TfToken("root");
+        const pxr::TfToken open = pxr::TfToken("open");
     } Tokens;
 }
