@@ -7,18 +7,22 @@
 
 def Xform "root"
 {
-    def NurbsPatch "zone"
+    def Xform "zone"
     {
-        uniform token uForm = "open"
-        double[] uKnots = [0, 0, 0, 0, 1, 1, 1, 1]
-        int uOrder = 4
-        double2 uRange = (0, 1)
-        int uVertexCount = 4
-        uniform token vForm = "open"
-        double[] vKnots = [0, 0, 0, 0, 1, 1, 1, 1]
-        int vOrder = 4
-        double2 vRange = (0, 1)
-        int vVertexCount = 4
+        def NurbsPatch "patch_0"
+        {
+            point3f[] points = [(0, 0, 0), (1, 0, 0), (2, 0, 0), (3, 0, 0), (0, 0, 1), (1, 2, 1), (2, 2, 1), (3, 0, 1), (0, 0, 2), (1, 2, 2), (2, 2, 2), (3, 0, 2), (0, 0, 3), (1, 0, 3), (2, 0, 3), (3, 0, 3)]
+            uniform token uForm = "open"
+            double[] uKnots = [0, 0, 0, 0, 1, 1, 1, 1]
+            int uOrder = 4
+            double2 uRange = (0, 1)
+            int uVertexCount = 4
+            uniform token vForm = "open"
+            double[] vKnots = [0, 0, 0, 0, 1, 1, 1, 1]
+            int vOrder = 4
+            double2 vRange = (0, 1)
+            int vVertexCount = 4
+        }
     }
 }
 
