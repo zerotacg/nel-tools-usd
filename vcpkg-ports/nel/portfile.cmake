@@ -4,7 +4,7 @@ vcpkg_from_github(
         OUT_SOURCE_PATH SOURCE_PATH
         REPO ryzom/ryzomcore
         REF "core4"
-        SHA512 1945a8a2a1b83247606b013fc4659de72234e23703744e4934ee6b09a9145d4ee8e156702f18d6ef4c4fd6c6f505769ba95c86d3de52cf1eb9797516a42f3b5b
+        SHA512 ae36da43ca18fbb493af1fb557b2a1f5b8c54327eaee9f83531d17b66ad95b6f847511d8fb6cc99c56cc4e603d6a36ec8d532acef3719792f69b566acdf8c215
         HEAD_REF core4
         PATCHES
             0001-cmake-component-dependencies.patch
@@ -21,6 +21,8 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
             pacs        WITH_PACS
             sound       WITH_SOUND
             web         WITH_WEB
+            sse2        WITH_SSE2
+            sse3        WITH_SSE3
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" BUILD_STATIC)

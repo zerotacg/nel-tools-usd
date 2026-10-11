@@ -6,7 +6,7 @@
     {
       "name": "nel",
       "features": [
-        "3d"
+        "3d", "sse2", "sse3"
       ]
     },
     "gtest"

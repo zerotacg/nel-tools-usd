@@ -40,9 +40,15 @@ int main(int argc, char** argv)
         NL3D::CZone loadingZone;
         loadInto(loadingZone, settings.input);
         const auto zoneId(loadingZone.getZoneId());
-        NL3D::CLandscape landscape; // TODO: causes segfautl or memory corruption, works on release build, investigate
+        NL3D::CLandscape landscape;
         landscape.setNoiseMode(false);
         const auto* zonea = landscape.getZone(zoneId);
+
+        if (zonea == nullptr)
+        {
+            fmt::print(fg(fmt::terminal_color::red), "Failed to load zone with id {}\n", zoneId);
+            return EXIT_FAILURE;
+        }
 
         pxr::UsdStageRefPtr stage = pxr::UsdStage::CreateNew(settings.output);
         if (!stage)
