@@ -41,6 +41,7 @@ int main(int argc, char** argv)
         loadInto(loadingZone, settings.input);
         const auto zoneId(loadingZone.getZoneId());
         NL3D::CLandscape landscape;
+        landscape.addZone(loadingZone);
         landscape.setNoiseMode(false);
         const auto* zonea = landscape.getZone(zoneId);
 

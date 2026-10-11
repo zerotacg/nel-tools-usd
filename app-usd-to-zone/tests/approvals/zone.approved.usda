@@ -9,6 +9,10 @@ def Xform "root"
 {
     def NurbsPatch "zone"
     {
+        int uOrder = 4
+        int uVertexCount = 4
+        int vOrder = 4
+        int vVertexCount = 4
     }
 }
 
