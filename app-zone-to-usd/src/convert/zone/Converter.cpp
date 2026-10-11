@@ -30,19 +30,20 @@ namespace nel_tools::usd::zone_to_usd::convert::zone
 
     void Converter::run()
     {
-        auto outPatch = UsdGeomNurbsPatch::Define(stage, Paths.zone);
-        outPatch.CreateUOrderAttr().Set(4);
-        outPatch.CreateVOrderAttr().Set(4);
-        outPatch.CreateUVertexCountAttr().Set(4);
-        outPatch.CreateVVertexCountAttr().Set(4);
-        outPatch.CreateUKnotsAttr().Set(VtArray<double>{0, 0, 0, 0, 1, 1, 1, 1});
-        outPatch.CreateVKnotsAttr().Set(VtArray<double>{0, 0, 0, 0, 1, 1, 1, 1});
-        outPatch.CreateURangeAttr().Set(GfVec2d(0.0, 1.0));
-        outPatch.CreateVRangeAttr().Set(GfVec2d(0.0, 1.0));
-        outPatch.CreateUFormAttr().Set(Tokens.open);
-        outPatch.CreateVFormAttr().Set(Tokens.open);
+        auto outZone = UsdGeomXform::Define(stage, Paths.zone);
         for (sint patchIndex = 0; patchIndex < zone->getNumPatchs(); patchIndex++)
         {
+            auto outPatch = UsdGeomNurbsPatch::Define(stage, patch(patchIndex));
+            outPatch.CreateUOrderAttr().Set(4);
+            outPatch.CreateVOrderAttr().Set(4);
+            outPatch.CreateUVertexCountAttr().Set(4);
+            outPatch.CreateVVertexCountAttr().Set(4);
+            outPatch.CreateUKnotsAttr().Set(VtArray<double>{0, 0, 0, 0, 1, 1, 1, 1});
+            outPatch.CreateVKnotsAttr().Set(VtArray<double>{0, 0, 0, 0, 1, 1, 1, 1});
+            outPatch.CreateURangeAttr().Set(GfVec2d(0.0, 1.0));
+            outPatch.CreateVRangeAttr().Set(GfVec2d(0.0, 1.0));
+            outPatch.CreateUFormAttr().Set(Tokens.open);
+            outPatch.CreateVFormAttr().Set(Tokens.open);
             CBezierPatch bezierPatch;
             const CPatch* patch = zone->getPatch(patchIndex);
             patch->unpack(bezierPatch);
