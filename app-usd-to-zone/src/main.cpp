@@ -16,10 +16,10 @@ import nel_tools.usd.usd_to_zone.Settings;
 using namespace nel_tools::usd::usd_to_zone;
 
 std::unique_ptr<NLMISC::COFile> openFile(const std::string& path);
-auto findPatch(const auto& stage) -> pxr::UsdGeomNurbsPatch;
 auto convert(const pxr::VtArray<pxr::GfVec3f>& source) -> std::vector<NLMISC::CVector>;
 auto vertices(const pxr::UsdAttribute& source) -> std::vector<NLMISC::CVector>;
-
+auto convert(const pxr::UsdGeomNurbsPatch& source) -> NL3D::CPatchInfo;
+auto isPatch(const pxr::UsdPrim& p) { return p.IsA<pxr::UsdGeomNurbsPatch>(); }
 
 int main(int argc, char** argv)
 {
@@ -51,48 +51,23 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
         auto outputFile = openFile(settings.output);
-        auto patch = findPatch(source);
-        auto points = vertices(patch.GetPointsAttr());
+
+        NL3D::CZoneInfo zone_info{
+            .ZoneId = 0
+        };
+        auto prim = source->GetDefaultPrim();
+        if (!prim)
+        {
+            fmt::print(fg(fmt::terminal_color::red), "Failed find default prim\n");
+            return EXIT_FAILURE;
+        }
+        for (auto child : prim.GetChildren() | std::views::filter(isPatch))
+        {
+            zone_info.Patchs.push_back(convert(pxr::UsdGeomNurbsPatch(child)));
+        }
+
 
         NL3D::CZone zone;
-        NL3D::CPatchInfo patch_info;
-        patch_info.Patch.Vertices[0] = points[0];
-        patch_info.Patch.Vertices[1] = points[12];
-        patch_info.Patch.Vertices[2] = points[15];
-        patch_info.Patch.Vertices[3] = points[3];
-        patch_info.Patch.Tangents[0] = points[4];
-        patch_info.Patch.Tangents[1] = points[8];
-        patch_info.Patch.Tangents[2] = points[13];
-        patch_info.Patch.Tangents[3] = points[14];
-        patch_info.Patch.Tangents[4] = points[11];
-        patch_info.Patch.Tangents[5] = points[7];
-        patch_info.Patch.Tangents[6] = points[2];
-        patch_info.Patch.Tangents[7] = points[1];
-        patch_info.Patch.Interiors[0] = points[5];
-        patch_info.Patch.Interiors[1] = points[9];
-        patch_info.Patch.Interiors[2] = points[10];
-        patch_info.Patch.Interiors[3] = points[6];
-        patch_info.OrderS = 2;
-        patch_info.OrderT = 2;
-        patch_info.Tiles.emplace_back();
-        patch_info.Tiles.emplace_back();
-        patch_info.Tiles.emplace_back();
-        patch_info.Tiles.emplace_back();
-        patch_info.TileColors.emplace_back();
-        patch_info.TileColors.emplace_back();
-        patch_info.TileColors.emplace_back();
-        patch_info.TileColors.emplace_back();
-        patch_info.TileColors.emplace_back();
-        patch_info.TileColors.emplace_back();
-        patch_info.TileColors.emplace_back();
-        patch_info.TileColors.emplace_back();
-        patch_info.TileColors.emplace_back();
-        NL3D::CZoneInfo zone_info{
-            .ZoneId = 0,
-            .Patchs = {
-                patch_info
-            }
-        };
         zone.build(zone_info);
         zone.serial(*outputFile);
 
@@ -118,17 +93,6 @@ std::unique_ptr<NLMISC::COFile> openFile(const std::string& path)
     return file;
 }
 
-auto findPatch(const auto& stage) -> pxr::UsdGeomNurbsPatch
-{
-    auto prim = stage->GetDefaultPrim();
-    auto isMesh = [](const pxr::UsdPrim& p) { return p.IsA<pxr::UsdGeomNurbsPatch>(); };
-    for (auto child : stage->Traverse() | std::views::filter(isMesh))
-    {
-        return pxr::UsdGeomNurbsPatch(child);
-    }
-    return pxr::UsdGeomNurbsPatch(prim);
-}
-
 auto vertices(const pxr::UsdAttribute& source) -> std::vector<NLMISC::CVector>
 {
     std::vector<NLMISC::CVector> target;
@@ -148,4 +112,44 @@ auto convert(const pxr::VtArray<pxr::GfVec3f>& source) -> std::vector<NLMISC::CV
     }
 
     return target;
+}
+
+auto convert(const pxr::UsdGeomNurbsPatch& source) -> NL3D::CPatchInfo
+{
+    auto points = vertices(source.GetPointsAttr());
+
+    NL3D::CPatchInfo patch_info;
+    patch_info.Patch.Vertices[0] = points[0];
+    patch_info.Patch.Vertices[1] = points[12];
+    patch_info.Patch.Vertices[2] = points[15];
+    patch_info.Patch.Vertices[3] = points[3];
+    patch_info.Patch.Tangents[0] = points[4];
+    patch_info.Patch.Tangents[1] = points[8];
+    patch_info.Patch.Tangents[2] = points[13];
+    patch_info.Patch.Tangents[3] = points[14];
+    patch_info.Patch.Tangents[4] = points[11];
+    patch_info.Patch.Tangents[5] = points[7];
+    patch_info.Patch.Tangents[6] = points[2];
+    patch_info.Patch.Tangents[7] = points[1];
+    patch_info.Patch.Interiors[0] = points[5];
+    patch_info.Patch.Interiors[1] = points[9];
+    patch_info.Patch.Interiors[2] = points[10];
+    patch_info.Patch.Interiors[3] = points[6];
+    patch_info.OrderS = 2;
+    patch_info.OrderT = 2;
+    patch_info.Tiles.emplace_back();
+    patch_info.Tiles.emplace_back();
+    patch_info.Tiles.emplace_back();
+    patch_info.Tiles.emplace_back();
+    patch_info.TileColors.emplace_back();
+    patch_info.TileColors.emplace_back();
+    patch_info.TileColors.emplace_back();
+    patch_info.TileColors.emplace_back();
+    patch_info.TileColors.emplace_back();
+    patch_info.TileColors.emplace_back();
+    patch_info.TileColors.emplace_back();
+    patch_info.TileColors.emplace_back();
+    patch_info.TileColors.emplace_back();
+
+    return patch_info;
 }
