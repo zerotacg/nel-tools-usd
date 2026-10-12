@@ -5,8 +5,8 @@
       metersPerUnit = 1
   )
 
-  def NurbsPatch "BezierPatch"
-  {
+def NurbsPatch "BezierPatch"
+{
       uniform token orientation = "leftHanded"
       # --- Bezier <=> NURBS encoding ---------------------------------
       # Bicubic Bezier => order 4 in each direction (order = degree + 1).
@@ -53,4 +53,4 @@
 
       # Optional: helps viewers frame the prim.
       float3[] extent = [(0, 0, 0), (3, 2, 3)]
-  }
+}
