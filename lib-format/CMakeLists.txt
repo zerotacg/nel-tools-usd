@@ -1,3 +1,6 @@
+add_subdirectory(tests)
+
+
 add_library(${PROJECT_NAME}-format STATIC)
 add_library(${PROJECT_NAME}::format ALIAS ${PROJECT_NAME}-format)
 
