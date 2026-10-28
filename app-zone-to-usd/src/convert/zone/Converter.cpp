@@ -49,6 +49,8 @@ namespace nel_tools::usd::zone_to_usd::convert::zone
             CBezierPatch bezierPatch;
             const CPatch* patch = zone->getPatch(patchIndex);
             patch->unpack(bezierPatch);
+            outPatch.GetPrim().SetCustomDataByKey(Tokens.nelOrderS, VtValue(patch->getOrderS()));
+            outPatch.GetPrim().SetCustomDataByKey(Tokens.nelOrderT, VtValue(patch->getOrderT()));
             auto points = std::vector{
                 bezierPatch.Vertices[0], bezierPatch.Tangents[7], bezierPatch.Tangents[6], bezierPatch.Vertices[3],
                 bezierPatch.Tangents[0], bezierPatch.Interiors[0], bezierPatch.Interiors[3], bezierPatch.Tangents[5],

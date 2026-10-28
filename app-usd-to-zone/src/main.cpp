@@ -12,8 +12,10 @@
 
 
 import nel_tools.usd.usd_to_zone.Settings;
+import nel_tools.usd.usd_to_zone.tokens;
 
 using namespace nel_tools::usd::usd_to_zone;
+using namespace nel_tools::usd::usd_to_zone::tokens;
 
 std::unique_ptr<NLMISC::COFile> openFile(const std::string& path);
 auto convert(const pxr::VtArray<pxr::GfVec3f>& source) -> std::vector<NLMISC::CVector>;
@@ -137,6 +139,20 @@ auto convert(const pxr::UsdGeomNurbsPatch& source) -> NL3D::CPatchInfo
     patch_info.Patch.Interiors[3] = points[6];
     patch_info.OrderS = 2;
     patch_info.OrderT = 2;
+    {
+        auto orderSValue = source.GetPrim().GetCustomDataByKey(Tokens.nelOrderS);
+        if (orderSValue.IsHolding<uint8>())
+        {
+            patch_info.OrderS = orderSValue.Get<uint8>();
+        }
+    }
+    {
+        auto orderTValue = source.GetPrim().GetCustomDataByKey(Tokens.nelOrderT);
+        if (orderTValue.IsHolding<uint8>())
+        {
+            patch_info.OrderT = orderTValue.Get<uint8>();
+        }
+    }
     patch_info.Tiles.emplace_back();
     patch_info.Tiles.emplace_back();
     patch_info.Tiles.emplace_back();
