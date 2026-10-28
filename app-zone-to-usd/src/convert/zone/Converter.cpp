@@ -61,9 +61,10 @@ namespace nel_tools::usd::zone_to_usd::convert::zone
         }
     }
 
-    VtArray<GfVec3f> Converter::value(const std::vector<CVector>& source)
+    VtArray<GfVec3f> Converter::value(const std::span<CVector>& source)
     {
         VtArray<GfVec3f> target;
+        target.reserve(source.size());
         for (auto const& value : source)
         {
             target.emplace_back(value.x, value.y, value.z);

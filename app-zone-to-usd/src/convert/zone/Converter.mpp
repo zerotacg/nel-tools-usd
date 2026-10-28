@@ -1,4 +1,5 @@
 module;
+#include <span>
 #include <nel/3d/zone.h>
 #include <pxr/usd/usd/stage.h>
 #include <pxr/usd/usdGeom/xform.h>
@@ -19,7 +20,7 @@ export namespace nel_tools::usd::zone_to_usd::convert::zone
 
         virtual void run();
 
-        pxr::VtArray<pxr::GfVec3f> value(const std::vector<NLMISC::CVector>& source);
+        pxr::VtArray<pxr::GfVec3f> value(const std::span<NLMISC::CVector>& source);
 
         static void convert(pxr::UsdStageRefPtr& target, const NL3D::CZone* shape);
 
