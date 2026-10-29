@@ -5,7 +5,9 @@
     upAxis = "Z"
 )
 
-def Xform "root"
+def Xform "root" (
+    kind = "component"
+)
 {
     def Xform "cube"
     {
@@ -17,7 +19,7 @@ def Xform "root"
             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
             int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
             int[] faceVertexIndices = [4, 2, 0, 2, 7, 3, 6, 5, 7, 1, 7, 5, 0, 3, 1, 4, 1, 5, 4, 6, 2, 2, 6, 7, 6, 4, 5, 1, 3, 7, 0, 2, 3, 4, 0, 1]
-            rel material:binding = </root/_materials/Material>
+            rel material:binding = </root/_materials/material_0_MAT>
             normal3f[] normals = [(0, 0, 1), (0, 0, 1), (0, 0, 1), (0, -1, 0), (0, -1, 0), (0, -1, 0), (-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (0, 0, -1), (0, 0, -1), (0, 0, -1), (1, 0, 0), (1, 0, 0), (1, 0, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, -1, 0), (0, -1, 0), (0, -1, 0), (-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (0, 0, -1), (0, 0, -1), (0, 0, -1), (1, 0, 0), (1, 0, 0), (1, 0, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0)] (
                 interpolation = "faceVarying"
             )
@@ -30,44 +32,9 @@ def Xform "root"
         }
     }
 
-    def Scope "_materials"
+    def Scope "_materials" (
+        prepend references = @./materials.usda@
+    )
     {
-        def Material "Material"
-        {
-            token outputs:surface.connect = </root/_materials/Material/Principled_BSDF.outputs:surface>
-
-            def Shader "Principled_BSDF"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                float inputs:clearcoat = 0
-                float inputs:clearcoatRoughness = 0.03
-                color3f inputs:diffuseColor.connect = </root/_materials/Material/Image_Texture.outputs:rgb>
-                float inputs:ior = 1.5
-                float inputs:metallic = 0
-                float inputs:opacity = 1
-                float inputs:roughness = 0.5
-                float inputs:specular = 0.5
-                token outputs:surface
-            }
-
-            def Shader "Image_Texture"
-            {
-                uniform token info:id = "UsdUVTexture"
-                asset inputs:file = @./textures/test.png@
-                token inputs:sourceColorSpace = "sRGB"
-                float2 inputs:st.connect = </root/_materials/Material/uvmap.outputs:result>
-                token inputs:wrapS = "repeat"
-                token inputs:wrapT = "repeat"
-                float3 outputs:rgb
-            }
-
-            def Shader "uvmap"
-            {
-                uniform token info:id = "UsdPrimvarReader_float2"
-                string inputs:varname = "st"
-                float2 outputs:result
-            }
-        }
     }
 }
-

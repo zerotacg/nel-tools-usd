@@ -23,48 +23,9 @@ def Xform "root" (
         uniform token subdivisionScheme = "none"
     }
 
-    def Scope "_materials"
+    def Scope "_materials" (
+        prepend references = @./materials.usda@
+    )
     {
-        over "input" (
-            prepend references = @./triangle.usda@
-        )
-        {
-            double3 xformOp:translate = (-3, 0, 0)
-            uniform token[] xformOpOrder = ["xformOp:translate"]
-        }
-        def Material "material_0_MAT"
-        {
-            token outputs:surface.connect = </root/_materials/material_0_MAT/Principled_BSDF.outputs:surface>
-
-            def Shader "Principled_BSDF"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (1, 0, 1)
-                color3f inputs:diffuseColor.connect = </root/_materials/material_0_MAT/Image_Texture.outputs:rgb>
-                float inputs:roughness = 0.9
-                color3f inputs:specularColor = (0, 0, 0)
-                int inputs:useSpecularWorkflow = 1
-                token outputs:surface
-            }
-
-            def Shader "Image_Texture"
-            {
-                uniform token info:id = "UsdUVTexture"
-                asset inputs:file = @./textures/test.png@
-                token inputs:sourceColorSpace = "sRGB"
-                float2 inputs:st.connect = </root/_materials/material_0_MAT/uvmap.outputs:result>
-                token inputs:wrapS = "repeat"
-                token inputs:wrapT = "repeat"
-                float3 outputs:rgb
-            }
-
-            def Shader "uvmap"
-            {
-                uniform token info:id = "UsdPrimvarReader_float2"
-                string inputs:varname = "st"
-                float2 outputs:result
-            }
-        }
     }
 }
-
