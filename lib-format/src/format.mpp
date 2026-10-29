@@ -9,7 +9,7 @@ export template <> struct fmt::formatter<NL3D::ITexture::TUploadFormat>: formatt
     auto format(NL3D::ITexture::TUploadFormat source, format_context& ctx) const
       -> format_context::iterator
     {
-        string_view name = "unknown";
+        std::string_view name = "unknown";
         switch (source)
         {
             // clang-format off
@@ -30,6 +30,6 @@ export template <> struct fmt::formatter<NL3D::ITexture::TUploadFormat>: formatt
         case NL3D::ITexture::UploadFormatCount: name = "UploadFormatCount"; break;
             // clang-format on
         }
-        return formatter<string_view>::format(name, ctx);
+        return formatter<std::string_view>::format(name, ctx);
     }
 };

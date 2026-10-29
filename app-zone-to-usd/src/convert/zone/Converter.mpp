@@ -2,6 +2,7 @@ module;
 #include <span>
 #include <nel/3d/zone.h>
 #include <pxr/usd/usd/stage.h>
+#include <pxr/usd/usdGeom/nurbsPatch.h>
 #include <pxr/usd/usdGeom/xform.h>
 
 export module nel_tools.usd.zone_to_usd.convert.zone.Converter;
@@ -11,8 +12,8 @@ export namespace nel_tools::usd::zone_to_usd::convert::zone
     class Converter
     {
     public:
-        explicit Converter(pxr::UsdStageRefPtr& stage, pxr::UsdGeomXform& target, const NL3D::CZone* zone)
-            : stage(stage), zoneRoot(target), zone(zone)
+        explicit Converter(pxr::UsdStageRefPtr& stage, pxr::UsdGeomXform& target, const NL3D::CZone* source)
+            : stage(stage), zoneRoot(target), zone(source)
         {
         }
 
@@ -21,8 +22,10 @@ export namespace nel_tools::usd::zone_to_usd::convert::zone
         virtual void run();
 
         pxr::VtArray<pxr::GfVec3f> value(const std::span<NLMISC::CVector>& source);
+        void convert(pxr::UsdGeomNurbsPatch& target, const NL3D::CPatch& source);
+        void convert(pxr::UsdGeomNurbsPatch& target, const NL3D::CBezierPatch& source);
 
-        static void convert(pxr::UsdStageRefPtr& target, const NL3D::CZone* shape);
+        static void convert(pxr::UsdStageRefPtr& target, const NL3D::CZone* source);
 
     protected:
         pxr::UsdStageRefPtr& stage;

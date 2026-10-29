@@ -35,29 +35,7 @@ namespace nel_tools::usd::zone_to_usd::convert::zone
         for (sint patchIndex = 0; patchIndex < zone->getNumPatchs(); patchIndex++)
         {
             auto outPatch = UsdGeomNurbsPatch::Define(stage, patch(patchIndex));
-            outPatch.CreateOrientationAttr().Set(UsdGeomTokens->leftHanded);
-            outPatch.CreateUOrderAttr().Set(4);
-            outPatch.CreateVOrderAttr().Set(4);
-            outPatch.CreateUVertexCountAttr().Set(4);
-            outPatch.CreateVVertexCountAttr().Set(4);
-            outPatch.CreateUKnotsAttr().Set(VtArray<double>{0, 0, 0, 0, 1, 1, 1, 1});
-            outPatch.CreateVKnotsAttr().Set(VtArray<double>{0, 0, 0, 0, 1, 1, 1, 1});
-            outPatch.CreateURangeAttr().Set(GfVec2d(0.0, 1.0));
-            outPatch.CreateVRangeAttr().Set(GfVec2d(0.0, 1.0));
-            outPatch.CreateUFormAttr().Set(	UsdGeomTokens->open);
-            outPatch.CreateVFormAttr().Set(UsdGeomTokens->open);
-            CBezierPatch bezierPatch;
-            const CPatch* patch = zone->getPatch(patchIndex);
-            patch->unpack(bezierPatch);
-            outPatch.GetPrim().SetCustomDataByKey(Tokens.nelOrderS, VtValue(patch->getOrderS()));
-            outPatch.GetPrim().SetCustomDataByKey(Tokens.nelOrderT, VtValue(patch->getOrderT()));
-            auto points = std::vector{
-                bezierPatch.Vertices[0], bezierPatch.Tangents[7], bezierPatch.Tangents[6], bezierPatch.Vertices[3],
-                bezierPatch.Tangents[0], bezierPatch.Interiors[0], bezierPatch.Interiors[3], bezierPatch.Tangents[5],
-                bezierPatch.Tangents[1], bezierPatch.Interiors[1], bezierPatch.Interiors[2], bezierPatch.Tangents[4],
-                bezierPatch.Vertices[1], bezierPatch.Tangents[2], bezierPatch.Tangents[3], bezierPatch.Vertices[2]
-            };
-            outPatch.CreatePointsAttr().Set(value(points));
+            convert(outPatch, *zone->getPatch(patchIndex));
         }
     }
 
@@ -71,5 +49,38 @@ namespace nel_tools::usd::zone_to_usd::convert::zone
         }
 
         return target;
+    }
+
+    void Converter::convert(UsdGeomNurbsPatch& target, const CPatch& source)
+    {
+        target.GetPrim().SetCustomDataByKey(Tokens.nelOrderS, VtValue(source.getOrderS()));
+        target.GetPrim().SetCustomDataByKey(Tokens.nelOrderT, VtValue(source.getOrderT()));
+
+        CBezierPatch bezierPatch;
+        source.unpack(bezierPatch);
+        convert(target, bezierPatch);
+    }
+
+    void Converter::convert(UsdGeomNurbsPatch& target, const CBezierPatch& source)
+    {
+        target.CreateOrientationAttr().Set(UsdGeomTokens->leftHanded);
+        target.CreateUOrderAttr().Set(4);
+        target.CreateVOrderAttr().Set(4);
+        target.CreateUVertexCountAttr().Set(4);
+        target.CreateVVertexCountAttr().Set(4);
+        target.CreateUKnotsAttr().Set(VtArray<double>{0, 0, 0, 0, 1, 1, 1, 1});
+        target.CreateVKnotsAttr().Set(VtArray<double>{0, 0, 0, 0, 1, 1, 1, 1});
+        target.CreateURangeAttr().Set(GfVec2d(0.0, 1.0));
+        target.CreateVRangeAttr().Set(GfVec2d(0.0, 1.0));
+        target.CreateUFormAttr().Set(UsdGeomTokens->open);
+        target.CreateVFormAttr().Set(UsdGeomTokens->open);
+
+        auto points = std::vector{
+            source.Vertices[0], source.Tangents[7], source.Tangents[6], source.Vertices[3],
+            source.Tangents[0], source.Interiors[0], source.Interiors[3], source.Tangents[5],
+            source.Tangents[1], source.Interiors[1], source.Interiors[2], source.Tangents[4],
+            source.Vertices[1], source.Tangents[2], source.Tangents[3], source.Vertices[2]
+        };
+        target.CreatePointsAttr().Set(value(points));
     }
 }
