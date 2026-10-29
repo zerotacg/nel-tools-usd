@@ -61,6 +61,8 @@ jobs:
 
       - uses: lukka/get-cmake@latest
 
+      - run: cmake --version
+
       - uses: lukka/run-vcpkg@v11.6
 
       - uses: actions/cache/restore@v6
