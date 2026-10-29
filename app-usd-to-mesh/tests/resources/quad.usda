@@ -2,7 +2,7 @@
 (
     defaultPrim = "root"
     metersPerUnit = 1
-    upAxis = "Z"
+    upAxis = "Y"
 )
 
 def Xform "root" (

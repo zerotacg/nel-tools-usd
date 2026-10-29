@@ -1,0 +1,98 @@
+#usda 1.0
+(
+    defaultPrim = "root"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "root" (
+    kind = "component"
+)
+{
+    def Mesh "grid" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        uniform bool doubleSided = 1
+        int[] faceVertexCounts = [4]
+        int[] faceVertexIndices = [0,1, 2, 3]
+        rel material:binding = </root/_materials/atlasMaterial>
+        point3f[] points = [(0, 0, 0), (2, 0, 0), (2, 2, 0), (0, 2, 0)]
+        texCoord2f[] primvars:st = [(0, 0), (1, 0), (1, 1), (0, 1)] (
+            interpolation = "vertex"
+        )
+        float2[] primvars:tile = [(1, 1)] (
+            interpolation = "constant"
+        )
+        uniform token subdivisionScheme = "none"
+        uniform token subsetFamily:materialBind:familyType = "nonOverlapping"
+    }
+
+    def Scope "_materials"
+    {
+        def Material "atlasMaterial"
+        {
+            # 16x16 texture atlas
+            token outputs:surface.connect = </root/_materials/atlasMaterial/PBRShader.outputs:surface>
+
+            def Shader "PBRShader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (1, 1, 1)
+                color3f inputs:diffuseColor.connect = </root/_materials/atlasMaterial/atlasTexture.outputs:rgb>
+                float inputs:opacity.connect = </root/_materials/atlasMaterial/atlasTexture.outputs:a>
+                float inputs:roughness = 0.9
+                color3f inputs:specularColor = (0, 0, 0)
+                int inputs:useSpecularWorkflow = 1
+                token outputs:surface
+            }
+
+            def Shader "uvmap"
+            {
+                uniform token info:id = "UsdPrimvarReader_float2"
+                string inputs:varname = "st"
+                float2 outputs:result
+            }
+
+            def Shader "tilemap"
+            {
+                uniform token info:id = "UsdPrimvarReader_float2"
+                string inputs:varname = "tile"
+                float2 outputs:result
+            }
+
+            def Shader "tile_offset"
+            {
+                uniform token info:id = "UsdTransform2d"
+
+                float2 inputs:in.connect = </root/_materials/atlasMaterial/tilemap.outputs:result>
+                float2 inputs:scale = (0.0625, 0.0625)
+                float2 inputs:translation = (0.0, 0.0)
+                float2 outputs:result
+            }
+
+            def Shader "atlasmap"
+            {
+                uniform token info:id = "UsdTransform2d"
+
+                float2 inputs:in.connect = </root/_materials/atlasMaterial/uvmap.outputs:result>
+                float2 inputs:scale = (0.0625, 0.0625)
+                float2 inputs:translation.connect = </root/_materials/atlasMaterial/tile_offset.outputs:result>
+                float2 outputs:result
+            }
+
+            def Shader "atlasTexture"
+            {
+                uniform token info:id = "UsdUVTexture"
+                asset inputs:file = @atlas.png@
+                token inputs:magFilter = "linear"
+                token inputs:minFilter = "linearMipmapLinear"
+                float2 inputs:st.connect = </root/_materials/atlasMaterial/atlasmap.outputs:result>
+                token inputs:wrapS = "clamp"
+                token inputs:wrapT = "clamp"
+                float outputs:a
+                float3 outputs:rgb
+            }
+        }
+    }
+}
