@@ -14,6 +14,9 @@ on:
 
 env:
   VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/.vcpkg,readwrite"
+  # Deterministic build flags for reproducible builds
+  SOURCE_DATE_EPOCH: "0"
+  ZERO_AR_DATE: "1"
 
 jobs:
   strings:

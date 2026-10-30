@@ -43,6 +43,8 @@ COPY --parents ./vcpkg.json ./vcpkg-configuration.json ./vcpkg-ports/ /build/
 RUN vcpkg install
 
 COPY ./ /build
+ENV SOURCE_DATE_EPOCH=0
+ENV ZERO_AR_DATE=1
 RUN cmake --workflow docker
 
 

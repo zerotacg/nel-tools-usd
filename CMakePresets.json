@@ -9,7 +9,8 @@
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": "${sourceDir}/build/install",
         "CMAKE_VERIFY_INTERFACE_HEADER_SETS": true,
-        "CMAKE_INSTALL_SBOM_FORMATS": "SPDX"
+        "CMAKE_INSTALL_SBOM_FORMATS": "SPDX",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
       }
     },
     {
