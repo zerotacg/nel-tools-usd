@@ -48,7 +48,7 @@ def Xform "root" (
             def Shader "PBRShader"
             {
                 uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (1, 1, 1)
+                color3f inputs:diffuseColor = (1, 0, 1)
                 color3f inputs:diffuseColor.connect = </root/_materials/material_0_MAT/texture_0.outputs:rgb>
                 float inputs:opacity.connect = </root/_materials/material_0_MAT/texture_0.outputs:a>
                 float inputs:roughness = 0.9
