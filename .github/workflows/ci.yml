@@ -72,7 +72,7 @@ jobs:
         id: vcpkg-cache
         with:
           path: ${{ github.workspace }}/.vcpkg
-          key: vcpkg-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          key: vcpkg-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-ports/**') }}
           restore-keys: vcpkg-
 
 
