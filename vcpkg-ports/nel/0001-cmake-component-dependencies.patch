@@ -1,13 +1,29 @@
-Subject: [PATCH] ignore empty test results as they are not generated for no changes
+Subject: [PATCH] cmake misc dependencies
 ---
+Index: nel/CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/nel/CMakeLists.txt b/nel/CMakeLists.txt
+--- a/nel/CMakeLists.txt	(revision 67dd6975d54188db619012ad3406d811c1c506f2)
++++ b/nel/CMakeLists.txt	(date 1793605539242)
+@@ -94,6 +94,7 @@
+ set(package_components 3d georges gui ligo misc net pacs sevenzip sound snd_lowlevel) # TODO append in components to have actual list of build targets
+ set(package_required_dependencies CURL Freetype LibXml2) # LibXml2 for misc, which links it PUBLIC
+ set(package_gui_dependencies Lua Luabind)
++set(package_misc_dependencies LibXml2 ZLIB JPEG GIF)
+ set(package_sound_dependencies Vorbis)
+
+
 Index: cmake/config.cmake.in
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/cmake/config.cmake.in b/cmake/config.cmake.in
---- a/cmake/config.cmake.in	(revision bf5b866ff4544d2b8c18b9ba249fc79cfb1da4b1)
-+++ b/cmake/config.cmake.in	(date 1778050229238)
+--- a/cmake/config.cmake.in	(revision 67dd6975d54188db619012ad3406d811c1c506f2)
++++ b/cmake/config.cmake.in	(date 1793605539225)
 @@ -3,6 +3,7 @@
  set(_@PROJECT_NAME@_supported_components @package_components@)
  set(_@PROJECT_NAME@_georges_dependencies @package_georges_dependencies@)
@@ -16,28 +32,3 @@ diff --git a/cmake/config.cmake.in b/cmake/config.cmake.in
  set(_@PROJECT_NAME@_sound_dependencies @package_sound_dependencies@)
 
  foreach(_comp ${@PROJECT_NAME@_FIND_COMPONENTS})
-@@ -22,7 +23,7 @@
-
-
- # Dependencies for components
--foreach(_comp ${_@PROJECT_NAME@_supported_components})
-+foreach(_comp ${@PROJECT_NAME@_FIND_COMPONENTS})
-   foreach(_dependency IN ITEMS ${_@PROJECT_NAME@_${_comp}_dependencies})
-     find_dependency(${_dependency} REQUIRED)
-   endforeach()
-Index: nel/CMakeLists.txt
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/nel/CMakeLists.txt b/nel/CMakeLists.txt
---- a/nel/CMakeLists.txt	(revision bf5b866ff4544d2b8c18b9ba249fc79cfb1da4b1)
-+++ b/nel/CMakeLists.txt	(date 1778050295766)
-@@ -95,6 +95,7 @@
- set(package_required_dependencies CURL Freetype)
- set(package_georges_dependencies LibXml2)
- set(package_gui_dependencies Lua Luabind)
-+set(package_misc_dependencies LibXml2 ZLIB JPEG GIF)
- set(package_sound_dependencies Vorbis)
-
-
